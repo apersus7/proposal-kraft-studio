@@ -1,0 +1,205 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus, FileText, Settings, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
+import logo from '@/assets/logo.png';
+
+interface Proposal {
+  id: string;
+  title: string;
+  client_name: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Profile {
+  company_name: string;
+  company_logo_url: string | null;
+}
+
+export default function Dashboard() {
+  const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchProposals();
+      fetchProfile();
+    }
+  }, [user]);
+
+  const fetchProposals = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('proposals')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setProposals(data || []);
+    } catch (error) {
+      console.error('Error fetching proposals:', error);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  const fetchProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('company_name, company_logo_url')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'draft': return 'secondary';
+      case 'sent': return 'default';
+      case 'accepted': return 'destructive';
+      case 'rejected': return 'outline';
+      default: return 'secondary';
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <img src={logo} alt="Proposal kraft" className="h-12 mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <img src={logo} alt="Proposal kraft" className="h-8" />
+              <h1 className="text-xl font-bold text-primary">Proposal kraft</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-muted-foreground">
+                {profile?.company_name || user.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">Your Proposals</h2>
+            <p className="text-muted-foreground mt-2">
+              Create and manage professional business proposals
+            </p>
+          </div>
+          <Button onClick={() => navigate('/create-proposal')} className="bg-primary hover:bg-primary/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Proposal
+          </Button>
+        </div>
+
+        {loadingData ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="h-3 bg-muted rounded w-1/2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-3 bg-muted rounded w-full mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : proposals.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No proposals yet</h3>
+              <p className="text-muted-foreground text-center max-w-sm mb-6">
+                Get started by creating your first proposal. Choose from our professional templates.
+              </p>
+              <Button onClick={() => navigate('/create-proposal')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Your First Proposal
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {proposals.map((proposal) => (
+              <Card key={proposal.id} className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg line-clamp-1">{proposal.title}</CardTitle>
+                    <Badge variant={getStatusColor(proposal.status)}>
+                      {proposal.status}
+                    </Badge>
+                  </div>
+                  <CardDescription>Client: {proposal.client_name}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm text-muted-foreground">
+                    <p>Created: {new Date(proposal.created_at).toLocaleDateString()}</p>
+                    <p>Updated: {new Date(proposal.updated_at).toLocaleDateString()}</p>
+                  </div>
+                  <div className="mt-4 flex space-x-2">
+                    <Button size="sm" variant="outline" className="flex-1">
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="outline" className="flex-1">
+                      View
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
