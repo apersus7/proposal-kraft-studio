@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Zap, Shield, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import Footer from '@/components/Footer';
 // Using uploaded logo directly
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -23,11 +24,20 @@ const Index = () => {
       <header className="border-b bg-card/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
+            <Link to="/" className="flex items-center space-x-3">
               <img src={logo} alt="Proposal kraft" className="h-8" />
-              <h1 className="text-xl font-bold text-primary">Proposal kraft</h1>
-            </div>
+              <span className="text-xl font-bold text-primary">Proposal kraft</span>
+            </Link>
             <div className="flex items-center space-x-4">
+              <Link to="/features">
+                <Button variant="ghost">Features</Button>
+              </Link>
+              <Link to="/pricing">
+                <Button variant="ghost">Pricing</Button>
+              </Link>
+              <Link to="/solutions">
+                <Button variant="ghost">Solutions</Button>
+              </Link>
               <Button variant="ghost" onClick={() => navigate('/auth')}>
                 Sign In
               </Button>
@@ -140,6 +150,8 @@ const Index = () => {
           </Button>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
