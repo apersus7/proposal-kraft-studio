@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Zap, Shield, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import logo from '@/assets/logo.png';
+// Using uploaded logo directly
+const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 const Index = () => {
   const { user } = useAuth();
