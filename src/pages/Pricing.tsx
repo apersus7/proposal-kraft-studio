@@ -3,66 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CheckCircle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Footer from '@/components/Footer';
+import { PayPalSubscription } from '@/components/PayPalSubscription';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 const Pricing = () => {
-  const plans = [
-    {
-      name: 'Starter',
-      price: 'Free',
-      description: 'Perfect for getting started with basic proposals',
-      features: [
-        { name: '5 proposals per month', included: true },
-        { name: '3 basic templates', included: true },
-        { name: 'PDF export', included: true },
-        { name: 'Email support', included: true },
-        { name: 'Custom branding', included: false },
-        { name: 'Advanced templates', included: false },
-        { name: 'Priority support', included: false },
-        { name: 'Analytics dashboard', included: false }
-      ],
-      popular: false,
-      buttonText: 'Get Started Free'
-    },
-    {
-      name: 'Professional',
-      price: '$19',
-      priceDetail: '/month',
-      description: 'Best for growing businesses and freelancers',
-      features: [
-        { name: 'Unlimited proposals', included: true },
-        { name: '20+ premium templates', included: true },
-        { name: 'PDF, Word & PPT export', included: true },
-        { name: 'Custom branding', included: true },
-        { name: 'Client management', included: true },
-        { name: 'Email support', included: true },
-        { name: 'Analytics dashboard', included: true },
-        { name: 'Priority support', included: false }
-      ],
-      popular: true,
-      buttonText: 'Start Free Trial'
-    },
-    {
-      name: 'Enterprise',
-      price: '$49',
-      priceDetail: '/month',
-      description: 'For teams and organizations with advanced needs',
-      features: [
-        { name: 'Everything in Professional', included: true },
-        { name: '50+ premium templates', included: true },
-        { name: 'Team collaboration', included: true },
-        { name: 'Advanced analytics', included: true },
-        { name: 'Priority support', included: true },
-        { name: 'Custom integrations', included: true },
-        { name: 'White-label options', included: true },
-        { name: 'Dedicated account manager', included: true }
-      ],
-      popular: false,
-      buttonText: 'Contact Sales'
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -113,49 +58,24 @@ const Pricing = () => {
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-8">
-              {plans.map((plan, index) => (
-                <Card key={index} className={`relative ${plan.popular ? 'border-primary shadow-lg scale-105' : ''}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      {plan.priceDetail && (
-                        <span className="text-muted-foreground">{plan.priceDetail}</span>
-                      )}
-                    </div>
-                    <CardDescription className="mt-4">{plan.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3 mb-8">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center">
-                          {feature.included ? (
-                            <CheckCircle className="h-5 w-5 text-primary mr-3" />
-                          ) : (
-                            <X className="h-5 w-5 text-muted-foreground mr-3" />
-                          )}
-                          <span className={feature.included ? 'text-foreground' : 'text-muted-foreground'}>
-                            {feature.name}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button 
-                      className="w-full" 
-                      variant={plan.popular ? 'default' : 'outline'}
-                    >
-                      {plan.buttonText}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              <PayPalSubscription
+                planId="P-STARTER-PLAN-ID"
+                planName="Professional"
+                price="$19/month"
+                description="Best for growing businesses and freelancers"
+              />
+              <PayPalSubscription
+                planId="P-PROFESSIONAL-PLAN-ID"
+                planName="Enterprise"
+                price="$49/month"
+                description="For teams and organizations with advanced needs"
+              />
+              <PayPalSubscription
+                planId="P-ENTERPRISE-PLAN-ID"
+                planName="Premium"
+                price="$99/month"
+                description="For large organizations requiring unlimited usage"
+              />
             </div>
           </div>
         </section>

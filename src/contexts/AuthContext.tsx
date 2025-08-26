@@ -6,10 +6,16 @@ import { toast } from '@/hooks/use-toast';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  loading: boolean;
+  subscriptionStatus: {
+    subscribed: boolean;
+    subscription_tier?: string;
+    subscription_end?: string;
+  };
+  checkSubscription: () => Promise<void>;
   signUp: (email: string, password: string, companyName?: string) => Promise<{ error?: any }>;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signOut: () => Promise<void>;
-  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +24,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    subscribed: boolean;
+    subscription_tier?: string;
+    subscription_end?: string;
+  }>({ subscribed: false });
+
+  const checkSubscription = async () => {
+    if (!user) {
+      setSubscriptionStatus({ subscribed: false });
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-paypal-subscription');
+      
+      if (error) {
+        console.error('Error checking subscription:', error);
+        setSubscriptionStatus({ subscribed: false });
+        return;
+      }
+      
+      if (data) {
+        setSubscriptionStatus(data);
+      }
+    } catch (error) {
+      console.error('Error checking subscription status:', error);
+      setSubscriptionStatus({ subscribed: false });
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -26,6 +61,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check subscription status when auth state changes
+        if (session?.user) {
+          setTimeout(() => {
+            checkSubscription();
+          }, 0);
+        } else {
+          setSubscriptionStatus({ subscribed: false });
+        }
       }
     );
 
@@ -131,10 +175,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{
       user,
       session,
+      loading,
+      subscriptionStatus,
+      checkSubscription,
       signUp,
       signIn,
       signOut,
-      loading
     }}>
       {children}
     </AuthContext.Provider>
