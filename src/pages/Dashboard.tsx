@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, FileText, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
-import logo from '@/assets/logo.png';
+const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
   id: string;
@@ -113,7 +113,7 @@ export default function Dashboard() {
               <span className="text-sm text-muted-foreground">
                 {profile?.company_name || user.email}
               </span>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
                 <Settings className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
@@ -171,9 +171,9 @@ export default function Dashboard() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {proposals.map((proposal) => (
-              <Card key={proposal.id} className="cursor-pointer hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
+              <Card key={proposal.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate(`/proposal/${proposal.id}`)}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
                     <CardTitle className="text-lg line-clamp-1">{proposal.title}</CardTitle>
                     <Badge variant={getStatusColor(proposal.status)}>
                       {proposal.status}
@@ -182,17 +182,9 @@ export default function Dashboard() {
                   <CardDescription>Client: {proposal.client_name}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="flex justify-between text-sm text-muted-foreground">
                     <p>Created: {new Date(proposal.created_at).toLocaleDateString()}</p>
                     <p>Updated: {new Date(proposal.updated_at).toLocaleDateString()}</p>
-                  </div>
-                  <div className="mt-4 flex space-x-2">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      View
-                    </Button>
                   </div>
                 </CardContent>
               </Card>

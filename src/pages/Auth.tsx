@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
-import logo from '@/assets/logo.png';
+const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
