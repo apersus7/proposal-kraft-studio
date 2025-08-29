@@ -57,25 +57,235 @@ const Pricing = () => {
         {/* Pricing Cards */}
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8">
-              <PayPalSubscription
-                planId="P-STARTER-PLAN-ID"
-                planName="Professional"
-                price="$19/month"
-                description="Best for growing businesses and freelancers"
-              />
-              <PayPalSubscription
-                planId="P-PROFESSIONAL-PLAN-ID"
-                planName="Enterprise"
-                price="$49/month"
-                description="For teams and organizations with advanced needs"
-              />
-              <PayPalSubscription
-                planId="P-ENTERPRISE-PLAN-ID"
-                planName="Premium"
-                price="$99/month"
-                description="For large organizations requiring unlimited usage"
-              />
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Starter Plan */}
+              <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
+                <CardHeader className="text-center pb-8">
+                  <CardTitle className="text-2xl mb-2">Starter</CardTitle>
+                  <CardDescription className="text-muted-foreground mb-4">
+                    Perfect for freelancers and small businesses
+                  </CardDescription>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    $19
+                    <span className="text-lg font-normal text-muted-foreground">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Billed monthly</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Up to 50 proposals per month</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">10 professional templates</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Basic analytics</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Email support</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Brand customization</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">CRM integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">Advanced analytics</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <PayPalSubscription
+                      planId="P-STARTER-PLAN-ID"
+                      planName="Starter"
+                      price="$19/month"
+                      description="Perfect for freelancers and small businesses"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Professional Plan */}
+              <Card className="relative border-primary shadow-lg hover:shadow-xl transition-all duration-300">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
+                    Most Popular
+                  </span>
+                </div>
+                <CardHeader className="text-center pb-8 pt-8">
+                  <CardTitle className="text-2xl mb-2">Professional</CardTitle>
+                  <CardDescription className="text-muted-foreground mb-4">
+                    Best for growing businesses and teams
+                  </CardDescription>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    $49
+                    <span className="text-lg font-normal text-muted-foreground">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Billed monthly</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Unlimited proposals</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">50+ premium templates</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Advanced analytics & tracking</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Priority support</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Full brand customization</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Basic CRM integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Team collaboration (5 users)</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <PayPalSubscription
+                      planId="P-PROFESSIONAL-PLAN-ID"
+                      planName="Professional"
+                      price="$49/month"
+                      description="Best for growing businesses and teams"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Enterprise Plan */}
+              <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
+                <CardHeader className="text-center pb-8">
+                  <CardTitle className="text-2xl mb-2">Enterprise</CardTitle>
+                  <CardDescription className="text-muted-foreground mb-4">
+                    For large organizations with advanced needs
+                  </CardDescription>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    $99
+                    <span className="text-lg font-normal text-muted-foreground">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Billed monthly</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Unlimited everything</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Custom templates & branding</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Advanced analytics & reporting</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">24/7 dedicated support</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">White-label solutions</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">All CRM integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Unlimited team members</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">API access</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <PayPalSubscription
+                      planId="P-ENTERPRISE-PLAN-ID"
+                      planName="Enterprise"
+                      price="$99/month"
+                      description="For large organizations with advanced needs"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Feature Comparison Table */}
+            <div className="mt-20">
+              <h3 className="text-2xl font-bold text-center mb-10">Compare Plans</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full border border-border rounded-lg">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="text-left p-4 font-semibold">Features</th>
+                      <th className="text-center p-4 font-semibold">Starter</th>
+                      <th className="text-center p-4 font-semibold">Professional</th>
+                      <th className="text-center p-4 font-semibold">Enterprise</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Monthly proposals</td>
+                      <td className="text-center p-4">50</td>
+                      <td className="text-center p-4">Unlimited</td>
+                      <td className="text-center p-4">Unlimited</td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Templates</td>
+                      <td className="text-center p-4">10</td>
+                      <td className="text-center p-4">50+</td>
+                      <td className="text-center p-4">Custom</td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Team members</td>
+                      <td className="text-center p-4">1</td>
+                      <td className="text-center p-4">5</td>
+                      <td className="text-center p-4">Unlimited</td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">CRM integrations</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4">Basic</td>
+                      <td className="text-center p-4">All</td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Analytics</td>
+                      <td className="text-center p-4">Basic</td>
+                      <td className="text-center p-4">Advanced</td>
+                      <td className="text-center p-4">Advanced + Reporting</td>
+                    </tr>
+                    <tr>
+                      <td className="p-4">Support</td>
+                      <td className="text-center p-4">Email</td>
+                      <td className="text-center p-4">Priority</td>
+                      <td className="text-center p-4">24/7 Dedicated</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </section>
