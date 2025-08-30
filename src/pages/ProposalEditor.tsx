@@ -65,6 +65,55 @@ export default function ProposalEditor() {
     }
   };
 
+  const getContentValue = (sectionType: string, field: string) => {
+    if (!proposal?.content?.sections) return '';
+    const section = proposal.content.sections.find((s: any) => s.type === sectionType);
+    return section ? section[field] : '';
+  };
+
+  const updateContentValue = (sectionType: string, field: string, value: any) => {
+    if (!proposal) return;
+    
+    const updatedSections = proposal.content?.sections?.map((section: any) => {
+      if (section.type === sectionType) {
+        return { ...section, [field]: value };
+      }
+      return section;
+    }) || [];
+
+    // If section doesn't exist, create it
+    if (!updatedSections.some((s: any) => s.type === sectionType)) {
+      updatedSections.push({ type: sectionType, [field]: value });
+    }
+    
+    setProposal(prev => prev ? {
+      ...prev,
+      content: { ...prev.content, sections: updatedSections }
+    } : null);
+  };
+
+  const updatePhase = (phaseIndex: number, field: string, value: string) => {
+    if (!proposal) return;
+    
+    const timelineSection = proposal.content?.sections?.find((s: any) => s.type === 'timeline');
+    const currentPhases = timelineSection?.phases || [];
+    const updatedPhases = [...currentPhases];
+    
+    if (updatedPhases[phaseIndex]) {
+      updatedPhases[phaseIndex] = { ...updatedPhases[phaseIndex], [field]: value };
+    } else {
+      updatedPhases[phaseIndex] = { [field]: value };
+    }
+    
+    updateContentValue('timeline', 'phases', updatedPhases);
+  };
+
+  const addTimelinePhase = () => {
+    const currentPhases = getContentValue('timeline', 'phases') || [];
+    const newPhases = [...currentPhases, { phase: '', duration: '', description: '' }];
+    updateContentValue('timeline', 'phases', newPhases);
+  };
+
   const handleSave = async () => {
     if (!proposal || !user) return;
 
@@ -236,43 +285,80 @@ export default function ProposalEditor() {
                   Customize the content of your proposal
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="executive_summary">Executive Summary</Label>
-                  <Textarea
-                    id="executive_summary"
-                    placeholder="Provide a brief overview of your proposal..."
-                    className="min-h-[100px]"
-                  />
-                </div>
+               <CardContent className="space-y-6">
+                 <div className="space-y-2">
+                   <Label htmlFor="executive_summary">Executive Summary</Label>
+                   <Textarea
+                     id="executive_summary"
+                     value={getContentValue('executive_summary', 'content')}
+                     onChange={(e) => updateContentValue('executive_summary', 'content', e.target.value)}
+                     placeholder="Provide a brief overview of your proposal..."
+                     className="min-h-[100px]"
+                   />
+                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="scope_of_work">Scope of Work</Label>
-                  <Textarea
-                    id="scope_of_work"
-                    placeholder="Detail the work to be performed..."
-                    className="min-h-[150px]"
-                  />
-                </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="scope_of_work">Scope of Work</Label>
+                   <Textarea
+                     id="scope_of_work"
+                     value={getContentValue('scope_of_work', 'items')?.join('\n') || ''}
+                     onChange={(e) => updateContentValue('scope_of_work', 'items', e.target.value.split('\n').filter(item => item.trim()))}
+                     placeholder="Detail the work to be performed... (one item per line)"
+                     className="min-h-[150px]"
+                   />
+                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="timeline">Timeline</Label>
-                  <Textarea
-                    id="timeline"
-                    placeholder="Outline the project timeline..."
-                    className="min-h-[100px]"
-                  />
-                </div>
+                 <div className="space-y-2">
+                   <Label>Timeline</Label>
+                   <div className="space-y-3">
+                     {getContentValue('timeline', 'phases')?.map((phase: any, index: number) => (
+                       <div key={index} className="grid grid-cols-3 gap-2">
+                          <Input
+                            value={phase.phase || ''}
+                            onChange={(e) => updatePhase(index, 'phase', e.target.value)}
+                            placeholder="Phase name"
+                          />
+                          <Input
+                            value={phase.duration || ''}
+                            onChange={(e) => updatePhase(index, 'duration', e.target.value)}
+                            placeholder="Duration"
+                          />
+                          <Input
+                            value={phase.description || ''}
+                            onChange={(e) => updatePhase(index, 'description', e.target.value)}
+                            placeholder="Description"
+                          />
+                       </div>
+                     )) || (
+                       <p className="text-muted-foreground text-sm">No timeline phases found</p>
+                     )}
+                     <Button onClick={addTimelinePhase} variant="outline" size="sm">
+                       Add Phase
+                     </Button>
+                   </div>
+                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="investment">Investment</Label>
-                  <Textarea
-                    id="investment"
-                    placeholder="Detail the pricing and payment terms..."
-                    className="min-h-[100px]"
-                  />
-                </div>
-              </CardContent>
+                 <div className="space-y-2">
+                   <Label htmlFor="investment_total">Total Investment</Label>
+                   <Input
+                     id="investment_total"
+                     value={getContentValue('investment', 'total') || ''}
+                     onChange={(e) => updateContentValue('investment', 'total', e.target.value)}
+                     placeholder="e.g., $15,000"
+                   />
+                 </div>
+                 
+                 <div className="space-y-2">
+                   <Label htmlFor="payment_terms">Payment Terms</Label>
+                   <Textarea
+                     id="payment_terms"
+                     value={getContentValue('investment', 'payment_terms') || ''}
+                     onChange={(e) => updateContentValue('investment', 'payment_terms', e.target.value)}
+                     placeholder="Detail the payment terms..."
+                     className="min-h-[80px]"
+                   />
+                 </div>
+               </CardContent>
             </Card>
           </div>
 
@@ -300,53 +386,66 @@ export default function ProposalEditor() {
                   </div>
                   
                   <div className="space-y-6">
-                    <section>
-                      <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                        Executive Summary
-                      </h2>
-                      <p className="text-gray-700 leading-relaxed">
-                        This proposal outlines our comprehensive approach to delivering exceptional results for your project. 
-                        We bring years of experience and a proven track record of success to ensure your objectives are met 
-                        and exceeded.
-                      </p>
-                    </section>
-                    
-                    <section>
-                      <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                        Scope of Work
-                      </h2>
-                      <ul className="list-disc list-inside text-gray-700 space-y-2 leading-relaxed">
-                        <li>Initial consultation and comprehensive requirements gathering</li>
-                        <li>Strategic planning and project roadmap development</li>
-                        <li>Design and development phase with regular checkpoints</li>
-                        <li>Comprehensive testing and quality assurance</li>
-                        <li>Deployment, launch, and post-launch support</li>
-                      </ul>
-                    </section>
-                    
-                    <section>
-                      <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                        Timeline
-                      </h2>
-                      <div className="text-gray-700 space-y-2">
-                        <p><strong>Phase 1:</strong> Discovery & Planning (2 weeks)</p>
-                        <p><strong>Phase 2:</strong> Design & Development (6-8 weeks)</p>
-                        <p><strong>Phase 3:</strong> Testing & Refinement (2 weeks)</p>
-                        <p><strong>Phase 4:</strong> Launch & Support (1 week)</p>
-                      </div>
-                    </section>
-                    
-                    <section>
-                      <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                        Investment
-                      </h2>
-                      <div className="text-gray-700">
-                        <p className="text-lg font-medium mb-2">Total Project Investment: $XX,XXX</p>
-                        <p className="text-sm">
-                          Payment terms: 50% upon contract signing, 25% at project midpoint, 25% upon completion.
-                        </p>
-                      </div>
-                    </section>
+                     <section>
+                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                         Executive Summary
+                       </h2>
+                       <p className="text-gray-700 leading-relaxed">
+                         {getContentValue('executive_summary', 'content') || 
+                          'This proposal outlines our comprehensive approach to delivering exceptional results for your project.'}
+                       </p>
+                     </section>
+                     
+                     <section>
+                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                         Scope of Work
+                       </h2>
+                       <ul className="list-disc list-inside text-gray-700 space-y-2 leading-relaxed">
+                         {getContentValue('scope_of_work', 'items')?.map((item: string, index: number) => (
+                           <li key={index}>{item}</li>
+                         )) || (
+                           <>
+                             <li>Initial consultation and comprehensive requirements gathering</li>
+                             <li>Strategic planning and project roadmap development</li>
+                             <li>Design and development phase with regular checkpoints</li>
+                           </>
+                         )}
+                       </ul>
+                     </section>
+                     
+                     <section>
+                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                         Timeline
+                       </h2>
+                       <div className="text-gray-700 space-y-2">
+                         {getContentValue('timeline', 'phases')?.map((phase: any, index: number) => (
+                           <p key={index}>
+                             <strong>{phase.phase}:</strong> {phase.description} ({phase.duration})
+                           </p>
+                         )) || (
+                           <>
+                             <p><strong>Phase 1:</strong> Discovery & Planning (2 weeks)</p>
+                             <p><strong>Phase 2:</strong> Design & Development (6-8 weeks)</p>
+                             <p><strong>Phase 3:</strong> Testing & Refinement (2 weeks)</p>
+                           </>
+                         )}
+                       </div>
+                     </section>
+                     
+                     <section>
+                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                         Investment
+                       </h2>
+                       <div className="text-gray-700">
+                         <p className="text-lg font-medium mb-2">
+                           Total Project Investment: {getContentValue('investment', 'total') || '$XX,XXX'}
+                         </p>
+                         <p className="text-sm">
+                           {getContentValue('investment', 'payment_terms') || 
+                            'Payment terms: 50% upon contract signing, 25% at project midpoint, 25% upon completion.'}
+                         </p>
+                       </div>
+                     </section>
 
                     <section className="mt-8 pt-6 border-t border-gray-200">
                       <div className="text-center">

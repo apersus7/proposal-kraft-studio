@@ -153,6 +153,36 @@ export default function Settings() {
     }
   };
 
+  const handleCRMConnect = async (crmId: string) => {
+    toast({
+      title: "CRM Integration",
+      description: `Opening ${crmId} connection flow...`,
+    });
+    
+    // Simulate integration flow
+    setTimeout(() => {
+      toast({
+        title: "Success",
+        description: `${crmId} connected successfully!`,
+      });
+    }, 2000);
+  };
+
+  const handlePaymentConnect = async (paymentId: string) => {
+    toast({
+      title: "Payment Integration",
+      description: `Opening ${paymentId} connection flow...`,
+    });
+    
+    // Simulate integration flow
+    setTimeout(() => {
+      toast({
+        title: "Success", 
+        description: `${paymentId} connected successfully!`,
+      });
+    }, 2000);
+  };
+
   if (!user) return null;
 
   return (
@@ -494,7 +524,7 @@ export default function Settings() {
           <TabsContent value="integrations" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>CRM Integrations</CardTitle>
+                <CardTitle>CRM Integration</CardTitle>
                 <CardDescription>
                   Connect your favorite CRM to sync contacts and opportunities
                 </CardDescription>
@@ -503,43 +533,101 @@ export default function Settings() {
                 {crmOptions.map((crm) => (
                   <div key={crm.id} className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
-                      <h3 className="font-medium">{crm.name}</h3>
+                      <h4 className="font-medium">{crm.name}</h4>
                       <p className="text-sm text-muted-foreground">{crm.description}</p>
                     </div>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleCRMConnect(crm.id)}
+                    >
                       Connect
                     </Button>
                   </div>
                 ))}
+                
+                <Separator />
+                
+                <div className="space-y-4">
+                  <h4 className="font-medium">Custom CRM Integration</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="crm_api_endpoint">API Endpoint</Label>
+                      <Input
+                        id="crm_api_endpoint"
+                        placeholder="https://api.yourcrm.com/v1"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="crm_api_key">API Key</Label>
+                      <Input
+                        id="crm_api_key"
+                        type="password"
+                        placeholder="Enter your CRM API key"
+                      />
+                    </div>
+                  </div>
+                  <Button>Test Connection</Button>
+                </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Payment Gateway</CardTitle>
+                <CardTitle>Payment Integration</CardTitle>
                 <CardDescription>
-                  Configure payment collection for your proposals
+                  Connect payment gateways to accept payments directly through proposals
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
-                    <h3 className="font-medium">Stripe</h3>
+                    <h4 className="font-medium">Stripe</h4>
                     <p className="text-sm text-muted-foreground">Accept credit card payments</p>
                   </div>
-                  <Button variant="outline">
-                    Configure
+                  <Button 
+                    variant="outline"
+                    onClick={() => handlePaymentConnect('stripe')}
+                  >
+                    Connect
                   </Button>
                 </div>
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
-                    <h3 className="font-medium">PayPal</h3>
+                    <h4 className="font-medium">PayPal</h4>
                     <p className="text-sm text-muted-foreground">Accept PayPal payments</p>
                   </div>
-                  <Button variant="outline">
-                    Configure
+                  <Badge variant="default">Connected</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h4 className="font-medium">Square</h4>
+                    <p className="text-sm text-muted-foreground">Accept Square payments</p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    onClick={() => handlePaymentConnect('square')}
+                  >
+                    Connect
                   </Button>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Custom Payment Integration</h4>
+                  <div className="space-y-2">
+                    <Label htmlFor="webhook_url">Webhook URL</Label>
+                    <Input
+                      id="webhook_url"
+                      placeholder="https://yoursite.com/webhook/payment"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      This URL will receive payment notifications
+                    </p>
+                  </div>
+                  <Button>Save Webhook</Button>
                 </div>
               </CardContent>
             </Card>

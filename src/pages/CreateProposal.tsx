@@ -72,6 +72,55 @@ export default function CreateProposal() {
     setStep('details');
   };
 
+  const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setLoading(true);
+    try {
+      // Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('templates')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Create template record
+      const { data, error } = await supabase
+        .from('templates')
+        .insert({
+          name: file.name.replace(/\.[^/.]+$/, ""),
+          description: 'Custom uploaded template',
+          created_by: user.id,
+          is_public: false,
+          template_data: { type: 'custom', file_path: fileName }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Template uploaded successfully!"
+      });
+
+      fetchTemplates();
+    } catch (error) {
+      console.error('Error uploading template:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload template",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateProposal = async () => {
     if (!user) return;
     
@@ -154,7 +203,18 @@ export default function CreateProposal() {
                   <CardDescription>
                     Upload your own template design
                   </CardDescription>
-                  <Button variant="outline" className="mt-4">
+                  <input
+                    type="file"
+                    accept=".json,.pdf,.doc,.docx"
+                    className="hidden"
+                    id="template-upload"
+                    onChange={handleTemplateUpload}
+                  />
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => document.getElementById('template-upload')?.click()}
+                  >
                     Upload Template
                   </Button>
                 </CardContent>
