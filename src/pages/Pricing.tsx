@@ -1,13 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
-import { PayPalSubscription } from '@/components/PayPalSubscription';
+import { useAuth } from '@/contexts/AuthContext';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 const Pricing = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -103,12 +106,13 @@ const Pricing = () => {
                     </div>
                   </div>
                   <div className="pt-6">
-                    <PayPalSubscription
-                      planId="P-STARTER-PLAN-ID"
-                      planName="Starter"
-                      price="$19/month"
-                      description="Perfect for freelancers and small businesses"
-                    />
+                    <Button 
+                      size="lg" 
+                      className="w-full"
+                      onClick={() => user ? navigate('/checkout?plan=starter') : navigate('/auth')}
+                    >
+                      {user ? 'Get Started' : 'Sign Up to Subscribe'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -163,12 +167,13 @@ const Pricing = () => {
                     </div>
                   </div>
                   <div className="pt-6">
-                    <PayPalSubscription
-                      planId="P-PROFESSIONAL-PLAN-ID"
-                      planName="Professional"
-                      price="$49/month"
-                      description="Best for growing businesses and teams"
-                    />
+                    <Button 
+                      size="lg" 
+                      className="w-full"
+                      onClick={() => user ? navigate('/checkout?plan=professional') : navigate('/auth')}
+                    >
+                      {user ? 'Start Free Trial' : 'Sign Up to Subscribe'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -222,12 +227,13 @@ const Pricing = () => {
                     </div>
                   </div>
                   <div className="pt-6">
-                    <PayPalSubscription
-                      planId="P-ENTERPRISE-PLAN-ID"
-                      planName="Enterprise"
-                      price="$99/month"
-                      description="For large organizations with advanced needs"
-                    />
+                    <Button 
+                      size="lg" 
+                      className="w-full"
+                      onClick={() => user ? navigate('/checkout?plan=enterprise') : navigate('/auth')}
+                    >
+                      {user ? 'Get Enterprise' : 'Sign Up to Subscribe'}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

@@ -166,40 +166,17 @@ export const PayPalSubscription: React.FC<PayPalSubscriptionProps> = ({
         <div className="space-y-4">
           <p className="font-semibold text-2xl">{price}</p>
           
-          {process.env.NODE_ENV === 'development' && (
-            <PayPalScriptProvider options={{
-              clientId: "AYsP-Q_NqBl8r5vWbclgNIlJlgHP2mzqpeEKs-r9pnVrgup-V9tFIftKGEls8LlzTHgFjm1MLEz3C0zs", // PayPal sandbox client ID
-              vault: true,
-              intent: "subscription",
-            }}>
-              <PayPalButtons
-                disabled={isLoading}
-                createSubscription={(data, actions) => {
-                  return actions.subscription.create({
-                    plan_id: planId,
-                  });
-                }}
-                onApprove={handleApprove}
-                onError={handleError}
-                onCancel={handleCancel}
-                style={{
-                  layout: "horizontal",
-                  color: "blue",
-                  shape: "rect",
-                  label: "subscribe"
-                }}
-              />
-            </PayPalScriptProvider>
-          )}
-          
-          {process.env.NODE_ENV === 'production' && (
-            <div className="p-4 border border-dashed rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                PayPal integration is configured for sandbox mode. 
-                Please update with production credentials for live payments.
-              </p>
-            </div>
-          )}
+          <div className="p-4 border border-dashed rounded-lg text-center">
+            <p className="text-sm text-muted-foreground mb-3">
+              Complete your subscription through our secure checkout
+            </p>
+            <Button 
+              onClick={() => window.location.href = `/checkout?plan=${planName.toLowerCase()}`}
+              className="w-full"
+            >
+              Subscribe to {planName}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
