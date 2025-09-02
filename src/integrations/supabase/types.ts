@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_kits: {
+        Row: {
+          accent_color: string | null
+          created_at: string
+          font_primary: string | null
+          font_secondary: string | null
+          id: string
+          is_default: boolean | null
+          logo_url: string | null
+          name: string
+          primary_color: string | null
+          secondary_color: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string | null
+          created_at?: string
+          font_primary?: string | null
+          font_secondary?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_url?: string | null
+          name: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string | null
+          created_at?: string
+          font_primary?: string | null
+          font_secondary?: string | null
+          id?: string
+          is_default?: boolean | null
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      content_snippets: {
+        Row: {
+          category: string
+          content: Json
+          created_at: string
+          id: string
+          is_global: boolean | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          content: Json
+          created_at?: string
+          id?: string
+          is_global?: boolean | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          is_global?: boolean | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           brand_color_primary: string | null
@@ -59,50 +134,248 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_analytics: {
+        Row: {
+          created_at: string
+          duration: number | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          metadata: Json | null
+          proposal_id: string
+          section_id: string | null
+          user_agent: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          proposal_id: string
+          section_id?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          metadata?: Json | null
+          proposal_id?: string
+          section_id?: string | null
+          user_agent?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_analytics_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          position_x: number | null
+          position_y: number | null
+          proposal_id: string
+          resolved: boolean | null
+          section_id: string | null
+          user_email: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          position_x?: number | null
+          position_y?: number | null
+          proposal_id: string
+          resolved?: boolean | null
+          section_id?: string | null
+          user_email: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          position_x?: number | null
+          position_y?: number | null
+          proposal_id?: string
+          resolved?: boolean | null
+          section_id?: string | null
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_comments_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_shares: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          permissions: string
+          proposal_id: string
+          shared_with_email: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          permissions?: string
+          proposal_id: string
+          shared_with_email: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          permissions?: string
+          proposal_id?: string
+          shared_with_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_shares_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_signatures: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          proposal_id: string
+          signature_data: string | null
+          signed_at: string | null
+          signer_email: string
+          signer_name: string
+          status: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          proposal_id: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email: string
+          signer_name: string
+          status?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          proposal_id?: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string
+          signer_name?: string
+          status?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_signatures_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposals: {
         Row: {
+          brand_kit_id: string | null
           client_email: string | null
           client_name: string
           content: Json
           created_at: string
           expires_at: string | null
           id: string
+          public_link: string | null
+          requires_signature: boolean | null
           sent_at: string | null
+          sharing_enabled: boolean | null
           status: string | null
           template_id: string | null
           title: string
           updated_at: string
           user_id: string
+          variables: Json | null
         }
         Insert: {
+          brand_kit_id?: string | null
           client_email?: string | null
           client_name: string
           content: Json
           created_at?: string
           expires_at?: string | null
           id?: string
+          public_link?: string | null
+          requires_signature?: boolean | null
           sent_at?: string | null
+          sharing_enabled?: boolean | null
           status?: string | null
           template_id?: string | null
           title: string
           updated_at?: string
           user_id: string
+          variables?: Json | null
         }
         Update: {
+          brand_kit_id?: string | null
           client_email?: string | null
           client_name?: string
           content?: Json
           created_at?: string
           expires_at?: string | null
           id?: string
+          public_link?: string | null
+          requires_signature?: boolean | null
           sent_at?: string | null
+          sharing_enabled?: boolean | null
           status?: string | null
           template_id?: string | null
           title?: string
           updated_at?: string
           user_id?: string
+          variables?: Json | null
         }
         Relationships: [
+          {
+            foreignKeyName: "proposals_brand_kit_id_fkey"
+            columns: ["brand_kit_id"]
+            isOneToOne: false
+            referencedRelation: "brand_kits"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "proposals_template_id_fkey"
             columns: ["template_id"]
@@ -150,37 +423,67 @@ export type Database = {
       }
       templates: {
         Row: {
+          category: string | null
           created_at: string
           created_by: string | null
           description: string | null
           id: string
+          industry: string | null
           is_public: boolean | null
           name: string
           preview_image_url: string | null
+          tags: string[] | null
           template_data: Json
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
+          industry?: string | null
           is_public?: boolean | null
           name: string
           preview_image_url?: string | null
+          tags?: string[] | null
           template_data: Json
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           id?: string
+          industry?: string | null
           is_public?: boolean | null
           name?: string
           preview_image_url?: string | null
+          tags?: string[] | null
           template_data?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -189,10 +492,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -319,6 +628,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "editor", "viewer"],
+    },
   },
 } as const
