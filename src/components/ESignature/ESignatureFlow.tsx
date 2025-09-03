@@ -69,7 +69,7 @@ export default function ESignatureFlow({
         status: signature.status as 'pending' | 'signed' | 'declined',
         signed_at: signature.signed_at,
         signature_data: signature.signature_data,
-        ip_address: signature.ip_address,
+        ip_address: signature.ip_address as string | undefined,
         user_agent: signature.user_agent
       }));
 
