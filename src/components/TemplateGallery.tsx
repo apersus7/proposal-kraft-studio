@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, FileText, Star, Briefcase, Building, Code, Heart, Palette, TrendingUp, Users, Zap, Globe, ShoppingCart, Calendar, GraduationCap, Monitor, Rocket, Settings, Leaf, Scale } from 'lucide-react';
+import { Search, Filter, FileText, Star, Briefcase, Building, Code, Heart, Palette, TrendingUp, Users, Zap, Globe, ShoppingCart, Calendar, GraduationCap, Monitor, Rocket, Settings, Leaf, Scale, Camera, Utensils, Dumbbell, Plane, Music, Paintbrush, Smartphone, Video, Gift } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -26,129 +26,227 @@ interface TemplateGalleryProps {
 }
 
 const industryIcons = {
-  technology: <Code className="h-4 w-4" />,
-  healthcare: <Heart className="h-4 w-4" />,
-  finance: <TrendingUp className="h-4 w-4" />,
-  consulting: <Users className="h-4 w-4" />,
-  marketing: <Palette className="h-4 w-4" />,
-  'real-estate': <Building className="h-4 w-4" />,
-  startup: <Zap className="h-4 w-4" />,
-  general: <Globe className="h-4 w-4" />,
+  creative: <Paintbrush className="h-4 w-4" />,
+  photography: <Camera className="h-4 w-4" />,
+  events: <Calendar className="h-4 w-4" />,
+  food: <Utensils className="h-4 w-4" />,
+  fitness: <Dumbbell className="h-4 w-4" />,
+  travel: <Plane className="h-4 w-4" />,
+  music: <Music className="h-4 w-4" />,
+  fashion: <Heart className="h-4 w-4" />,
+  technology: <Smartphone className="h-4 w-4" />,
+  marketing: <Video className="h-4 w-4" />,
+  lifestyle: <Gift className="h-4 w-4" />,
   business: <Briefcase className="h-4 w-4" />
 };
 
 const starterTemplates = [
   {
-    name: 'Technology Consulting Proposal',
-    description: 'Perfect for IT consulting and software development projects',
-    category: 'consulting',
-    industry: 'technology',
-    tags: ['software', 'development', 'consulting'],
+    name: 'Creative Portfolio Showcase',
+    description: 'Stunning visual portfolio design for creative professionals and agencies',
+    category: 'creative',
+    industry: 'creative',
+    tags: ['portfolio', 'design', 'visual'],
     template_data: {
       sections: [
-        { type: 'executive_summary', content: 'We propose a comprehensive technology solution that will transform your digital infrastructure and accelerate your business growth.' },
-        { type: 'scope_of_work', items: ['Technical assessment and analysis', 'System architecture design', 'Development and implementation', 'Testing and quality assurance', 'Deployment and go-live support'] },
-        { type: 'timeline', phases: [
-          { phase: 'Discovery & Planning', duration: '2 weeks', description: 'Requirements gathering and technical architecture' },
-          { phase: 'Development', duration: '8-12 weeks', description: 'Core system development and integration' },
-          { phase: 'Testing & Launch', duration: '2-3 weeks', description: 'Quality assurance and deployment' }
+        { type: 'hero', content: 'Bringing your creative vision to life with award-winning design and storytelling that captivates your audience.' },
+        { type: 'portfolio_showcase', items: ['Brand identity design collection', 'Digital art and illustrations', 'Photography and visual storytelling', 'Interactive web experiences', 'Motion graphics and animations'] },
+        { type: 'creative_process', phases: [
+          { phase: 'Inspiration & Concept', duration: '1-2 weeks', description: 'Creative exploration and mood boarding' },
+          { phase: 'Design & Development', duration: '3-4 weeks', description: 'Visual creation and refinement' },
+          { phase: 'Launch & Promotion', duration: '1 week', description: 'Portfolio launch and social media rollout' }
         ]},
-        { type: 'investment', total: '$75,000 - $125,000', payment_terms: 'Payment schedule: 30% upfront, 40% at milestone completion, 30% upon delivery' }
+        { type: 'investment', total: '$5,000 - $15,000', payment_terms: 'Creative retainer: 50% to start, 50% on completion' }
       ]
     }
   },
   {
-    name: 'Healthcare Services Proposal',
-    description: 'Tailored for healthcare consulting and medical technology projects',
-    category: 'healthcare',
-    industry: 'healthcare',
-    tags: ['medical', 'healthcare', 'compliance'],
-    template_data: {
-      sections: [
-        { type: 'executive_summary', content: 'Our healthcare solution ensures compliance with industry regulations while improving patient outcomes and operational efficiency.' },
-        { type: 'scope_of_work', items: ['HIPAA compliance assessment', 'Medical workflow optimization', 'EHR system integration', 'Staff training and support', 'Ongoing maintenance and updates'] },
-        { type: 'timeline', phases: [
-          { phase: 'Compliance Review', duration: '1-2 weeks', description: 'HIPAA and regulatory compliance assessment' },
-          { phase: 'Implementation', duration: '6-10 weeks', description: 'System setup and integration' },
-          { phase: 'Training & Support', duration: '2-4 weeks', description: 'Staff training and go-live support' }
-        ]},
-        { type: 'investment', total: '$50,000 - $95,000', payment_terms: 'Milestone-based payments with 25% upfront, 50% at implementation, 25% post-training' }
-      ]
-    }
-  },
-  {
-    name: 'Marketing Strategy Proposal',
-    description: 'Comprehensive marketing and brand development proposals',
+    name: 'Social Media Campaign',
+    description: 'Eye-catching social media strategy with vibrant visuals and engaging content',
     category: 'marketing',
     industry: 'marketing',
-    tags: ['branding', 'digital marketing', 'strategy'],
+    tags: ['social media', 'content', 'viral'],
     template_data: {
       sections: [
-        { type: 'executive_summary', content: 'Transform your brand presence with our data-driven marketing strategy that delivers measurable ROI and sustainable growth.' },
-        { type: 'scope_of_work', items: ['Brand audit and competitive analysis', 'Marketing strategy development', 'Content creation and campaigns', 'Social media management', 'Performance tracking and optimization'] },
-        { type: 'timeline', phases: [
-          { phase: 'Research & Strategy', duration: '2-3 weeks', description: 'Market analysis and strategy development' },
-          { phase: 'Campaign Creation', duration: '4-6 weeks', description: 'Content development and campaign setup' },
-          { phase: 'Launch & Optimize', duration: 'Ongoing', description: 'Campaign launch and continuous optimization' }
+        { type: 'campaign_vision', content: 'Create scroll-stopping content that builds community, drives engagement, and transforms followers into loyal brand advocates.' },
+        { type: 'content_strategy', items: ['Instagram story templates & highlights', 'TikTok video concepts & trends', 'LinkedIn carousel designs', 'Pinterest pin collections', 'YouTube thumbnail designs'] },
+        { type: 'content_calendar', phases: [
+          { phase: 'Content Planning', duration: '1 week', description: 'Strategy development and content calendar creation' },
+          { phase: 'Creative Production', duration: '2-3 weeks', description: 'Visual content creation and copywriting' },
+          { phase: 'Campaign Launch', duration: 'Ongoing', description: 'Content publishing and community management' }
         ]},
-        { type: 'investment', total: '$25,000 - $60,000', payment_terms: 'Monthly retainer: 50% upfront, remaining balance in monthly installments' }
+        { type: 'investment', total: '$3,000 - $8,000', payment_terms: 'Monthly subscription: $1,500-2,500/month' }
       ]
     }
   },
   {
-    name: 'Financial Advisory Proposal',
-    description: 'Professional financial consulting and advisory services',
-    category: 'consulting',
-    industry: 'finance',
-    tags: ['financial planning', 'investment', 'advisory'],
+    name: 'Event Experience Design',
+    description: 'Memorable event branding and experience design for unforgettable celebrations',
+    category: 'events',
+    industry: 'events',
+    tags: ['events', 'branding', 'experience'],
     template_data: {
       sections: [
-        { type: 'executive_summary', content: 'Our financial advisory services provide strategic guidance to optimize your investment portfolio and achieve long-term financial goals.' },
-        { type: 'scope_of_work', items: ['Financial portfolio analysis', 'Risk assessment and management', 'Investment strategy development', 'Regulatory compliance review', 'Ongoing advisory support'] },
-        { type: 'timeline', phases: [
-          { phase: 'Assessment', duration: '1-2 weeks', description: 'Comprehensive financial analysis' },
-          { phase: 'Strategy Development', duration: '2-3 weeks', description: 'Investment strategy and recommendations' },
-          { phase: 'Implementation', duration: 'Ongoing', description: 'Portfolio management and monitoring' }
+        { type: 'event_vision', content: 'Design an immersive event experience that tells your story through every detail, from invitation to farewell gift.' },
+        { type: 'design_elements', items: ['Custom invitation suite design', 'Event branding and signage', 'Instagram-worthy photo backdrops', 'Digital touchpoints and apps', 'Gift and merchandise design'] },
+        { type: 'event_timeline', phases: [
+          { phase: 'Concept & Design', duration: '2-4 weeks', description: 'Theme development and visual identity creation' },
+          { phase: 'Production & Setup', duration: '1-2 weeks', description: 'Material production and venue styling' },
+          { phase: 'Event Day', duration: '1 day', description: 'Setup, coordination, and breakdown' }
         ]},
-        { type: 'investment', total: '$15,000 - $45,000', payment_terms: 'Annual fee structure with quarterly payments' }
+        { type: 'investment', total: '$8,000 - $25,000', payment_terms: 'Event payment plan: 40% booking, 40% production, 20% completion' }
       ]
     }
   },
   {
-    name: 'Real Estate Development Proposal',
-    description: 'Commercial and residential real estate project proposals',
-    category: 'real-estate',
-    industry: 'real-estate',
-    tags: ['property', 'development', 'construction'],
+    name: 'Food & Restaurant Branding',
+    description: 'Delicious visual identity and marketing for culinary experiences',
+    category: 'food',
+    industry: 'food',
+    tags: ['restaurant', 'branding', 'culinary'],
     template_data: {
       sections: [
-        { type: 'executive_summary', content: 'Partner with us for a comprehensive real estate development solution that maximizes value and minimizes risk throughout the project lifecycle.' },
-        { type: 'scope_of_work', items: ['Site analysis and feasibility study', 'Design and planning services', 'Permit acquisition and approvals', 'Construction management', 'Marketing and sales support'] },
-        { type: 'timeline', phases: [
-          { phase: 'Planning & Permits', duration: '3-6 months', description: 'Design development and regulatory approvals' },
-          { phase: 'Construction', duration: '12-18 months', description: 'Site preparation and building construction' },
-          { phase: 'Marketing & Sales', duration: '6-12 months', description: 'Property marketing and sales completion' }
+        { type: 'brand_story', content: 'Craft a mouthwatering brand identity that makes customers crave your culinary creations before they even taste them.' },
+        { type: 'brand_deliverables', items: ['Logo design and brand identity', 'Menu design and food photography', 'Restaurant interior design concepts', 'Social media content templates', 'Packaging and takeout branding'] },
+        { type: 'brand_development', phases: [
+          { phase: 'Brand Discovery', duration: '1-2 weeks', description: 'Culinary concept and brand positioning' },
+          { phase: 'Visual Identity', duration: '2-3 weeks', description: 'Logo, colors, and brand system creation' },
+          { phase: 'Brand Application', duration: '2-4 weeks', description: 'Menu, signage, and marketing materials' }
         ]},
-        { type: 'investment', total: '$500,000 - $2,500,000', payment_terms: 'Phased investment schedule aligned with project milestones' }
+        { type: 'investment', total: '$10,000 - $30,000', payment_terms: 'Brand package: 30% start, 40% concepts, 30% final delivery' }
       ]
     }
   },
   {
-    name: 'Startup Business Plan',
-    description: 'Comprehensive business plans for startups and new ventures',
+    name: 'Fitness & Wellness Brand',
+    description: 'Energizing brand design for fitness studios, trainers, and wellness coaches',
+    category: 'fitness',
+    industry: 'fitness',
+    tags: ['fitness', 'wellness', 'health'],
+    template_data: {
+      sections: [
+        { type: 'wellness_vision', content: 'Build a motivating brand that inspires transformation and creates a community around health, fitness, and personal growth.' },
+        { type: 'brand_system', items: ['Logo and fitness brand identity', 'Workout gear and apparel design', 'Mobile app UI/UX design', 'Social media content strategy', 'Class promotional materials'] },
+        { type: 'launch_strategy', phases: [
+          { phase: 'Brand Foundation', duration: '2 weeks', description: 'Brand strategy and visual identity development' },
+          { phase: 'Digital Presence', duration: '3 weeks', description: 'Website, app, and social media setup' },
+          { phase: 'Community Launch', duration: '2 weeks', description: 'Grand opening campaign and member onboarding' }
+        ]},
+        { type: 'investment', total: '$7,500 - $20,000', payment_terms: 'Fitness brand package: 50% upfront, 50% at launch' }
+      ]
+    }
+  },
+  {
+    name: 'Fashion Brand Launch',
+    description: 'Trendy fashion brand identity with lookbooks and e-commerce design',
+    category: 'fashion',
+    industry: 'fashion',
+    tags: ['fashion', 'lookbook', 'ecommerce'],
+    template_data: {
+      sections: [
+        { type: 'fashion_story', content: 'Create a fashion brand that defines trends, tells stories through style, and builds a loyal community of fashion-forward customers.' },
+        { type: 'brand_collection', items: ['Fashion brand identity and logo', 'Lookbook and campaign photography', 'E-commerce website design', 'Social media aesthetic', 'Packaging and label design'] },
+        { type: 'collection_launch', phases: [
+          { phase: 'Brand Development', duration: '3-4 weeks', description: 'Brand identity and visual direction' },
+          { phase: 'Collection Shoot', duration: '1-2 weeks', description: 'Professional photography and content creation' },
+          { phase: 'Launch Campaign', duration: '2-3 weeks', description: 'Website launch and promotional campaign' }
+        ]},
+        { type: 'investment', total: '$15,000 - $40,000', payment_terms: 'Fashion launch package: 40% brand, 30% shoot, 30% launch' }
+      ]
+    }
+  },
+  {
+    name: 'Travel & Adventure Brand',
+    description: 'Wanderlust-inspiring travel brand with stunning destination marketing',
+    category: 'travel',
+    industry: 'travel',
+    tags: ['travel', 'adventure', 'destinations'],
+    template_data: {
+      sections: [
+        { type: 'travel_vision', content: 'Inspire wanderlust and create unforgettable travel experiences through captivating storytelling and breathtaking visual content.' },
+        { type: 'travel_content', items: ['Destination brand identity', 'Travel photography and videography', 'Interactive travel guides', 'Social media travel content', 'Travel app design concepts'] },
+        { type: 'content_journey', phases: [
+          { phase: 'Destination Research', duration: '1-2 weeks', description: 'Location scouting and story development' },
+          { phase: 'Content Creation', duration: '2-4 weeks', description: 'Photography, videography, and content production' },
+          { phase: 'Campaign Launch', duration: '1-2 weeks', description: 'Multi-platform content distribution' }
+        ]},
+        { type: 'investment', total: '$12,000 - $35,000', payment_terms: 'Travel campaign: 30% pre-production, 50% production, 20% delivery' }
+      ]
+    }
+  },
+  {
+    name: 'Music Artist Promotion',
+    description: 'Creative music promotion package with album artwork and social presence',
+    category: 'music',
+    industry: 'music',
+    tags: ['music', 'album', 'promotion'],
+    template_data: {
+      sections: [
+        { type: 'artist_story', content: 'Amplify your musical story with visually stunning artwork and strategic promotion that connects with fans and builds your fanbase.' },
+        { type: 'music_package', items: ['Album artwork and cover design', 'Music video visual concepts', 'Social media content strategy', 'Fan merchandise design', 'Concert poster and promotional materials'] },
+        { type: 'promotion_timeline', phases: [
+          { phase: 'Visual Identity', duration: '2-3 weeks', description: 'Album artwork and brand development' },
+          { phase: 'Content Creation', duration: '3-4 weeks', description: 'Promotional materials and social content' },
+          { phase: 'Release Campaign', duration: '4-6 weeks', description: 'Multi-platform promotion and fan engagement' }
+        ]},
+        { type: 'investment', total: '$6,000 - $18,000', payment_terms: 'Music promotion: 40% creative, 40% production, 20% campaign' }
+      ]
+    }
+  },
+  {
+    name: 'Tech Startup Pitch Deck',
+    description: 'Modern, investor-ready pitch deck design with stunning data visualization',
     category: 'business',
-    industry: 'startup',
-    tags: ['business plan', 'funding', 'startup'],
+    industry: 'technology',
+    tags: ['startup', 'pitch deck', 'investors'],
     template_data: {
       sections: [
-        { type: 'executive_summary', content: 'Our innovative startup solution addresses a significant market opportunity with a scalable business model and strong competitive advantages.' },
-        { type: 'scope_of_work', items: ['Market research and validation', 'Business model development', 'Financial projections', 'Go-to-market strategy', 'Investor presentation creation'] },
-        { type: 'timeline', phases: [
-          { phase: 'Research & Validation', duration: '4-6 weeks', description: 'Market analysis and business model validation' },
-          { phase: 'Development', duration: '8-12 weeks', description: 'Product development and testing' },
-          { phase: 'Launch', duration: '4-8 weeks', description: 'Market launch and customer acquisition' }
+        { type: 'startup_vision', content: 'Tell your startup story with a compelling pitch deck that captures investor attention and communicates your vision with clarity and impact.' },
+        { type: 'pitch_elements', items: ['Investor pitch deck design', 'Data visualization and infographics', 'Product mockups and prototypes', 'Financial projection graphics', 'Demo video and presentation'] },
+        { type: 'pitch_development', phases: [
+          { phase: 'Story Development', duration: '1-2 weeks', description: 'Narrative structure and key messaging' },
+          { phase: 'Design & Visuals', duration: '2-3 weeks', description: 'Slide design and visual storytelling' },
+          { phase: 'Pitch Preparation', duration: '1 week', description: 'Presentation coaching and final refinements' }
         ]},
-        { type: 'investment', total: '$100,000 - $500,000', payment_terms: 'Seed funding with milestone-based releases' }
+        { type: 'investment', total: '$5,000 - $15,000', payment_terms: 'Pitch package: 50% strategy, 50% design completion' }
+      ]
+    }
+  },
+  {
+    name: 'Lifestyle Brand Identity',
+    description: 'Aspirational lifestyle brand with curated aesthetic and premium feel',
+    category: 'lifestyle',
+    industry: 'lifestyle',
+    tags: ['lifestyle', 'premium', 'aesthetic'],
+    template_data: {
+      sections: [
+        { type: 'lifestyle_vision', content: 'Create an aspirational lifestyle brand that resonates with your target audience and embodies the premium experience you provide.' },
+        { type: 'brand_experience', items: ['Premium brand identity design', 'Lifestyle photography direction', 'Packaging and product design', 'Curated social media aesthetic', 'Brand storytelling and content'] },
+        { type: 'brand_journey', phases: [
+          { phase: 'Brand Strategy', duration: '2-3 weeks', description: 'Brand positioning and visual direction' },
+          { phase: 'Identity Creation', duration: '3-4 weeks', description: 'Logo, typography, and brand system' },
+          { phase: 'Brand Application', duration: '2-3 weeks', description: 'Touchpoint design and brand guidelines' }
+        ]},
+        { type: 'investment', total: '$12,000 - $28,000', payment_terms: 'Lifestyle brand: 35% strategy, 40% design, 25% applications' }
+      ]
+    }
+  },
+  {
+    name: 'Photography Portfolio',
+    description: 'Stunning photography portfolio with elegant galleries and client presentation',
+    category: 'creative',
+    industry: 'photography',
+    tags: ['photography', 'portfolio', 'gallery'],
+    template_data: {
+      sections: [
+        { type: 'portfolio_vision', content: 'Showcase your photographic artistry with a stunning portfolio that tells stories, captures emotions, and attracts dream clients.' },
+        { type: 'portfolio_features', items: ['Custom portfolio website design', 'Professional photo editing and retouching', 'Client gallery and delivery system', 'Print portfolio and presentation materials', 'Social media photography strategy'] },
+        { type: 'portfolio_development', phases: [
+          { phase: 'Portfolio Curation', duration: '1-2 weeks', description: 'Image selection and story development' },
+          { phase: 'Design & Development', duration: '3-4 weeks', description: 'Website design and gallery creation' },
+          { phase: 'Launch & Promotion', duration: '1-2 weeks', description: 'Portfolio launch and marketing strategy' }
+        ]},
+        { type: 'investment', total: '$4,500 - $12,000', payment_terms: 'Photography package: 40% start, 40% design, 20% launch' }
       ]
     }
   }
