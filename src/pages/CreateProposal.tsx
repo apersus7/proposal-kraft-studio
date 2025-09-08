@@ -35,7 +35,21 @@ export default function CreateProposal() {
     title: '',
     client_name: '',
     client_email: '',
-    content: {},
+    project_name: '',
+    pricing: '',
+    content: {
+      sections: [
+        { type: 'cover_page', title: '', tagline: '', company_name: '', company_logo: '' },
+        { type: 'executive_summary', content: '' },
+        { type: 'client_problem', content: '' },
+        { type: 'proposed_solution', content: '', approach: '', tools: [], why_fits: '' },
+        { type: 'scope_of_work', deliverables: [], timeline: [], included: [], excluded: [] },
+        { type: 'pricing', packages: [], payment_terms: '', total: '' },
+        { type: 'value_proposition', advantages: [], case_studies: [], testimonials: [], team: [] },
+        { type: 'terms_conditions', content: '' },
+        { type: 'call_to_action', next_steps: '', contact_details: '' }
+      ]
+    },
   });
 
   useEffect(() => {
@@ -133,7 +147,11 @@ export default function CreateProposal() {
           title: proposalData.title,
           client_name: proposalData.client_name,
           client_email: proposalData.client_email,
-          content: proposalData.content,
+          content: {
+            ...proposalData.content,
+            project_name: proposalData.project_name,
+            pricing: proposalData.pricing
+          },
           template_id: selectedTemplate?.id,
           status: 'draft'
         })
@@ -293,13 +311,33 @@ export default function CreateProposal() {
                   />
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="project_name">Project Name</Label>
+                  <Input
+                    id="project_name"
+                    value={proposalData.project_name}
+                    onChange={(e) => setProposalData(prev => ({ ...prev, project_name: e.target.value }))}
+                    placeholder="Website Redesign Project"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pricing">Total Project Value</Label>
+                  <Input
+                    id="pricing"
+                    value={proposalData.pricing}
+                    onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
+                    placeholder="e.g., $15,000"
+                  />
+                </div>
+
                 <div className="flex gap-4 pt-4">
                   <Button variant="outline" onClick={() => setStep('template')}>
                     Back
                   </Button>
                   <Button 
                     onClick={() => setStep('content')}
-                    disabled={!proposalData.title || !proposalData.client_name}
+                    disabled={!proposalData.title || !proposalData.client_name || !proposalData.project_name || !proposalData.pricing}
                   >
                     Continue to Content
                   </Button>
@@ -328,33 +366,71 @@ export default function CreateProposal() {
                 </CardHeader>
                 <CardContent>
                   <div className="aspect-[8.5/11] bg-white border rounded-lg p-6 text-sm text-black overflow-auto">
-                    <div className="text-center mb-6">
-                      <h2 className="text-2xl font-bold mb-2">{proposalData.title}</h2>
+                    {/* Cover Page */}
+                    <div className="text-center mb-8 border-b pb-6">
+                      <h1 className="text-3xl font-bold mb-2">{proposalData.title}</h1>
+                      <p className="text-lg text-gray-600 mb-2">Project: {proposalData.project_name}</p>
                       <p className="text-gray-600">Prepared for {proposalData.client_name}</p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Helping {proposalData.client_name} achieve success with innovative solutions
+                      </p>
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <section>
-                        <h3 className="text-lg font-semibold mb-2">Executive Summary</h3>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Executive Summary
+                        </h2>
                         <p className="text-gray-700">
-                          This proposal outlines our comprehensive approach to delivering exceptional results for your project.
+                          This proposal outlines our comprehensive approach to delivering exceptional results for your {proposalData.project_name || 'project'}.
                         </p>
                       </section>
                       
                       <section>
-                        <h3 className="text-lg font-semibold mb-2">Scope of Work</h3>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Understanding Your Needs
+                        </h2>
+                        <p className="text-gray-700">
+                          We understand the challenges you're facing and are committed to providing tailored solutions.
+                        </p>
+                      </section>
+                      
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Our Solution
+                        </h2>
+                        <p className="text-gray-700">
+                          Our proven methodology and cutting-edge approach will deliver measurable results.
+                        </p>
+                      </section>
+                      
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Scope of Work
+                        </h2>
                         <ul className="list-disc list-inside text-gray-700 space-y-1">
                           <li>Initial consultation and requirements gathering</li>
-                          <li>Design and development phase</li>
-                          <li>Testing and quality assurance</li>
-                          <li>Deployment and launch</li>
+                          <li>Strategic planning and design phase</li>
+                          <li>Development and implementation</li>
+                          <li>Testing, refinement, and launch</li>
                         </ul>
                       </section>
                       
                       <section>
-                        <h3 className="text-lg font-semibold mb-2">Investment</h3>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Investment
+                        </h2>
+                        <p className="text-lg font-medium text-gray-800">
+                          Total Project Investment: {proposalData.pricing || '$XX,XXX'}
+                        </p>
+                      </section>
+                      
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Next Steps
+                        </h2>
                         <p className="text-gray-700">
-                          Total project investment: $X,XXX
+                          Ready to get started? Let's schedule a kickoff call to begin transforming your vision into reality.
                         </p>
                       </section>
                     </div>
