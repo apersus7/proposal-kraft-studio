@@ -10,29 +10,29 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CheckCircle, ArrowLeft } from 'lucide-react';
 
 const plans = {
-  starter: {
+  freelance: {
     id: 'P-5ML4271244454362WXNWU5NQ',
-    name: 'Starter',
+    name: 'Freelance',
     price: '$19/month',
     amount: 19,
-    description: 'Perfect for small businesses getting started',
-    features: ['Up to 10 proposals per month', 'Basic templates', 'Email support', 'Basic analytics']
+    description: 'Perfect for freelancers and small businesses',
+    features: ['5 proposals with watermark', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats']
   },
-  professional: {
+  agency: {
     id: 'P-1GJ4568135982362YXNWU5NQ',
-    name: 'Professional',
+    name: 'Agency',
     price: '$49/month',
     amount: 49,
-    description: 'Most popular plan for growing businesses',
-    features: ['Unlimited proposals', 'Premium templates', 'Priority support', 'Advanced analytics', 'CRM integration', 'Custom branding']
+    description: 'Best for growing businesses and teams',
+    features: ['Unlimited proposal', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats', 'CRM integration', 'Upload custom template', 'Reminders', 'Team collaboration']
   },
   enterprise: {
     id: 'P-2HL7893456021362ZXNWU5NQ',
     name: 'Enterprise',
-    price: '$99/month',
-    amount: 99,
+    price: '$69/month',
+    amount: 69,
     description: 'For large organizations with advanced needs',
-    features: ['Everything in Professional', 'White-label solution', 'API access', 'Dedicated support', 'Custom integrations', 'Advanced security']
+    features: ['Unlimited proposal', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats', 'CRM integration', 'Upload custom template', 'Payment integration', 'Reminders', 'Team collaboration']
   }
 };
 
