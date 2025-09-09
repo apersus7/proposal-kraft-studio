@@ -61,10 +61,10 @@ const Pricing = () => {
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-3 gap-8">
-              {/* Starter Plan */}
+              {/* Freelance Plan */}
               <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
                 <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl mb-2">Starter</CardTitle>
+                  <CardTitle className="text-2xl mb-2">Freelance</CardTitle>
                   <CardDescription className="text-muted-foreground mb-4">
                     Perfect for freelancers and small businesses
                   </CardDescription>
@@ -78,38 +78,34 @@ const Pricing = () => {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Up to 50 proposals per month</span>
+                      <span className="text-sm">5 proposals with watermark</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">10 professional templates</span>
+                      <span className="text-sm">Unlimited templates</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Basic analytics</span>
+                      <span className="text-sm">Unlimited customisation</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Email support</span>
+                      <span className="text-sm">Tracking</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Brand customization</span>
+                      <span className="text-sm">E-signature</span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">CRM integrations</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <X className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">Advanced analytics</span>
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Export in various formats</span>
                     </div>
                   </div>
                   <div className="pt-6">
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=starter') : navigate('/auth')}
+                      onClick={() => user ? navigate('/checkout?plan=freelance') : navigate('/auth')}
                     >
                       {user ? 'Get Started' : 'Sign Up to Subscribe'}
                     </Button>
@@ -117,7 +113,7 @@ const Pricing = () => {
                 </CardContent>
               </Card>
 
-              {/* Professional Plan */}
+              {/* Agency Plan */}
               <Card className="relative border-primary shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
@@ -125,7 +121,7 @@ const Pricing = () => {
                   </span>
                 </div>
                 <CardHeader className="text-center pb-8 pt-8">
-                  <CardTitle className="text-2xl mb-2">Professional</CardTitle>
+                  <CardTitle className="text-2xl mb-2">Agency</CardTitle>
                   <CardDescription className="text-muted-foreground mb-4">
                     Best for growing businesses and teams
                   </CardDescription>
@@ -139,38 +135,50 @@ const Pricing = () => {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited proposals</span>
+                      <span className="text-sm">Unlimited proposal</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">50+ premium templates</span>
+                      <span className="text-sm">Unlimited templates</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Advanced analytics & tracking</span>
+                      <span className="text-sm">Unlimited customisation</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Priority support</span>
+                      <span className="text-sm">Tracking</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Full brand customization</span>
+                      <span className="text-sm">E-signature</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Basic CRM integrations</span>
+                      <span className="text-sm">Export in various formats</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Team collaboration (5 users)</span>
+                      <span className="text-sm">CRM integration</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Upload custom template</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Reminders</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Team collaboration</span>
                     </div>
                   </div>
                   <div className="pt-6">
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=professional') : navigate('/auth')}
+                      onClick={() => user ? navigate('/checkout?plan=agency') : navigate('/auth')}
                     >
                       {user ? 'Start Free Trial' : 'Sign Up to Subscribe'}
                     </Button>
@@ -186,7 +194,7 @@ const Pricing = () => {
                     For large organizations with advanced needs
                   </CardDescription>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    $99
+                    $69
                     <span className="text-lg font-normal text-muted-foreground">/month</span>
                   </div>
                   <p className="text-sm text-muted-foreground">Billed monthly</p>
@@ -195,35 +203,47 @@ const Pricing = () => {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited everything</span>
+                      <span className="text-sm">Unlimited proposal</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Custom templates & branding</span>
+                      <span className="text-sm">Unlimited templates</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Advanced analytics & reporting</span>
+                      <span className="text-sm">Unlimited customisation</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">24/7 dedicated support</span>
+                      <span className="text-sm">Tracking</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">White-label solutions</span>
+                      <span className="text-sm">E-signature</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">All CRM integrations</span>
+                      <span className="text-sm">Export in various formats</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited team members</span>
+                      <span className="text-sm">CRM integration</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">API access</span>
+                      <span className="text-sm">Upload custom template</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Payment integration</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Reminders</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Team collaboration</span>
                     </div>
                   </div>
                   <div className="pt-6">
@@ -247,47 +267,77 @@ const Pricing = () => {
                   <thead>
                     <tr className="border-b border-border bg-muted/30">
                       <th className="text-left p-4 font-semibold">Features</th>
-                      <th className="text-center p-4 font-semibold">Starter</th>
-                      <th className="text-center p-4 font-semibold">Professional</th>
+                      <th className="text-center p-4 font-semibold">Freelance</th>
+                      <th className="text-center p-4 font-semibold">Agency</th>
                       <th className="text-center p-4 font-semibold">Enterprise</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-border">
                       <td className="p-4">Monthly proposals</td>
-                      <td className="text-center p-4">50</td>
+                      <td className="text-center p-4">5 (with watermark)</td>
                       <td className="text-center p-4">Unlimited</td>
                       <td className="text-center p-4">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
                       <td className="p-4">Templates</td>
-                      <td className="text-center p-4">10</td>
-                      <td className="text-center p-4">50+</td>
-                      <td className="text-center p-4">Custom</td>
+                      <td className="text-center p-4">Unlimited</td>
+                      <td className="text-center p-4">Unlimited</td>
+                      <td className="text-center p-4">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4">Team members</td>
-                      <td className="text-center p-4">1</td>
-                      <td className="text-center p-4">5</td>
+                      <td className="p-4">Customisation</td>
+                      <td className="text-center p-4">Unlimited</td>
+                      <td className="text-center p-4">Unlimited</td>
                       <td className="text-center p-4">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">CRM integrations</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4">Basic</td>
-                      <td className="text-center p-4">All</td>
+                      <td className="p-4">Tracking</td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4">Analytics</td>
-                      <td className="text-center p-4">Basic</td>
-                      <td className="text-center p-4">Advanced</td>
-                      <td className="text-center p-4">Advanced + Reporting</td>
+                      <td className="p-4">E-signature</td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Export formats</td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">CRM integration</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Upload custom template</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Reminders</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Team collaboration</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr>
-                      <td className="p-4">Support</td>
-                      <td className="text-center p-4">Email</td>
-                      <td className="text-center p-4">Priority</td>
-                      <td className="text-center p-4">24/7 Dedicated</td>
+                      <td className="p-4">Payment integration</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                   </tbody>
                 </table>
