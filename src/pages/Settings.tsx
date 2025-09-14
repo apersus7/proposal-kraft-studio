@@ -24,7 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
+
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -457,19 +457,9 @@ export default function Settings() {
                             <li>✓ Advanced analytics</li>
                             <li>✓ CRM integrations</li>
                           </ul>
-                          <PayPalScriptProvider options={{ clientId: "YOUR_PAYPAL_CLIENT_ID" }}>
-                            <PayPalButtons
-                              createSubscription={(data, actions) => {
-                                return actions.subscription.create({
-                                  plan_id: 'P-YOUR_PRO_PLAN_ID'
-                                });
-                              }}
-                              onApprove={async (data, actions) => {
-                                console.log('Subscription approved:', data);
-                                return Promise.resolve();
-                              }}
-                            />
-                          </PayPalScriptProvider>
+                          <Button variant="outline" className="mt-4">
+                            Contact Sales
+                          </Button>
                         </CardContent>
                       </Card>
 
@@ -485,19 +475,9 @@ export default function Settings() {
                             <li>✓ White-label options</li>
                             <li>✓ Priority support</li>
                           </ul>
-                          <PayPalScriptProvider options={{ clientId: "YOUR_PAYPAL_CLIENT_ID" }}>
-                            <PayPalButtons
-                              createSubscription={(data, actions) => {
-                                return actions.subscription.create({
-                                  plan_id: 'P-YOUR_ENTERPRISE_PLAN_ID'
-                                });
-                              }}
-                              onApprove={async (data, actions) => {
-                                console.log('Subscription approved:', data);
-                                return Promise.resolve();
-                              }}
-                            />
-                          </PayPalScriptProvider>
+                          <Button variant="outline" className="mt-4">
+                            Contact Sales
+                          </Button>
                         </CardContent>
                       </Card>
                     </div>
@@ -592,13 +572,6 @@ export default function Settings() {
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <h4 className="font-medium">PayPal</h4>
-                    <p className="text-sm text-muted-foreground">Accept PayPal payments</p>
-                  </div>
-                  <Badge variant="default">Connected</Badge>
-                </div>
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
