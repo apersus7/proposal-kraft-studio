@@ -385,6 +385,42 @@ export type Database = {
           },
         ]
       }
+      secure_proposal_shares: {
+        Row: {
+          accessed_count: number | null
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          last_accessed_at: string | null
+          permissions: string
+          proposal_id: string
+          share_token: string
+        }
+        Insert: {
+          accessed_count?: number | null
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          permissions?: string
+          proposal_id: string
+          share_token?: string
+        }
+        Update: {
+          accessed_count?: number | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          permissions?: string
+          proposal_id?: string
+          share_token?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           created_at: string
