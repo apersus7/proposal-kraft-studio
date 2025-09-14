@@ -22,17 +22,6 @@ const paymentProviders = [
     ]
   },
   {
-    id: 'paypal',
-    name: 'PayPal',
-    description: 'Accept PayPal payments worldwide',
-    icon: <DollarSign className="h-6 w-6" />,
-    status: 'connected',
-    fields: [
-      { name: 'clientId', label: 'Client ID', placeholder: 'Your PayPal Client ID' },
-      { name: 'clientSecret', label: 'Client Secret', type: 'password', placeholder: 'Your PayPal Client Secret' }
-    ]
-  },
-  {
     id: 'square',
     name: 'Square',
     description: 'Accept payments with Square platform',

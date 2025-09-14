@@ -37,9 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     
     try {
-      const { data, error } = await supabase.functions.invoke('check-paypal-subscription');
+      // Check subscription status from subscribers table
+      const { data, error } = await supabase
+        .from('subscribers')
+        .select('subscribed, subscription_tier, subscription_end')
+        .or(`user_id.eq.${user.id},email.eq.${user.email}`)
+        .single();
       
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error checking subscription:', error);
         setSubscriptionStatus({ subscribed: false });
         return;
@@ -47,6 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (data) {
         setSubscriptionStatus(data);
+      } else {
+        setSubscriptionStatus({ subscribed: false });
       }
     } catch (error) {
       console.error('Error checking subscription status:', error);

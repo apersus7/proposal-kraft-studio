@@ -363,7 +363,7 @@ const Pricing = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-2">What payment methods do you accept?</h3>
-                <p className="text-muted-foreground">We accept all major credit cards, PayPal, and bank transfers for annual plans.</p>
+                <p className="text-muted-foreground">We accept all major credit cards and bank transfers for annual plans.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-2">Do you offer refunds?</h3>

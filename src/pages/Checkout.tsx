@@ -1,251 +1,163 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { CheckCircle, ArrowLeft } from 'lucide-react';
 
+// Plan definitions
 const plans = {
   freelance: {
-    id: 'P-5ML4271244454362WXNWU5NQ',
+    id: 'freelance',
     name: 'Freelance',
     price: '$19/month',
-    amount: 19,
     description: 'Perfect for freelancers and small businesses',
-    features: ['5 proposals with watermark', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats']
+    features: [
+      '5 proposals with watermark',
+      'Unlimited templates',
+      'Unlimited customisation',
+      'Tracking',
+      'E-signature',
+      'Export in various formats'
+    ]
   },
   agency: {
-    id: 'P-1GJ4568135982362YXNWU5NQ',
+    id: 'agency', 
     name: 'Agency',
     price: '$49/month',
-    amount: 49,
     description: 'Best for growing businesses and teams',
-    features: ['Unlimited proposal', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats', 'CRM integration', 'Upload custom template', 'Reminders', 'Team collaboration']
+    features: [
+      'Unlimited proposals',
+      'Unlimited templates', 
+      'Unlimited customisation',
+      'Tracking',
+      'E-signature',
+      'Export in various formats',
+      'CRM integration',
+      'Upload custom template',
+      'Reminders',
+      'Team collaboration'
+    ]
   },
   enterprise: {
-    id: 'P-2HL7893456021362ZXNWU5NQ',
-    name: 'Enterprise',
+    id: 'enterprise',
+    name: 'Enterprise', 
     price: '$69/month',
-    amount: 69,
     description: 'For large organizations with advanced needs',
-    features: ['Unlimited proposal', 'Unlimited templates', 'Unlimited customisation', 'Tracking', 'E-signature', 'Export in various formats', 'CRM integration', 'Upload custom template', 'Payment integration', 'Reminders', 'Team collaboration']
+    features: [
+      'Unlimited proposals',
+      'Unlimited templates',
+      'Unlimited customisation', 
+      'Tracking',
+      'E-signature',
+      'Export in various formats',
+      'CRM integration',
+      'Upload custom template',
+      'Payment integration',
+      'Reminders',
+      'Team collaboration'
+    ]
   }
 };
 
-export default function Checkout() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const { toast } = useToast();
+const Checkout = () => {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [paypalClientId, setPaypalClientId] = useState<string>('');
-
-  const planType = searchParams.get('plan') as keyof typeof plans;
-  const plan = planType ? plans[planType] : null;
-
-  useEffect(() => {
-    const getPayPalClientId = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('get-paypal-client-id');
-        if (error) throw error;
-        setPaypalClientId(data.clientId);
-      } catch (error) {
-        console.error('Error getting PayPal client ID:', error);
-        // Fallback to sandbox for development
-        setPaypalClientId('AYsP-Q_NqBl8r5vWbclgNIlJlgHP2mzqpeEKs-r9pnVrgup-V9tFIftKGEls8LlzTHgFjm1MLEz3C0zs');
-      }
-    };
-
-    getPayPalClientId();
-  }, []);
-
-  const handleApprove = async (data: any) => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('subscribers')
-        .upsert({
-          email: user?.email,
-          user_id: user?.id,
-          paypal_subscription_id: data.subscriptionID,
-          subscribed: true,
-          subscription_tier: plan?.name,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'email' });
-
-      if (error) throw error;
-
-      toast({
-        title: "Payment Successful!",
-        description: `Welcome to ${plan?.name}! Your subscription is now active.`,
-      });
-
-      navigate('/dashboard?success=true');
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to process subscription. Please contact support.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleError = (err: any) => {
-    console.error('PayPal error:', err);
-    toast({
-      title: "Payment Failed",
-      description: "There was an issue processing your payment. Please try again.",
-      variant: "destructive",
-    });
-    setIsLoading(false);
-  };
-
-  const handleCancel = () => {
-    toast({
-      title: "Payment Cancelled",
-      description: "You can complete your subscription anytime.",
-    });
-    setIsLoading(false);
-  };
+  const [searchParams] = useSearchParams();
+  const planId = searchParams.get('plan') as keyof typeof plans;
+  const selectedPlan = planId ? plans[planId] : null;
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center">
+        <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Sign In Required</CardTitle>
-            <CardDescription>Please sign in to complete your purchase</CardDescription>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please sign in to continue with your subscription</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate('/auth')} className="w-full">
-              Sign In
-            </Button>
+            <Link to="/auth">
+              <Button className="w-full">Sign In</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  if (!plan) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Invalid Plan</CardTitle>
-            <CardDescription>The selected plan was not found</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/pricing')} className="w-full">
-              View Plans
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (!selectedPlan) {
+    return <Navigate to="/pricing" replace />;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/pricing')}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Pricing
-        </Button>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Back button */}
+        <Link to="/pricing">
+          <Button variant="ghost" className="mb-8">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Pricing
+          </Button>
+        </Link>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Order Summary */}
           <Card>
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
+              <CardDescription>Review your subscription details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
+            <CardContent>
+              <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold">{plan.name} Plan</h3>
-                  <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  <h3 className="font-semibold text-lg">{selectedPlan.name}</h3>
+                  <p className="text-muted-foreground">{selectedPlan.description}</p>
                 </div>
-                <Badge variant="secondary">Monthly</Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium">Features included:</h4>
-                <ul className="space-y-1">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <CheckCircle className="w-4 h-4 text-primary mr-2" />
-                      {feature}
-                    </li>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium">Features included:</h4>
+                  {selectedPlan.features.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                      <span className="text-sm">{feature}</span>
+                    </div>
                   ))}
-                </ul>
-              </div>
-
-              <div className="border-t pt-4">
-                <div className="flex items-center justify-between text-lg font-semibold">
-                  <span>Total</span>
-                  <span>{plan.price}</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Billed monthly • Cancel anytime
-                </p>
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Total</span>
+                    <span className="font-semibold text-lg">{selectedPlan.price}</span>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Payment */}
+          {/* Payment Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Payment Method</CardTitle>
+              <CardTitle>Complete Your Subscription</CardTitle>
               <CardDescription>
-                Complete your subscription with PayPal
+                Secure checkout - Contact us to complete your subscription
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {paypalClientId && (
-                <PayPalScriptProvider options={{
-                  clientId: paypalClientId,
-                  vault: true,
-                  intent: "subscription",
-                  currency: "USD"
-                }}>
-                  <PayPalButtons
-                    disabled={isLoading}
-                    createSubscription={(data, actions) => {
-                      return actions.subscription.create({
-                        plan_id: plan.id,
-                      });
-                    }}
-                    onApprove={handleApprove}
-                    onError={handleError}
-                    onCancel={handleCancel}
-                    style={{
-                      layout: "vertical",
-                      color: "blue",
-                      shape: "rect",
-                      label: "subscribe",
-                      height: 45
-                    }}
-                  />
-                </PayPalScriptProvider>
-              )}
-              
-              <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Secure checkout powered by PayPal
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Your subscription will auto-renew monthly. Cancel anytime from your dashboard.
-                </p>
+              <div className="space-y-6">
+                <div className="p-6 border border-dashed rounded-lg text-center">
+                  <h3 className="font-semibold mb-2">Contact Sales</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Get in touch with our sales team to complete your {selectedPlan.name} subscription
+                  </p>
+                  <Button size="lg" className="w-full">
+                    Contact Sales Team
+                  </Button>
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground space-y-2">
+                  <p>🔒 Secure checkout process</p>
+                  <p>📅 Monthly billing cycle</p>
+                  <p>❌ Cancel anytime</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -253,4 +165,6 @@ export default function Checkout() {
       </div>
     </div>
   );
-}
+};
+
+export default Checkout;
