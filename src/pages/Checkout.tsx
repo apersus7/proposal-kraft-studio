@@ -147,7 +147,11 @@ const Checkout = () => {
       },
       fundingSource: undefined, // Allow all funding sources
       createSubscription: function(data: any, actions: any) {
-        const planIdToUse = paypalPlanIds[planId];
+        let planIdToUse = paypalPlanIds[planId];
+        // Ensure plan ID has P- prefix
+        if (planIdToUse && !planIdToUse.startsWith('P-')) {
+          planIdToUse = 'P-' + planIdToUse;
+        }
         console.log('Using PayPal plan ID:', planIdToUse);
         return actions.subscription.create({
           plan_id: planIdToUse
