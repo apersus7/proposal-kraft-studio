@@ -70,7 +70,8 @@ const Checkout = () => {
   const selectedPlan = planId ? plans[planId] : null;
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [paypalClientId, setPaypalClientId] = useState<string | null>(null);
-  
+  const [paypalLoadFailed, setPaypalLoadFailed] = useState(false);
+
   useEffect(() => {
     // Get PayPal client ID
     const getPayPalClientId = async () => {
@@ -95,17 +96,36 @@ const Checkout = () => {
   
   useEffect(() => {
     // Load PayPal SDK
-    if (paypalClientId && !paypalLoaded) {
+    if (paypalClientId && !paypalLoaded && !(window as any).paypal) {
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons`;
       script.onload = () => setPaypalLoaded(true);
+      script.onerror = () => {
+        console.error('Failed to load PayPal SDK script');
+        setPaypalLoadFailed(true);
+        toast({
+          title: 'Payment Error',
+          description: 'Could not load PayPal. Check network/ad-blockers and try again.',
+          variant: 'destructive'
+        });
+      };
       document.head.appendChild(script);
+    } else if ((window as any).paypal && !paypalLoaded) {
+      // SDK already present (e.g., from navigation)
+      setPaypalLoaded(true);
     }
-  }, [paypalClientId, paypalLoaded]);
+  }, [paypalClientId, paypalLoaded, toast]);
   
   const createPayPalSubscription = () => {
-    if (!(window as any).paypal || !selectedPlan) return;
-    
+    if (!selectedPlan) return;
+    if (!(window as any).paypal) {
+      console.error('PayPal SDK not available on window');
+      return;
+    }
+
+    const container = document.getElementById('paypal-button-container');
+    if (container) container.innerHTML = '';
+
     // PayPal plan IDs from PayPal Developer Dashboard
     const paypalPlanIds = {
       freelance: 'P-7YB493177K007112KNDEUCQQ',
