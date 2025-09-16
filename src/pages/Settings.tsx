@@ -163,8 +163,8 @@ export default function Settings() {
                 Back to Dashboard
               </Button>
               <div className="flex items-center space-x-3">
-                <img src={logo} alt="Proposal kraft" className="h-8" />
-                <span className="text-xl font-bold text-primary">Proposal kraft</span>
+                <img src={logo} alt="ProposalKraft" className="h-8" />
+                <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
             <Badge variant={subscriptionStatus.subscribed ? "default" : "secondary"}>

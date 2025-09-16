@@ -80,8 +80,8 @@ const Solutions = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="Proposal kraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">Proposal kraft</span>
+              <img src={logo} alt="ProposalKraft" className="h-8" />
+              <span className="text-xl font-bold text-primary">ProposalKraft</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/features">
@@ -113,7 +113,7 @@ const Solutions = () => {
               <span className="text-primary block">Business Size</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-              From solo freelancers to enterprise teams, Proposal kraft adapts to your business needs 
+              From solo freelancers to enterprise teams, ProposalKraft adapts to your business needs 
               and helps you win more deals.
             </p>
             <Link to="/auth">
@@ -189,7 +189,7 @@ const Solutions = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">Proven Results</h2>
               <p className="text-xl text-muted-foreground">
-                See how Proposal kraft helps businesses win more deals
+                See how ProposalKraft helps businesses win more deals
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 text-center">
@@ -216,7 +216,7 @@ const Solutions = () => {
               Ready to Transform Your Proposal Process?
             </h2>
             <p className="text-xl text-muted-foreground mb-10">
-              Join thousands of businesses already using Proposal kraft to win more deals and grow faster.
+              Join thousands of businesses already using ProposalKraft to win more deals and grow faster.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">

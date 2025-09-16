@@ -92,7 +92,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <img src={logo} alt="Proposal kraft" className="h-12 mx-auto mb-4 animate-pulse" />
+          <img src={logo} alt="ProposalKraft" className="h-12 mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -106,8 +106,8 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <img src={logo} alt="Proposal kraft" className="h-8" />
-              <h1 className="text-xl font-bold text-primary">Proposal kraft</h1>
+              <img src={logo} alt="ProposalKraft" className="h-8" />
+              <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-muted-foreground">

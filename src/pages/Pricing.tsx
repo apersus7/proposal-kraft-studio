@@ -18,8 +18,8 @@ const Pricing = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="Proposal kraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">Proposal kraft</span>
+              <img src={logo} alt="ProposalKraft" className="h-8" />
+              <span className="text-xl font-bold text-primary">ProposalKraft</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/features">
@@ -380,7 +380,7 @@ const Pricing = () => {
               Ready to Start Creating?
             </h2>
             <p className="text-xl text-muted-foreground mb-10">
-              Join thousands of professionals already using Proposal kraft to win more business.
+              Join thousands of professionals already using ProposalKraft to win more business.
             </p>
             <Link to="/auth">
               <Button size="lg" className="text-lg px-8 py-3">

@@ -25,8 +25,8 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="Proposal kraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">Proposal kraft</span>
+              <img src={logo} alt="ProposalKraft" className="h-8" />
+              <span className="text-xl font-bold text-primary">ProposalKraft</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/features">
@@ -53,7 +53,7 @@ const Index = () => {
       <section className="py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-8">
-            <img src={logo} alt="Proposal kraft" className="h-20 mx-auto mb-6" />
+            <img src={logo} alt="ProposalKraft" className="h-20 mx-auto mb-6" />
           </div>
           <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
             Craft Professional
@@ -143,7 +143,7 @@ const Index = () => {
             Ready to Create Your First Proposal?
           </h2>
           <p className="text-xl text-muted-foreground mb-10">
-            Join thousands of businesses creating winning proposals with Proposal kraft.
+            Join thousands of businesses creating winning proposals with ProposalKraft.
           </p>
           <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">
             Get Started Today

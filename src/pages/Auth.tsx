@@ -94,8 +94,8 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={logo} alt="Proposal kraft" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-primary">Proposal kraft</h1>
+          <img src={logo} alt="ProposalKraft" className="h-12 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-primary">ProposalKraft</h1>
           <p className="text-muted-foreground mt-2">Create professional business proposals</p>
         </div>
 

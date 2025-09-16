@@ -184,7 +184,7 @@ export default function ProposalEditor() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center">
         <div className="text-center">
-          <img src={logo} alt="Proposal kraft" className="h-12 mx-auto mb-4 animate-pulse" />
+          <img src={logo} alt="ProposalKraft" className="h-12 mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Loading proposal...</p>
         </div>
       </div>
@@ -203,8 +203,8 @@ export default function ProposalEditor() {
                 Back to Dashboard
               </Button>
               <div className="flex items-center space-x-3">
-                <img src={logo} alt="Proposal kraft" className="h-8" />
-                <span className="text-xl font-bold text-primary">Proposal kraft</span>
+                <img src={logo} alt="ProposalKraft" className="h-8" />
+                <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
