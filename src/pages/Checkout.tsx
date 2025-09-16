@@ -75,20 +75,25 @@ const Checkout = () => {
   const [showCardForm, setShowCardForm] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const [paypalPlanIds, setPaypalPlanIds] = useState<any>(null);
+
   useEffect(() => {
     // Get PayPal client ID and client token
     const getPayPalCredentials = async () => {
       try {
-        const [clientIdResponse, clientTokenResponse] = await Promise.all([
+        const [clientIdResponse, clientTokenResponse, planIdsResponse] = await Promise.all([
           supabase.functions.invoke('get-paypal-client-id'),
-          supabase.functions.invoke('generate-paypal-client-token')
+          supabase.functions.invoke('generate-paypal-client-token'),
+          supabase.functions.invoke('get-paypal-plan-ids')
         ]);
         
         if (clientIdResponse.error) throw clientIdResponse.error;
         if (clientTokenResponse.error) throw clientTokenResponse.error;
+        if (planIdsResponse.error) throw planIdsResponse.error;
         
         setPaypalClientId(clientIdResponse.data.clientId);
         setClientToken(clientTokenResponse.data.clientToken);
+        setPaypalPlanIds(planIdsResponse.data.planIds);
       } catch (error) {
         console.error('Error getting PayPal credentials:', error);
         toast({
@@ -99,10 +104,10 @@ const Checkout = () => {
       }
     };
     
-    if (user && selectedPlan) {
+    if (user && selectedPlan && !paypalPlanIds) {
       getPayPalCredentials();
     }
-  }, [user, selectedPlan, toast]);
+  }, [user, selectedPlan, paypalPlanIds, toast]);
   
   useEffect(() => {
     // Load PayPal SDK with card components
@@ -126,7 +131,7 @@ const Checkout = () => {
   }, [paypalClientId, paypalLoaded, toast]);
   
   const createPayPalSubscription = () => {
-    if (!selectedPlan) return;
+    if (!selectedPlan || !paypalPlanIds) return;
     if (!(window as any).paypal) {
       console.error('PayPal SDK not available on window');
       return;
@@ -134,13 +139,6 @@ const Checkout = () => {
 
     const container = document.getElementById('paypal-button-container');
     if (container) container.innerHTML = '';
-
-    // PayPal plan IDs from PayPal Developer Dashboard
-    const paypalPlanIds = {
-      freelance: 'P-7YB493177K007112KNDEUCQQ',
-      agency: 'P-2HX63496VE684490XNDEUC5Q', 
-      enterprise: 'P-0HH73491LT124962RNDEUDHY'
-    };
     
     (window as any).paypal.Buttons({
       style: {
@@ -152,8 +150,10 @@ const Checkout = () => {
       },
       fundingSource: undefined, // Allow all funding sources
       createSubscription: function(data: any, actions: any) {
+        const planIdToUse = paypalPlanIds[planId];
+        console.log('Using PayPal plan ID:', planIdToUse);
         return actions.subscription.create({
-          plan_id: paypalPlanIds[planId]
+          plan_id: planIdToUse
         });
       },
       onApprove: function(data: any, actions: any) {
@@ -256,13 +256,13 @@ const Checkout = () => {
   };
   
   useEffect(() => {
-    if (paypalLoaded && selectedPlan) {
+    if (paypalLoaded && selectedPlan && paypalPlanIds) {
       createPayPalSubscription();
       if (clientToken) {
         createCardFields();
       }
     }
-  }, [paypalLoaded, selectedPlan, clientToken]);
+  }, [paypalLoaded, selectedPlan, clientToken, paypalPlanIds]);
 
   if (!user) {
     return (

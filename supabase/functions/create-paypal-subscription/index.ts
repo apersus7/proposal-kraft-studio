@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { planId, paymentMethodNonce } = await req.json();
+    const { planId } = await req.json();
     
     const paypalClientId = Deno.env.get('PAYPAL_CLIENT_ID');
     const paypalClientSecret = Deno.env.get('PAYPAL_CLIENT_SECRET');
@@ -21,16 +21,20 @@ serve(async (req) => {
       throw new Error('PayPal credentials not configured');
     }
 
-    // PayPal plan IDs mapping
+    // Get the actual PayPal plan ID from environment
+    const freelancePlanId = Deno.env.get('PAYPAL_PLAN_ID_FREELANCE');
+    const agencyPlanId = Deno.env.get('PAYPAL_PLAN_ID_AGENCY');
+    const enterprisePlanId = Deno.env.get('PAYPAL_PLAN_ID_ENTERPRISE');
+
     const paypalPlanIds = {
-      freelance: 'P-7YB493177K007112KNDEUCQQ',
-      agency: 'P-2HX63496VE684490XNDEUC5Q', 
-      enterprise: 'P-0HH73491LT124962RNDEUDHY'
+      freelance: freelancePlanId,
+      agency: agencyPlanId,
+      enterprise: enterprisePlanId
     };
 
     const planIdToUse = paypalPlanIds[planId as keyof typeof paypalPlanIds];
     if (!planIdToUse) {
-      throw new Error('Invalid plan ID');
+      throw new Error(`Invalid plan ID: ${planId}`);
     }
 
     // Get PayPal access token
