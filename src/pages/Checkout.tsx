@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { Link, useSearchParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 // Plan definitions
 const plans = {
@@ -62,9 +64,93 @@ const plans = {
 
 const Checkout = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const planId = searchParams.get('plan') as keyof typeof plans;
   const selectedPlan = planId ? plans[planId] : null;
+  const [paypalLoaded, setPaypalLoaded] = useState(false);
+  const [paypalClientId, setPaypalClientId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Get PayPal client ID
+    const getPayPalClientId = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-paypal-client-id');
+        if (error) throw error;
+        setPaypalClientId(data.clientId);
+      } catch (error) {
+        console.error('Error getting PayPal client ID:', error);
+        toast({
+          title: 'Payment Error',
+          description: 'Unable to load payment system. Please try again.',
+          variant: 'destructive'
+        });
+      }
+    };
+    
+    if (user && selectedPlan) {
+      getPayPalClientId();
+    }
+  }, [user, selectedPlan, toast]);
+  
+  useEffect(() => {
+    // Load PayPal SDK
+    if (paypalClientId && !paypalLoaded) {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription`;
+      script.onload = () => setPaypalLoaded(true);
+      document.head.appendChild(script);
+    }
+  }, [paypalClientId, paypalLoaded]);
+  
+  const createPayPalSubscription = () => {
+    if (!(window as any).paypal || !selectedPlan) return;
+    
+    // PayPal plan IDs mapping - you'll need to create these in your PayPal dashboard
+    const paypalPlanIds = {
+      freelance: 'P-XXX-FREELANCE-PLAN-ID',
+      agency: 'P-XXX-AGENCY-PLAN-ID', 
+      enterprise: 'P-XXX-ENTERPRISE-PLAN-ID'
+    };
+    
+    (window as any).paypal.Buttons({
+      style: {
+        shape: 'rect',
+        color: 'blue',
+        layout: 'vertical',
+        label: 'subscribe'
+      },
+      createSubscription: function(data: any, actions: any) {
+        return actions.subscription.create({
+          plan_id: paypalPlanIds[planId]
+        });
+      },
+      onApprove: function(data: any, actions: any) {
+        toast({
+          title: 'Subscription Created!',
+          description: `Your ${selectedPlan.name} subscription is now active.`
+        });
+        // Redirect to dashboard after successful payment
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2000);
+      },
+      onError: function(err: any) {
+        console.error('PayPal error:', err);
+        toast({
+          title: 'Payment Error',
+          description: 'There was an issue processing your payment. Please try again.',
+          variant: 'destructive'
+        });
+      }
+    }).render('#paypal-button-container');
+  };
+  
+  useEffect(() => {
+    if (paypalLoaded && selectedPlan) {
+      createPayPalSubscription();
+    }
+  }, [paypalLoaded, selectedPlan]);
 
   if (!user) {
     return (
@@ -143,18 +229,27 @@ const Checkout = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="p-6 border border-dashed rounded-lg text-center">
-                  <h3 className="font-semibold mb-2">Contact Sales</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Get in touch with our sales team to complete your {selectedPlan.name} subscription
-                  </p>
-                  <Button size="lg" className="w-full">
-                    Contact Sales Team
-                  </Button>
-                </div>
+                {paypalLoaded ? (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h3 className="font-semibold mb-2">Complete Your Payment</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Subscribe to {selectedPlan.name} with PayPal
+                      </p>
+                    </div>
+                    <div id="paypal-button-container"></div>
+                  </div>
+                ) : (
+                  <div className="p-6 border border-dashed rounded-lg text-center">
+                    <h3 className="font-semibold mb-2">Loading Payment Options...</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Please wait while we prepare your secure checkout
+                    </p>
+                  </div>
+                )}
 
                 <div className="text-center text-sm text-muted-foreground space-y-2">
-                  <p>🔒 Secure checkout process</p>
+                  <p>🔒 Secure PayPal checkout</p>
                   <p>📅 Monthly billing cycle</p>
                   <p>❌ Cancel anytime</p>
                 </div>
