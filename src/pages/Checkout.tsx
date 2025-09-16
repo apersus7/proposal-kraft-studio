@@ -107,11 +107,15 @@ const Checkout = () => {
   }, [user, selectedPlan, paypalPlanIds, toast]);
   
   useEffect(() => {
-    // Load PayPal SDK with standard buttons only
+    // Load PayPal SDK with enhanced card support
     if (paypalClientId && !paypalLoaded && !(window as any).paypal) {
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons&enable-funding=card,venmo&currency=USD`;
-      script.onload = () => setPaypalLoaded(true);
+      // Enhanced SDK loading with card fields and hosted fields for better card support
+      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons,hosted-fields&enable-funding=card,venmo,paylater&disable-funding=sepa,bancontact,eps,giropay,ideal,mybank,p24,sofort&currency=USD`;
+      script.onload = () => {
+        console.log('PayPal SDK loaded successfully');
+        setPaypalLoaded(true);
+      };
       script.onerror = () => {
         console.error('Failed to load PayPal SDK script');
         setPaypalLoadFailed(true);
@@ -123,6 +127,7 @@ const Checkout = () => {
       };
       document.head.appendChild(script);
     } else if ((window as any).paypal && !paypalLoaded) {
+      console.log('PayPal SDK already available');
       setPaypalLoaded(true);
     }
   }, [paypalClientId, paypalLoaded, toast]);
@@ -143,35 +148,71 @@ const Checkout = () => {
         color: 'gold',
         layout: 'vertical',
         label: 'subscribe',
-        height: 55
+        height: 55,
+        tagline: false
       },
-      fundingSource: undefined, // Allow all funding sources
+      fundingSource: undefined, // Allow all funding sources including cards
       createSubscription: function(data: any, actions: any) {
+        console.log('Creating subscription for plan:', planId);
         let planIdToUse = paypalPlanIds[planId];
         // Ensure plan ID has P- prefix
         if (planIdToUse && !planIdToUse.startsWith('P-')) {
           planIdToUse = 'P-' + planIdToUse;
         }
         console.log('Using PayPal plan ID:', planIdToUse);
+        
         return actions.subscription.create({
-          plan_id: planIdToUse
+          plan_id: planIdToUse,
+          application_context: {
+            brand_name: 'Proposal Kraft',
+            locale: 'en-US',
+            shipping_preference: 'NO_SHIPPING',
+            user_action: 'SUBSCRIBE_NOW',
+            payment_method: {
+              payer_selected: 'PAYPAL',
+              payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
+            }
+          }
         });
       },
       onApprove: function(data: any, actions: any) {
+        console.log('Subscription approved:', data);
+        setIsProcessing(true);
+        
         toast({
           title: 'Subscription Created!',
           description: `Your ${selectedPlan.name} subscription is now active.`
         });
+        
         // Redirect to dashboard after successful payment
         setTimeout(() => {
           window.location.href = '/dashboard';
         }, 2000);
       },
+      onCancel: function(data: any) {
+        console.log('PayPal payment cancelled:', data);
+        toast({
+          title: 'Payment Cancelled',
+          description: 'Your payment was cancelled. You can try again anytime.',
+          variant: 'default'
+        });
+      },
       onError: function(err: any) {
-        console.error('PayPal error:', err);
+        console.error('PayPal error details:', err);
+        setIsProcessing(false);
+        
+        let errorMessage = 'There was an issue processing your payment. Please try again.';
+        
+        // Provide more specific error messages
+        if (err.message && err.message.includes('card')) {
+          errorMessage = 'Card payment failed. Please check your card details or try a different payment method.';
+        } else if (err.message && err.message.includes('declined')) {
+          errorMessage = 'Payment was declined. Please check with your bank or try a different payment method.';
+        }
+        
         toast({
           title: 'Payment Error',
-          description: 'There was an issue processing your payment. Please try again.',
+          description: errorMessage,
           variant: 'destructive'
         });
       }
