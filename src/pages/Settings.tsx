@@ -410,39 +410,68 @@ export default function Settings() {
                 {!subscriptionStatus.subscribed && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Upgrade Your Plan</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-3 gap-4">
                       <Card>
                         <CardHeader>
-                          <CardTitle>Pro Plan</CardTitle>
-                          <CardDescription>$29/month</CardDescription>
+                          <CardTitle>Freelance</CardTitle>
+                          <CardDescription>$19/month</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="space-y-2 text-sm">
+                            <li>✓ 5 proposals (with watermark)</li>
+                            <li>✓ Unlimited templates</li>
+                            <li>✓ Tracking & E-signature</li>
+                            <li>✓ Export in various formats</li>
+                          </ul>
+                          <Button 
+                            variant="outline" 
+                            className="mt-4 w-full"
+                            onClick={() => navigate('/checkout?plan=freelance')}
+                          >
+                            Get Started
+                          </Button>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="border-primary">
+                        <CardHeader>
+                          <CardTitle>Agency</CardTitle>
+                          <CardDescription>$49/month</CardDescription>
                         </CardHeader>
                         <CardContent>
                           <ul className="space-y-2 text-sm">
                             <li>✓ Unlimited proposals</li>
+                            <li>✓ CRM integration</li>
+                            <li>✓ Team collaboration</li>
                             <li>✓ Custom templates</li>
-                            <li>✓ Advanced analytics</li>
-                            <li>✓ CRM integrations</li>
                           </ul>
-                          <Button variant="outline" className="mt-4">
-                            Contact Sales
+                          <Button 
+                            className="mt-4 w-full"
+                            onClick={() => navigate('/checkout?plan=agency')}
+                          >
+                            Start Free Trial
                           </Button>
                         </CardContent>
                       </Card>
 
                       <Card>
                         <CardHeader>
-                          <CardTitle>Enterprise Plan</CardTitle>
-                          <CardDescription>$99/month</CardDescription>
+                          <CardTitle>Enterprise</CardTitle>
+                          <CardDescription>$69/month</CardDescription>
                         </CardHeader>
                         <CardContent>
                           <ul className="space-y-2 text-sm">
-                            <li>✓ Everything in Pro</li>
-                            <li>✓ Team collaboration</li>
-                            <li>✓ White-label options</li>
+                            <li>✓ Everything in Agency</li>
+                            <li>✓ Payment integration</li>
+                            <li>✓ Advanced features</li>
                             <li>✓ Priority support</li>
                           </ul>
-                          <Button variant="outline" className="mt-4">
-                            Contact Sales
+                          <Button 
+                            variant="outline" 
+                            className="mt-4 w-full"
+                            onClick={() => navigate('/checkout?plan=enterprise')}
+                          >
+                            Get Enterprise
                           </Button>
                         </CardContent>
                       </Card>
