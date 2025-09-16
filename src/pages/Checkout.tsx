@@ -98,7 +98,7 @@ const Checkout = () => {
     // Load PayPal SDK
     if (paypalClientId && !paypalLoaded && !(window as any).paypal) {
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons&enable-funding=card,venmo&currency=USD`;
       script.onload = () => setPaypalLoaded(true);
       script.onerror = () => {
         console.error('Failed to load PayPal SDK script');
@@ -136,10 +136,12 @@ const Checkout = () => {
     (window as any).paypal.Buttons({
       style: {
         shape: 'rect',
-        color: 'blue',
+        color: 'gold',
         layout: 'vertical',
-        label: 'subscribe'
+        label: 'subscribe',
+        height: 55
       },
+      fundingSource: undefined, // Allow all funding sources
       createSubscription: function(data: any, actions: any) {
         return actions.subscription.create({
           plan_id: paypalPlanIds[planId]
