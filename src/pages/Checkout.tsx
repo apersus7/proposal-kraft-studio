@@ -106,11 +106,11 @@ const Checkout = () => {
   const createPayPalSubscription = () => {
     if (!(window as any).paypal || !selectedPlan) return;
     
-    // PayPal plan IDs mapping - you'll need to create these in your PayPal dashboard
+    // PayPal plan IDs from PayPal Developer Dashboard
     const paypalPlanIds = {
-      freelance: 'P-XXX-FREELANCE-PLAN-ID',
-      agency: 'P-XXX-AGENCY-PLAN-ID', 
-      enterprise: 'P-XXX-ENTERPRISE-PLAN-ID'
+      freelance: 'P-7YB493177K007112KNDEUCQQ',
+      agency: 'P-2HX63496VE684490XNDEUC5Q', 
+      enterprise: 'P-0HH73491LT124962RNDEUDHY'
     };
     
     (window as any).paypal.Buttons({
