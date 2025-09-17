@@ -78,18 +78,21 @@ const Checkout = () => {
   const [paypalPlanIds, setPaypalPlanIds] = useState<any>(null);
 
   useEffect(() => {
-    // Get PayPal client ID and client token
+    // Get PayPal client ID, client token, and plan IDs
     const getPayPalCredentials = async () => {
       try {
-        const [clientIdResponse, planIdsResponse] = await Promise.all([
+        const [clientIdResponse, clientTokenResponse, planIdsResponse] = await Promise.all([
           supabase.functions.invoke('get-paypal-client-id'),
+          supabase.functions.invoke('generate-paypal-client-token'),
           supabase.functions.invoke('get-paypal-plan-ids')
         ]);
         
         if (clientIdResponse.error) throw clientIdResponse.error;
+        if (clientTokenResponse.error) throw clientTokenResponse.error;
         if (planIdsResponse.error) throw planIdsResponse.error;
         
         setPaypalClientId(clientIdResponse.data.clientId);
+        setClientToken(clientTokenResponse.data.clientToken);
         setPaypalPlanIds(planIdsResponse.data.planIds);
       } catch (error) {
         console.error('Error getting PayPal credentials:', error);
@@ -133,7 +136,7 @@ const Checkout = () => {
   }, [paypalClientId, paypalLoaded, toast]);
   
   const createPayPalSubscription = () => {
-    if (!selectedPlan || !paypalPlanIds) return;
+    if (!selectedPlan || !paypalPlanIds || !clientToken) return;
     if (!(window as any).paypal) {
       console.error('PayPal SDK not available on window');
       return;
@@ -142,19 +145,22 @@ const Checkout = () => {
     const container = document.getElementById('paypal-button-container');
     if (container) container.innerHTML = '';
     
+    // Enhanced PayPal integration with better card support
     (window as any).paypal.Buttons({
       style: {
         shape: 'rect',
         color: 'gold',
-        layout: 'vertical',
+        layout: 'vertical', 
         label: 'subscribe',
         height: 55,
         tagline: false
       },
-      fundingSource: undefined, // Allow all funding sources including cards
+      // Enhanced funding options for better card support
+      fundingSource: undefined,
       createSubscription: function(data: any, actions: any) {
         console.log('Creating subscription for plan:', planId);
         let planIdToUse = paypalPlanIds[planId];
+        
         // Ensure plan ID has P- prefix
         if (planIdToUse && !planIdToUse.startsWith('P-')) {
           planIdToUse = 'P-' + planIdToUse;
@@ -168,10 +174,20 @@ const Checkout = () => {
             locale: 'en-US',
             shipping_preference: 'NO_SHIPPING',
             user_action: 'SUBSCRIBE_NOW',
+            return_url: window.location.origin + '/dashboard',
+            cancel_url: window.location.href,
             payment_method: {
               payer_selected: 'PAYPAL',
               payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
             }
+          },
+          // Enhanced subscription details for better processing
+          subscriber: {
+            name: {
+              given_name: user?.user_metadata?.full_name?.split(' ')[0] || 'Customer',
+              surname: user?.user_metadata?.full_name?.split(' ')[1] || ''
+            },
+            email_address: user?.email || ''
           }
         });
       },
@@ -180,8 +196,8 @@ const Checkout = () => {
         setIsProcessing(true);
         
         toast({
-          title: 'Subscription Created!',
-          description: `Your ${selectedPlan.name} subscription is now active.`
+          title: 'Subscription Created Successfully!',
+          description: `Your ${selectedPlan.name} subscription is now active. Redirecting to dashboard...`
         });
         
         // Redirect to dashboard after successful payment
@@ -191,6 +207,7 @@ const Checkout = () => {
       },
       onCancel: function(data: any) {
         console.log('PayPal payment cancelled:', data);
+        setIsProcessing(false);
         toast({
           title: 'Payment Cancelled',
           description: 'Your payment was cancelled. You can try again anytime.',
@@ -203,11 +220,26 @@ const Checkout = () => {
         
         let errorMessage = 'There was an issue processing your payment. Please try again.';
         
-        // Provide more specific error messages
-        if (err.message && err.message.includes('card')) {
-          errorMessage = 'Card payment failed. Please check your card details or try a different payment method.';
-        } else if (err.message && err.message.includes('declined')) {
-          errorMessage = 'Payment was declined. Please check with your bank or try a different payment method.';
+        // Enhanced error handling for card-specific issues
+        if (err && typeof err === 'object') {
+          if (err.message) {
+            if (err.message.includes('card') || err.message.includes('CARD')) {
+              errorMessage = 'Card payment failed. Please verify your card details and try again, or use PayPal directly.';
+            } else if (err.message.includes('declined') || err.message.includes('DECLINED')) {
+              errorMessage = 'Payment was declined by your bank. Please contact your bank or try a different payment method.';
+            } else if (err.message.includes('expired') || err.message.includes('EXPIRED')) {
+              errorMessage = 'Your card has expired. Please use a different card.';
+            } else if (err.message.includes('insufficient') || err.message.includes('INSUFFICIENT')) {
+              errorMessage = 'Insufficient funds. Please check your account balance or use a different payment method.';
+            }
+          }
+          
+          // Log detailed error for debugging
+          console.error('Detailed PayPal error:', {
+            message: err.message,
+            details: err.details,
+            name: err.name
+          });
         }
         
         toast({
@@ -216,14 +248,22 @@ const Checkout = () => {
           variant: 'destructive'
         });
       }
-    }).render('#paypal-button-container');
+    }).render('#paypal-button-container').catch((renderError: any) => {
+      console.error('PayPal button render error:', renderError);
+      setPaypalLoadFailed(true);
+      toast({
+        title: 'Payment System Error',
+        description: 'Unable to load payment options. Please refresh the page and try again.',
+        variant: 'destructive'
+      });
+    });
   };
   
   useEffect(() => {
-    if (paypalLoaded && selectedPlan && paypalPlanIds) {
+    if (paypalLoaded && selectedPlan && paypalPlanIds && clientToken) {
       createPayPalSubscription();
     }
-  }, [paypalLoaded, selectedPlan, paypalPlanIds]);
+  }, [paypalLoaded, selectedPlan, paypalPlanIds, clientToken]);
 
   if (!user) {
     return (
@@ -302,21 +342,37 @@ const Checkout = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {paypalLoaded ? (
+                {paypalLoaded && clientToken ? (
                   <div className="space-y-4">
                     <div className="text-center">
                       <h3 className="font-semibold mb-2">Complete Your Payment</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Subscribe to {selectedPlan.name} with PayPal
+                        Subscribe to {selectedPlan.name} - PayPal accepts all major cards
                       </p>
                     </div>
                     <div id="paypal-button-container"></div>
+                    {isProcessing && (
+                      <div className="text-center p-4 bg-muted rounded-lg">
+                        <p className="text-sm font-medium">Processing your subscription...</p>
+                        <p className="text-xs text-muted-foreground mt-1">Please do not close this window</p>
+                      </div>
+                    )}
+                  </div>
+                ) : paypalLoadFailed ? (
+                  <div className="p-6 border border-destructive/20 rounded-lg text-center bg-destructive/5">
+                    <h3 className="font-semibold mb-2 text-destructive">Payment System Unavailable</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Unable to load PayPal. Please check your network connection and disable any ad blockers, then refresh the page.
+                    </p>
+                    <Button onClick={() => window.location.reload()} variant="outline">
+                      Refresh Page
+                    </Button>
                   </div>
                 ) : (
                   <div className="p-6 border border-dashed rounded-lg text-center">
                     <h3 className="font-semibold mb-2">Loading Payment Options...</h3>
                     <p className="text-sm text-muted-foreground">
-                      Please wait while we prepare your secure checkout
+                      Preparing secure checkout with enhanced card support...
                     </p>
                   </div>
                 )}
