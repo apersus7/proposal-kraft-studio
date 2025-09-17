@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
+import { CompanyResearch } from '@/components/CompanyResearch';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -34,8 +35,9 @@ export default function CreateProposal() {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [step, setStep] = useState<'template' | 'theme' | 'details' | 'content'>('template');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
+  const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   
-  const [proposalData, setProposalData] = useState({
+  const [proposalData, setProposalData] = useState<any>({
     title: '',
     client_name: '',
     client_email: '',
@@ -84,12 +86,44 @@ export default function CreateProposal() {
     }
   };
 
+  // Helpers to update content sections in local state
+  const updateSectionValue = (sectionType: string, field: string, value: any) => {
+    setProposalData(prev => {
+      const sections = Array.isArray(prev.content?.sections) ? [...prev.content.sections] : [];
+      const idx = sections.findIndex((s: any) => s.type === sectionType);
+      if (idx >= 0) {
+        sections[idx] = { ...sections[idx], [field]: value };
+      } else {
+        sections.push({ type: sectionType, [field]: value });
+      }
+      return { ...prev, content: { ...prev.content, sections } };
+    });
+  };
+
+  const generateAIContent = async (section: string, context?: string) => {
+    setGeneratingAI(section);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-proposal-content', {
+        body: { section, context }
+      });
+      if (error) throw error;
+      if (data?.content) {
+        updateSectionValue(section, 'content', data.content);
+        toast({ title: 'AI Content Generated', description: `${section.replace('_', ' ')} updated` });
+      }
+    } catch (err) {
+      console.error('Error generating AI content:', err);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    } finally {
+      setGeneratingAI(null);
+    }
+  };
+
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
     setProposalData(prev => ({ ...prev, content: template.template_data }));
     setStep('theme');
   };
-
   const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
@@ -391,9 +425,32 @@ export default function CreateProposal() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-          </div>
-        )}
+              </Card>
+
+              <div className="mt-8">
+                <Card className="max-w-3xl">
+                  <CardHeader>
+                    <CardTitle>Company Research & Analysis</CardTitle>
+                    <CardDescription>
+                      Analyze the client's company to extract pain points and opportunities
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <CompanyResearch 
+                      onResearchComplete={(data) => {
+                        const bullets = data.painPoints.map((p: string) => `• ${p}`).join('\n');
+                        updateSectionValue('client_problem', 'content', `Key pain points for ${data.companyName}:\n${bullets}`);
+                        toast({ 
+                          title: 'Analysis added', 
+                          description: 'Pain points inserted into client needs section' 
+                        });
+                      }}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
 
         {step === 'content' && (
           <div>
@@ -508,6 +565,53 @@ export default function CreateProposal() {
                     
                     <Button variant="outline" onClick={() => setStep('details')}>
                       Back to Details
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Assistant</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Button 
+                      onClick={() => generateAIContent('executive_summary', `${proposalData.client_name} - ${proposalData.project_name}`)}
+                      disabled={generatingAI === 'executive_summary'}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {generatingAI === 'executive_summary' ? 'Generating...' : 'Generate Executive Summary'}
+                    </Button>
+
+                    <Button 
+                      onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                      disabled={generatingAI === 'scope_of_work'}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {generatingAI === 'scope_of_work' ? 'Generating...' : 'Generate Scope of Work'}
+                    </Button>
+
+                    <Button 
+                      onClick={() => generateAIContent('timeline', proposalData.project_name)}
+                      disabled={generatingAI === 'timeline'}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {generatingAI === 'timeline' ? 'Generating...' : 'Generate Timeline'}
+                    </Button>
+
+                    <Button 
+                      onClick={() => generateAIContent('pricing', proposalData.pricing)}
+                      disabled={generatingAI === 'pricing'}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {generatingAI === 'pricing' ? 'Generating...' : 'Generate Pricing'}
                     </Button>
                   </CardContent>
                 </Card>
