@@ -20,6 +20,9 @@ enable_manual_linking = false
 [functions.check-paypal-subscription]
 verify_jwt = true
 
+[functions.generate-proposal-content]
+verify_jwt = true
+
 [functions.paypal-webhook]
 verify_jwt = false
 

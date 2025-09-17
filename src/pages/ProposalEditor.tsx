@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Send, Eye, Download } from 'lucide-react';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -29,6 +29,7 @@ export default function ProposalEditor() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   const [proposal, setProposal] = useState<Proposal | null>(null);
 
   useEffect(() => {
@@ -180,6 +181,39 @@ export default function ProposalEditor() {
     }
   };
 
+  const generateAIContent = async (section: string, context?: string) => {
+    if (!proposal) return;
+    
+    setGeneratingAI(section);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-proposal-content', {
+        body: { 
+          section,
+          context: context || `${proposal.client_name} - ${proposal.title}`
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.content) {
+        updateContentValue(section, 'content', data.content);
+        toast({
+          title: "AI Content Generated",
+          description: "Content has been generated and added to your proposal"
+        });
+      }
+    } catch (error) {
+      console.error('Error generating AI content:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate AI content",
+        variant: "destructive"
+      });
+    } finally {
+      setGeneratingAI(null);
+    }
+  };
+
   if (!user || !proposal) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center">
@@ -296,16 +330,27 @@ export default function ProposalEditor() {
                    />
                  </div>
 
-                 <div className="space-y-2">
-                   <Label htmlFor="executive_summary">Executive Summary</Label>
-                   <Textarea
-                     id="executive_summary"
-                     value={getContentValue('executive_summary', 'content')}
-                     onChange={(e) => updateContentValue('executive_summary', 'content', e.target.value)}
-                     placeholder="Provide a high-level overview tailored to the client's main challenge and results you aim to deliver..."
-                     className="min-h-[100px]"
-                   />
-                 </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="executive_summary">Executive Summary</Label>
+                      <Button 
+                        onClick={() => generateAIContent('executive_summary')}
+                        disabled={generatingAI === 'executive_summary'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'executive_summary' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </div>
+                    <Textarea
+                      id="executive_summary"
+                      value={getContentValue('executive_summary', 'content')}
+                      onChange={(e) => updateContentValue('executive_summary', 'content', e.target.value)}
+                      placeholder="Provide a high-level overview tailored to the client's main challenge and results you aim to deliver..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
 
                  <div className="space-y-2">
                    <Label htmlFor="client_problem">Client's Problem / Needs</Label>
@@ -329,16 +374,27 @@ export default function ProposalEditor() {
                    />
                  </div>
 
-                 <div className="space-y-2">
-                   <Label htmlFor="scope_of_work">Scope of Work (Deliverables)</Label>
-                   <Textarea
-                     id="scope_of_work"
-                     value={getContentValue('scope_of_work', 'deliverables')?.join('\n') || ''}
-                     onChange={(e) => updateContentValue('scope_of_work', 'deliverables', e.target.value.split('\n').filter(item => item.trim()))}
-                     placeholder="Detailed breakdown of deliverables and activities... (one item per line)"
-                     className="min-h-[120px]"
-                   />
-                 </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="scope_of_work">Scope of Work (Deliverables)</Label>
+                      <Button 
+                        onClick={() => generateAIContent('scope_of_work')}
+                        disabled={generatingAI === 'scope_of_work'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </div>
+                    <Textarea
+                      id="scope_of_work"
+                      value={getContentValue('scope_of_work', 'content')}
+                      onChange={(e) => updateContentValue('scope_of_work', 'content', e.target.value)}
+                      placeholder="Detailed breakdown of deliverables and activities..."
+                      className="min-h-[120px]"
+                    />
+                  </div>
 
                  <div className="space-y-2">
                    <Label>Timeline / Milestones</Label>
@@ -370,15 +426,27 @@ export default function ProposalEditor() {
                    </div>
                  </div>
 
-                 <div className="space-y-2">
-                   <Label htmlFor="pricing_total">Pricing & Packages</Label>
-                   <Input
-                     id="pricing_total"
-                     value={getContentValue('pricing', 'total') || ''}
-                     onChange={(e) => updateContentValue('pricing', 'total', e.target.value)}
-                     placeholder="e.g., $15,000"
-                   />
-                 </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="pricing_total">Pricing & Packages</Label>
+                      <Button 
+                        onClick={() => generateAIContent('pricing')}
+                        disabled={generatingAI === 'pricing'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'pricing' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </div>
+                    <Textarea
+                      id="pricing_content"
+                      value={getContentValue('pricing', 'content')}
+                      onChange={(e) => updateContentValue('pricing', 'content', e.target.value)}
+                      placeholder="Detailed pricing breakdown and packages..."
+                      className="min-h-[120px]"
+                    />
+                  </div>
                  
                  <div className="space-y-2">
                    <Label htmlFor="payment_terms">Payment Terms</Label>
@@ -391,16 +459,27 @@ export default function ProposalEditor() {
                    />
                  </div>
 
-                 <div className="space-y-2">
-                   <Label htmlFor="value_proposition">Value Proposition / Why Us</Label>
-                   <Textarea
-                     id="value_proposition"
-                     value={getContentValue('value_proposition', 'advantages')?.join('\n') || ''}
-                     onChange={(e) => updateContentValue('value_proposition', 'advantages', e.target.value.split('\n').filter(item => item.trim()))}
-                     placeholder="Your unique advantages, case studies, testimonials, team expertise... (one per line)"
-                     className="min-h-[100px]"
-                   />
-                 </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="value_proposition">Value Proposition / Why Us</Label>
+                      <Button 
+                        onClick={() => generateAIContent('about_us')}
+                        disabled={generatingAI === 'about_us'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'about_us' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </div>
+                    <Textarea
+                      id="value_proposition"
+                      value={getContentValue('about_us', 'content')}
+                      onChange={(e) => updateContentValue('about_us', 'content', e.target.value)}
+                      placeholder="Your unique advantages, case studies, testimonials, team expertise..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
 
                  <div className="space-y-2">
                    <Label htmlFor="terms_conditions">Terms & Conditions</Label>
