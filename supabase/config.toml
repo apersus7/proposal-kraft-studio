@@ -21,7 +21,10 @@ enable_manual_linking = false
 verify_jwt = true
 
 [functions.generate-proposal-content]
-verify_jwt = true
+verify_jwt = false
+
+[functions.research-company]
+verify_jwt = false
 
 [functions.paypal-webhook]
 verify_jwt = false

@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Save, Send, Eye, Download, Sparkles } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { CompanyResearch } from '@/components/CompanyResearch';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -271,7 +273,17 @@ export default function ProposalEditor() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <Tabs defaultValue="editor" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="editor">Proposal Editor</TabsTrigger>
+            <TabsTrigger value="research">
+              <Building className="h-4 w-4 mr-2" />
+              Company Research
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="editor">
+            <div className="grid lg:grid-cols-2 gap-8">
           {/* Editor */}
           <div className="space-y-6">
             <Card>
@@ -655,21 +667,35 @@ export default function ProposalEditor() {
                        </p>
                      </section>
 
-                    <section className="mt-8 pt-6 border-t border-gray-200">
-                      <div className="text-center">
-                        <p className="text-gray-600 mb-2">Ready to get started?</p>
-                        <p className="text-sm text-gray-500">
-                          Contact us at {proposal.client_email} to discuss next steps.
-                        </p>
-                      </div>
-                    </section>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+                     <section className="mt-8 pt-6 border-t border-gray-200">
+                       <div className="text-center">
+                         <p className="text-gray-600 mb-2">Ready to get started?</p>
+                         <p className="text-sm text-gray-500">
+                           Contact us at {proposal.client_email} to discuss next steps.
+                         </p>
+                       </div>
+                     </section>
+                   </div>
+                 </div>
+               </CardContent>
+             </Card>
+           </div>
+         </div>
+       </TabsContent>
+       
+       <TabsContent value="research" className="space-y-6">
+         <CompanyResearch 
+           onResearchComplete={(data) => {
+             console.log('Research completed:', data);
+             toast({
+               title: "Research Complete",
+               description: `Analysis completed for ${data.companyName}`,
+             });
+           }}
+         />
+       </TabsContent>
+     </Tabs>
+   </div>
+ </div>
+);
 }
