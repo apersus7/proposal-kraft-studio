@@ -7,10 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Upload, Eye, Save } from 'lucide-react';
+import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -21,6 +22,8 @@ interface Template {
   preview_image_url: string | null;
   template_data: any;
   is_public: boolean;
+  category?: string;
+  industry?: string;
 }
 
 export default function CreateProposal() {
@@ -29,7 +32,8 @@ export default function CreateProposal() {
   const [loading, setLoading] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [step, setStep] = useState<'template' | 'details' | 'content'>('template');
+  const [step, setStep] = useState<'template' | 'theme' | 'details' | 'content'>('template');
+  const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
   
   const [proposalData, setProposalData] = useState({
     title: '',
@@ -83,7 +87,7 @@ export default function CreateProposal() {
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
     setProposalData(prev => ({ ...prev, content: template.template_data }));
-    setStep('details');
+    setStep('theme');
   };
 
   const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,7 +154,8 @@ export default function CreateProposal() {
           content: {
             ...proposalData.content,
             project_name: proposalData.project_name,
-            pricing: proposalData.pricing
+            pricing: proposalData.pricing,
+            colorTheme: selectedColorTheme
           },
           template_id: selectedTemplate?.id,
           status: 'draft'
@@ -197,7 +202,7 @@ export default function CreateProposal() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">Step {step === 'template' ? '1' : step === 'details' ? '2' : '3'} of 3</Badge>
+              <Badge variant="outline">Step {step === 'template' ? '1' : step === 'theme' ? '2' : step === 'details' ? '3' : '4'} of 4</Badge>
             </div>
           </div>
         </div>
@@ -209,7 +214,7 @@ export default function CreateProposal() {
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tight">Choose a Template</h1>
               <p className="text-muted-foreground">
-                Select a professional template to get started with your proposal
+                Select a professional template designed for your industry and needs
               </p>
             </div>
 
@@ -238,29 +243,72 @@ export default function CreateProposal() {
                 </CardContent>
               </Card>
 
-              {templates.map((template) => (
-                <Card key={template.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleTemplateSelect(template)}>
-                  {template.preview_image_url && (
-                    <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                      <img 
-                        src={template.preview_image_url} 
-                        alt={template.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardContent className="p-4">
-                    <CardTitle className="text-lg mb-2">{template.name}</CardTitle>
-                    <CardDescription>{template.description}</CardDescription>
-                    <Button className="w-full mt-4">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Use This Template
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              {templates.map((template) => {
+                // Get appropriate icon based on template category/industry
+                const getTemplateIcon = () => {
+                  if (template.industry === 'technology' || template.category === 'business') return <Zap className="h-6 w-6" />;
+                  if (template.category === 'creative' || template.industry === 'marketing') return <Sparkles className="h-6 w-6" />;
+                  if (template.category === 'consulting' || template.industry === 'professional') return <Briefcase className="h-6 w-6" />;
+                  if (template.industry === 'healthcare') return <Shield className="h-6 w-6" />;
+                  return <FileText className="h-6 w-6" />;
+                };
+
+                const getTemplateTag = () => {
+                  if (template.industry === 'technology') return { label: 'Tech', color: 'bg-blue-100 text-blue-800' };
+                  if (template.category === 'creative') return { label: 'Creative', color: 'bg-purple-100 text-purple-800' };
+                  if (template.category === 'consulting') return { label: 'Professional', color: 'bg-gray-100 text-gray-800' };
+                  if (template.industry === 'healthcare') return { label: 'Healthcare', color: 'bg-green-100 text-green-800' };
+                  if (template.industry === 'retail') return { label: 'E-commerce', color: 'bg-orange-100 text-orange-800' };
+                  return { label: 'Business', color: 'bg-indigo-100 text-indigo-800' };
+                };
+
+                const templateTag = getTemplateTag();
+
+                return (
+                  <Card key={template.id} className="cursor-pointer hover:shadow-lg transition-all duration-200 group" onClick={() => handleTemplateSelect(template)}>
+                    {template.preview_image_url && (
+                      <div className="aspect-video bg-muted rounded-t-lg overflow-hidden relative">
+                        <img 
+                          src={template.preview_image_url} 
+                          alt={template.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                        <div className="absolute top-3 right-3">
+                          <Badge className={`${templateTag.color} border-0`}>
+                            {templateTag.label}
+                          </Badge>
+                        </div>
+                      </div>
+                    )}
+                    <CardContent className="p-6">
+                      <CardTitle className="text-lg mb-2 flex items-center gap-3">
+                        <div className="text-primary">
+                          {getTemplateIcon()}
+                        </div>
+                        {template.name}
+                      </CardTitle>
+                      <CardDescription className="mb-4 line-clamp-2">
+                        {template.description}
+                      </CardDescription>
+                      <Button className="w-full group-hover:bg-primary/90 transition-colors">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Use This Template
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
+        )}
+
+        {step === 'theme' && (
+          <ColorThemeSelector
+            selectedTheme={selectedColorTheme}
+            onThemeSelect={setSelectedColorTheme}
+            onNext={() => setStep('details')}
+            onBack={() => setStep('template')}
+          />
         )}
 
         {step === 'details' && (
@@ -332,7 +380,7 @@ export default function CreateProposal() {
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                  <Button variant="outline" onClick={() => setStep('template')}>
+                  <Button variant="outline" onClick={() => setStep('theme')}>
                     Back
                   </Button>
                   <Button 
