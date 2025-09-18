@@ -14,6 +14,10 @@ import { toast } from '@/hooks/use-toast';
 import { CompanyResearch } from '@/components/CompanyResearch';
 import DragDropEditor from '@/components/ProposalEditor/DragDropEditor';
 import ExportDialog from '@/components/ProposalEditor/ExportDialog';
+import ProposalSharing from '@/components/ProposalSharing';
+import PaymentLinks from '@/components/PaymentLinks';
+import ProposalAnalytics from '@/components/ProposalAnalytics';
+import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -282,6 +286,19 @@ export default function ProposalEditor() {
                   Preview
                 </Button>
                 <ExportDialog proposal={proposal} />
+                <ProposalSharing 
+                  proposalId={proposal.id} 
+                  proposalTitle={proposal.title} 
+                />
+                <PaymentLinks 
+                  proposalId={proposal.id}
+                  proposalAmount={proposal.content?.pricing}
+                  proposalCurrency={proposal.content?.currency}
+                />
+                <ProposalAnalytics 
+                  proposalId={proposal.id}
+                  proposalTitle={proposal.title}
+                />
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -308,11 +325,15 @@ export default function ProposalEditor() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="editor" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="editor">Proposal Editor</TabsTrigger>
             <TabsTrigger value="research">
               <Building className="h-4 w-4 mr-2" />
               Company Research
+            </TabsTrigger>
+            <TabsTrigger value="signatures">
+              <Edit3 className="h-4 w-4 mr-2" />
+              E-Signatures
             </TabsTrigger>
           </TabsList>
           
@@ -724,18 +745,29 @@ export default function ProposalEditor() {
             )}
         </TabsContent>
        
-       <TabsContent value="research" className="space-y-6">
-         <CompanyResearch 
-           onResearchComplete={(data) => {
-             console.log('Research completed:', data);
-             toast({
-               title: "Research Complete",
-               description: `Analysis completed for ${data.companyName}`,
-             });
-           }}
-         />
-       </TabsContent>
-     </Tabs>
+        <TabsContent value="research" className="space-y-6">
+          <CompanyResearch 
+            onResearchComplete={(data) => {
+              console.log('Research completed:', data);
+              toast({
+                title: "Research Complete",
+                description: `Analysis completed for ${data.companyName}`,
+              });
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="signatures" className="space-y-6">
+          <ESignatureFlow 
+            proposalId={proposal.id}
+            signers={[]}
+            onSignersUpdate={(signers) => {
+              console.log('Signers updated:', signers);
+            }}
+            isOwner={true}
+          />
+        </TabsContent>
+      </Tabs>
    </div>
  </div>
 );

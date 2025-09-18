@@ -1,0 +1,349 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CreditCard, Copy, ExternalLink, DollarSign, Euro, PoundSterling } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+
+interface PaymentLinksProps {
+  proposalId: string;
+  proposalAmount?: string;
+  proposalCurrency?: string;
+}
+
+export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD' }: PaymentLinksProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [paymentLinks, setPaymentLinks] = useState<any[]>([]);
+  const [paymentData, setPaymentData] = useState({
+    amount: proposalAmount || '',
+    currency: proposalCurrency,
+    description: '',
+    paymentType: 'one-time', // 'one-time' | 'subscription'
+    intervalType: 'monthly' // 'monthly' | 'yearly'
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchPaymentLinks();
+    }
+  }, [isOpen]);
+
+  const getCurrencySymbol = (currency: string) => {
+    switch (currency) {
+      case 'USD': case 'CAD': case 'AUD': return '$';
+      case 'EUR': return '€'; 
+      case 'GBP': return '£';
+      case 'JPY': return '¥';
+      default: return '$';
+    }
+  };
+
+  const getCurrencyIcon = (currency: string) => {
+    switch (currency) {
+      case 'EUR': return <Euro className="h-4 w-4" />;
+      case 'GBP': return <PoundSterling className="h-4 w-4" />;
+      default: return <DollarSign className="h-4 w-4" />;
+    }
+  };
+
+  const createPayPalPaymentLink = async () => {
+    setLoading(true);
+    try {
+      // Get PayPal client configuration
+      const { data: configData, error: configError } = await supabase.functions.invoke('get-paypal-client-id');
+      if (configError) throw configError;
+
+      // Create payment intent via edge function
+      const { data, error } = await supabase.functions.invoke('create-payment-link', {
+        body: {
+          amount: parseFloat(paymentData.amount),
+          currency: paymentData.currency,
+          description: paymentData.description || `Payment for Proposal`,
+          proposalId,
+          paymentType: paymentData.paymentType,
+          intervalType: paymentData.paymentType === 'subscription' ? paymentData.intervalType : undefined
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Link Created",
+        description: "PayPal payment link generated successfully"
+      });
+
+      fetchPaymentLinks();
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create payment link. Please check your PayPal configuration.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createStripePaymentLink = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-stripe-payment-link', {
+        body: {
+          amount: parseFloat(paymentData.amount),
+          currency: paymentData.currency,
+          description: paymentData.description || `Payment for Proposal`,
+          proposalId,
+          paymentType: paymentData.paymentType,
+          intervalType: paymentData.paymentType === 'subscription' ? paymentData.intervalType : undefined
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Link Created", 
+        description: "Stripe payment link generated successfully"
+      });
+
+      fetchPaymentLinks();
+    } catch (error) {
+      console.error('Error creating Stripe payment link:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create Stripe payment link. Please check your Stripe configuration.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPaymentLinks = async () => {
+    try {
+      // This would fetch from a payment_links table
+      // For now, we'll simulate the data structure
+      setPaymentLinks([]);
+    } catch (error) {
+      console.error('Error fetching payment links:', error);
+    }
+  };
+
+  const copyPaymentLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Copied",
+        description: "Payment link copied to clipboard"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to copy link",
+        variant: "destructive"
+      });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm">
+          <CreditCard className="h-4 w-4 mr-2" />
+          Payment Links
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Create Payment Links</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Payment Configuration */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Payment Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Amount</Label>
+                  <div className="flex">
+                    <div className="flex items-center px-3 border border-r-0 rounded-l-md bg-muted">
+                      {getCurrencyIcon(paymentData.currency)}
+                    </div>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={paymentData.amount}
+                      onChange={(e) => setPaymentData(prev => ({ ...prev, amount: e.target.value }))}
+                      className="rounded-l-none"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Currency</Label>
+                  <Select
+                    value={paymentData.currency}
+                    onValueChange={(value) => setPaymentData(prev => ({ ...prev, currency: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD ($)</SelectItem>
+                      <SelectItem value="EUR">EUR (€)</SelectItem>
+                      <SelectItem value="GBP">GBP (£)</SelectItem>
+                      <SelectItem value="CAD">CAD ($)</SelectItem>
+                      <SelectItem value="AUD">AUD ($)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Input
+                  value={paymentData.description}
+                  onChange={(e) => setPaymentData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Payment description"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Payment Type</Label>
+                <Select
+                  value={paymentData.paymentType}
+                  onValueChange={(value) => setPaymentData(prev => ({ ...prev, paymentType: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="one-time">One-time Payment</SelectItem>
+                    <SelectItem value="subscription">Subscription</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {paymentData.paymentType === 'subscription' && (
+                <div className="space-y-2">
+                  <Label>Billing Interval</Label>
+                  <Select
+                    value={paymentData.intervalType}
+                    onValueChange={(value) => setPaymentData(prev => ({ ...prev, intervalType: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Payment Providers */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center">
+                  <div className="w-6 h-6 bg-blue-600 rounded mr-2 flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">P</span>
+                  </div>
+                  PayPal
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={createPayPalPaymentLink}
+                  disabled={loading || !paymentData.amount}
+                  className="w-full"
+                  variant="outline"
+                >
+                  Create PayPal Link
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center">
+                  <div className="w-6 h-6 bg-purple-600 rounded mr-2 flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">S</span>
+                  </div>
+                  Stripe
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={createStripePaymentLink}
+                  disabled={loading || !paymentData.amount}
+                  className="w-full"
+                  variant="outline"
+                >
+                  Create Stripe Link
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Active Payment Links */}
+          {paymentLinks.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Active Payment Links</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {paymentLinks.map((link) => (
+                  <div key={link.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">{link.provider}</Badge>
+                        <span className="font-medium">
+                          {getCurrencySymbol(link.currency)}{link.amount}
+                        </span>
+                        {link.paymentType === 'subscription' && (
+                          <Badge variant="secondary">{link.intervalType}</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{link.description}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyPaymentLink(link.url)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.open(link.url, '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
