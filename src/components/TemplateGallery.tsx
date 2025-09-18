@@ -392,7 +392,7 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
                 onClick={() => onSelectTemplate(template)}
               >
                 {/* Document Preview */}
-                <div className="aspect-[3/4] relative overflow-hidden bg-white">
+                <div className="aspect-[3/4] relative overflow-hidden bg-white shadow-inner">
                   {template.preview_image_url ? (
                     <img 
                       src={template.preview_image_url} 
@@ -400,48 +400,454 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className={`w-full h-full ${template.preview_color || 'bg-white'} p-3 flex flex-col`}>
-                      {/* Document Header */}
-                      <div className="mb-3">
-                        <div className="h-1 bg-primary/60 w-12 mb-2 rounded-full"></div>
-                        <div className="h-3 bg-foreground/80 w-3/4 mb-1 rounded-sm"></div>
-                        <div className="h-2 bg-foreground/40 w-1/2 rounded-sm"></div>
-                      </div>
-                      
-                      {/* Document Content Lines */}
-                      <div className="space-y-2 flex-1">
-                        <div className="space-y-1">
-                          <div className="h-1.5 bg-foreground/60 w-full rounded-full"></div>
-                          <div className="h-1.5 bg-foreground/60 w-5/6 rounded-full"></div>
-                          <div className="h-1.5 bg-foreground/60 w-4/5 rounded-full"></div>
-                        </div>
-                        
-                        {/* Section Divider */}
-                        <div className="py-2">
-                          <div className="h-2 bg-primary/20 w-16 rounded-sm"></div>
-                        </div>
-                        
-                        {/* More Content */}
-                        <div className="space-y-1">
-                          <div className="h-1.5 bg-foreground/40 w-full rounded-full"></div>
-                          <div className="h-1.5 bg-foreground/40 w-3/4 rounded-full"></div>
-                          <div className="h-1.5 bg-foreground/40 w-2/3 rounded-full"></div>
-                        </div>
-                        
-                        {/* Charts/Visual Elements */}
-                        {(template.category === 'investment' || template.category === 'business') && (
-                          <div className="mt-3 flex gap-1">
-                            <div className="w-4 h-6 bg-primary/40 rounded-sm"></div>
-                            <div className="w-4 h-4 bg-primary/60 rounded-sm mt-2"></div>
-                            <div className="w-4 h-8 bg-primary/80 rounded-sm"></div>
+                    <div className="w-full h-full bg-white p-4 flex flex-col relative">
+                      {/* Professional Template Previews */}
+                      {template.category === 'sales' && (
+                        <>
+                          {/* Header Section */}
+                          <div className="border-l-4 border-blue-500 pl-3 mb-4">
+                            <div className="text-xs font-bold text-gray-800 mb-1">SALES PROPOSAL</div>
+                            <div className="w-20 h-3 bg-gray-800 rounded mb-1"></div>
+                            <div className="w-16 h-2 bg-gray-400 rounded"></div>
                           </div>
-                        )}
-                      </div>
+                          
+                          {/* Content Blocks */}
+                          <div className="space-y-3 flex-1">
+                            <div className="bg-blue-50 p-2 rounded">
+                              <div className="w-12 h-2 bg-blue-600 rounded mb-1"></div>
+                              <div className="space-y-1">
+                                <div className="w-full h-1 bg-gray-300 rounded"></div>
+                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="bg-gray-50 p-2 rounded">
+                                <div className="w-8 h-1.5 bg-gray-600 rounded mb-1"></div>
+                                <div className="w-full h-1 bg-gray-300 rounded"></div>
+                              </div>
+                              <div className="bg-gray-50 p-2 rounded">
+                                <div className="w-10 h-1.5 bg-gray-600 rounded mb-1"></div>
+                                <div className="w-full h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Pricing Section */}
+                            <div className="bg-blue-500 text-white p-2 rounded text-center">
+                              <div className="w-8 h-2 bg-white/80 rounded mx-auto mb-1"></div>
+                              <div className="w-12 h-1 bg-white/60 rounded mx-auto"></div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                       
-                      {/* Footer */}
-                      <div className="mt-auto pt-2">
-                        <div className="h-1 bg-foreground/20 w-full rounded-full"></div>
-                      </div>
+                      {template.category === 'business' && (
+                        <>
+                          {/* Professional Header */}
+                          <div className="text-center mb-4 pb-2 border-b-2 border-green-500">
+                            <div className="w-16 h-2 bg-gray-800 rounded mx-auto mb-2"></div>
+                            <div className="w-20 h-1.5 bg-green-600 rounded mx-auto mb-1"></div>
+                            <div className="w-12 h-1 bg-gray-400 rounded mx-auto"></div>
+                          </div>
+                          
+                          {/* Executive Summary */}
+                          <div className="mb-3">
+                            <div className="w-16 h-1.5 bg-green-600 rounded mb-2"></div>
+                            <div className="space-y-1">
+                              <div className="w-full h-1 bg-gray-400 rounded"></div>
+                              <div className="w-5/6 h-1 bg-gray-400 rounded"></div>
+                              <div className="w-4/5 h-1 bg-gray-400 rounded"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Two Column Layout */}
+                          <div className="grid grid-cols-3 gap-2 mb-3">
+                            <div className="col-span-2 space-y-1">
+                              <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
+                              <div className="w-full h-1 bg-gray-300 rounded"></div>
+                              <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="w-full h-4 bg-green-100 rounded"></div>
+                              <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Chart Area */}
+                          <div className="bg-gray-50 p-2 rounded flex items-end gap-1 mt-auto">
+                            <div className="w-2 h-3 bg-green-400 rounded-sm"></div>
+                            <div className="w-2 h-5 bg-green-500 rounded-sm"></div>
+                            <div className="w-2 h-4 bg-green-600 rounded-sm"></div>
+                            <div className="w-2 h-6 bg-green-700 rounded-sm"></div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'marketing' && (
+                        <>
+                          {/* Creative Header */}
+                          <div className="relative mb-4">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded opacity-20"></div>
+                            <div className="relative p-3 text-center">
+                              <div className="w-18 h-2 bg-purple-600 rounded mx-auto mb-2"></div>
+                              <div className="w-14 h-1.5 bg-pink-500 rounded mx-auto"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Strategy Blocks */}
+                          <div className="space-y-2 flex-1">
+                            <div className="flex gap-2">
+                              <div className="w-6 h-6 bg-purple-500 rounded-full flex-shrink-0"></div>
+                              <div className="flex-1 space-y-1">
+                                <div className="w-3/4 h-1.5 bg-gray-700 rounded"></div>
+                                <div className="w-full h-1 bg-gray-400 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <div className="w-6 h-6 bg-pink-500 rounded-full flex-shrink-0"></div>
+                              <div className="flex-1 space-y-1">
+                                <div className="w-2/3 h-1.5 bg-gray-700 rounded"></div>
+                                <div className="w-5/6 h-1 bg-gray-400 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Metrics Dashboard */}
+                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-2 rounded mt-auto">
+                              <div className="grid grid-cols-3 gap-1 text-center">
+                                <div>
+                                  <div className="w-full h-1.5 bg-purple-500 rounded mb-1"></div>
+                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
+                                </div>
+                                <div>
+                                  <div className="w-full h-2 bg-pink-500 rounded mb-1"></div>
+                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
+                                </div>
+                                <div>
+                                  <div className="w-full h-1 bg-purple-400 rounded mb-1"></div>
+                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'optimization' && (
+                        <>
+                          {/* Analytics Header */}
+                          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2 rounded mb-3">
+                            <div className="w-16 h-1.5 bg-white/90 rounded mb-1"></div>
+                            <div className="w-20 h-1 bg-white/70 rounded"></div>
+                          </div>
+                          
+                          {/* Data Visualization */}
+                          <div className="space-y-3 flex-1">
+                            {/* Current vs Projected */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="text-center">
+                                <div className="w-8 h-8 bg-red-100 rounded-full mx-auto mb-1 flex items-center justify-center">
+                                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                                </div>
+                                <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
+                              </div>
+                              <div className="text-center">
+                                <div className="w-8 h-8 bg-green-100 rounded-full mx-auto mb-1 flex items-center justify-center">
+                                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Funnel Visualization */}
+                            <div className="space-y-1">
+                              <div className="w-full h-2 bg-indigo-500 rounded"></div>
+                              <div className="w-4/5 h-2 bg-indigo-400 rounded"></div>
+                              <div className="w-3/5 h-2 bg-indigo-300 rounded"></div>
+                              <div className="w-2/5 h-2 bg-indigo-200 rounded"></div>
+                            </div>
+                            
+                            {/* Testing Plan */}
+                            <div className="bg-purple-50 p-2 rounded">
+                              <div className="w-12 h-1.5 bg-purple-600 rounded mb-1"></div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between">
+                                  <div className="w-1/3 h-1 bg-purple-300 rounded"></div>
+                                  <div className="w-1/4 h-1 bg-purple-400 rounded"></div>
+                                </div>
+                                <div className="w-2/3 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'services' && (
+                        <>
+                          {/* Service Header */}
+                          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-yellow-300">
+                            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                            <div className="flex-1">
+                              <div className="w-3/4 h-1.5 bg-gray-800 rounded mb-1"></div>
+                              <div className="w-1/2 h-1 bg-gray-500 rounded"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Service Details */}
+                          <div className="space-y-3 flex-1">
+                            {/* Assessment Section */}
+                            <div className="bg-yellow-50 p-2 rounded">
+                              <div className="w-16 h-1.5 bg-yellow-600 rounded mb-1"></div>
+                              <div className="space-y-1">
+                                <div className="w-full h-1 bg-gray-400 rounded"></div>
+                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Equipment/Timeline */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <div className="w-3/4 h-1.5 bg-gray-600 rounded mb-1"></div>
+                                <div className="space-y-0.5">
+                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
+                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="w-2/3 h-1.5 bg-gray-600 rounded mb-1"></div>
+                                <div className="space-y-0.5">
+                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
+                                  <div className="w-4/5 h-0.5 bg-gray-300 rounded"></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Warranty/Guarantee */}
+                            <div className="bg-yellow-500 text-white p-2 rounded text-center mt-auto">
+                              <div className="w-10 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
+                              <div className="w-16 h-1 bg-white/70 rounded mx-auto"></div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'advertising' && (
+                        <>
+                          {/* Media Header */}
+                          <div className="bg-cyan-500 text-white p-2 rounded-t mb-3">
+                            <div className="w-18 h-1.5 bg-white/90 rounded mb-1"></div>
+                            <div className="w-14 h-1 bg-white/70 rounded"></div>
+                          </div>
+                          
+                          {/* Campaign Elements */}
+                          <div className="space-y-2 flex-1">
+                            {/* Audience Targeting */}
+                            <div className="flex gap-2">
+                              <div className="w-1/3">
+                                <div className="w-full h-6 bg-cyan-100 rounded mb-1"></div>
+                                <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
+                              </div>
+                              <div className="flex-1 space-y-1">
+                                <div className="w-full h-1 bg-gray-400 rounded"></div>
+                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
+                                <div className="w-3/4 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Ad Packages */}
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="bg-cyan-50 p-1 rounded text-center">
+                                <div className="w-full h-1.5 bg-cyan-400 rounded mb-1"></div>
+                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
+                              </div>
+                              <div className="bg-cyan-100 p-1 rounded text-center">
+                                <div className="w-full h-1.5 bg-cyan-500 rounded mb-1"></div>
+                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
+                              </div>
+                              <div className="bg-cyan-50 p-1 rounded text-center">
+                                <div className="w-full h-1.5 bg-cyan-400 rounded mb-1"></div>
+                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Analytics Preview */}
+                            <div className="bg-gray-50 p-2 rounded mt-auto">
+                              <div className="flex justify-between items-end">
+                                <div className="w-2 h-4 bg-cyan-400 rounded-sm"></div>
+                                <div className="w-2 h-6 bg-cyan-500 rounded-sm"></div>
+                                <div className="w-2 h-3 bg-cyan-400 rounded-sm"></div>
+                                <div className="w-2 h-5 bg-cyan-600 rounded-sm"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'financial' && (
+                        <>
+                          {/* Financial Header */}
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                            <div className="flex-1">
+                              <div className="w-3/4 h-1.5 bg-gray-800 rounded mb-1"></div>
+                              <div className="w-1/2 h-1 bg-orange-500 rounded"></div>
+                            </div>
+                          </div>
+                          
+                          {/* Loan Products */}
+                          <div className="space-y-2 flex-1">
+                            <div className="bg-orange-50 p-2 rounded">
+                              <div className="w-16 h-1.5 bg-orange-600 rounded mb-2"></div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
+                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
+                                </div>
+                                <div>
+                                  <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
+                                  <div className="w-2/3 h-0.5 bg-gray-300 rounded"></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Rates Table */}
+                            <div className="space-y-1">
+                              <div className="flex justify-between">
+                                <div className="w-1/3 h-1 bg-orange-400 rounded"></div>
+                                <div className="w-1/4 h-1 bg-orange-500 rounded"></div>
+                              </div>
+                              <div className="flex justify-between">
+                                <div className="w-1/3 h-1 bg-gray-300 rounded"></div>
+                                <div className="w-1/4 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                              <div className="flex justify-between">
+                                <div className="w-1/3 h-1 bg-gray-300 rounded"></div>
+                                <div className="w-1/4 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Call to Action */}
+                            <div className="bg-orange-500 text-white p-2 rounded text-center mt-auto">
+                              <div className="w-12 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
+                              <div className="w-8 h-1 bg-white/70 rounded mx-auto"></div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'investment' && (
+                        <>
+                          {/* Executive Header */}
+                          <div className="bg-gradient-to-r from-gray-800 to-gray-600 text-white p-2 rounded mb-3">
+                            <div className="w-16 h-1.5 bg-white/90 rounded mb-1"></div>
+                            <div className="w-20 h-1 bg-white/70 rounded"></div>
+                          </div>
+                          
+                          {/* Investment Highlights */}
+                          <div className="space-y-2 flex-1">
+                            {/* Opportunity Overview */}
+                            <div className="border border-gray-300 p-2 rounded">
+                              <div className="w-14 h-1.5 bg-gray-700 rounded mb-1"></div>
+                              <div className="space-y-0.5">
+                                <div className="w-full h-1 bg-gray-400 rounded"></div>
+                                <div className="w-5/6 h-1 bg-gray-300 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Market & Financials */}
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="bg-gray-50 p-1 rounded">
+                                <div className="w-3/4 h-1 bg-gray-600 rounded mb-1"></div>
+                                <div className="flex items-end gap-0.5">
+                                  <div className="w-1 h-2 bg-gray-400 rounded-sm"></div>
+                                  <div className="w-1 h-3 bg-gray-500 rounded-sm"></div>
+                                  <div className="w-1 h-4 bg-gray-600 rounded-sm"></div>
+                                </div>
+                              </div>
+                              <div className="bg-gray-50 p-1 rounded">
+                                <div className="w-2/3 h-1 bg-gray-600 rounded mb-1"></div>
+                                <div className="w-full h-2 bg-green-400 rounded mb-0.5"></div>
+                                <div className="w-3/4 h-0.5 bg-gray-400 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* ROI Projection */}
+                            <div className="bg-gray-800 text-white p-2 rounded text-center mt-auto">
+                              <div className="w-8 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
+                              <div className="w-12 h-2 bg-green-400 rounded mx-auto"></div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {template.category === 'technology' && (
+                        <>
+                          {/* Tech Header */}
+                          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2 rounded mb-3">
+                            <div className="flex items-center gap-1 mb-1">
+                              <div className="w-2 h-2 bg-white rounded-full"></div>
+                              <div className="w-16 h-1.5 bg-white/90 rounded"></div>
+                            </div>
+                            <div className="w-18 h-1 bg-white/70 rounded"></div>
+                          </div>
+                          
+                          {/* App Features */}
+                          <div className="space-y-2 flex-1">
+                            {/* Feature List */}
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                <div className="w-3/4 h-1 bg-gray-600 rounded"></div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                <div className="w-2/3 h-1 bg-gray-600 rounded"></div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                <div className="w-3/4 h-1 bg-gray-600 rounded"></div>
+                              </div>
+                            </div>
+                            
+                            {/* Mobile Preview */}
+                            <div className="bg-blue-50 p-2 rounded flex justify-center">
+                              <div className="w-8 h-12 bg-white rounded border-2 border-blue-200 flex flex-col">
+                                <div className="bg-blue-500 h-2 rounded-t"></div>
+                                <div className="flex-1 p-1 space-y-0.5">
+                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
+                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
+                                  <div className="w-full h-1 bg-blue-200 rounded"></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Development Timeline */}
+                            <div className="bg-indigo-50 p-2 rounded">
+                              <div className="w-12 h-1 bg-indigo-600 rounded mb-1"></div>
+                              <div className="flex justify-between">
+                                <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                                <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                                <div className="w-2 h-2 bg-indigo-300 rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      
+                      {/* Default fallback for other categories */}
+                      {!['sales', 'business', 'marketing', 'optimization', 'services', 'advertising', 'financial', 'investment', 'technology'].includes(template.category) && (
+                        <>
+                          <div className="mb-3">
+                            <div className="w-20 h-2 bg-gray-800 rounded mb-2"></div>
+                            <div className="w-16 h-1.5 bg-gray-500 rounded"></div>
+                          </div>
+                          <div className="space-y-2 flex-1">
+                            <div className="w-full h-1 bg-gray-400 rounded"></div>
+                            <div className="w-5/6 h-1 bg-gray-300 rounded"></div>
+                            <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                   
