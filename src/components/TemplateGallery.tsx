@@ -48,162 +48,172 @@ const industryIcons = {
 
 const starterTemplates = [
   {
-    name: 'Creative Agency',
-    description: 'Modern design proposal for creative agencies and studios',
-    category: 'creative',
-    industry: 'creative', 
-    tags: ['design', 'branding', 'creative'],
-    preview_color: 'from-purple-500 to-pink-500',
-    template_data: {
-      sections: [
-        { type: 'hero', content: 'Transform your brand with creative excellence that captivates and converts.' },
-        { type: 'services', items: ['Brand Identity Design', 'Digital Marketing', 'Creative Strategy', 'Visual Storytelling'] },
-        { type: 'process', phases: [
-          { phase: 'Discovery', duration: '1 week', description: 'Brand research and strategy' },
-          { phase: 'Creative Development', duration: '2-3 weeks', description: 'Design and content creation' },
-          { phase: 'Launch', duration: '1 week', description: 'Implementation and delivery' }
-        ]},
-        { type: 'investment', total: '$8,000 - $25,000', payment_terms: '50% upfront, 50% on completion' }
-      ]
-    }
-  },
-  {
-    name: 'Marketing Campaign',
-    description: 'High-converting marketing proposal for campaigns and strategy',
-    category: 'marketing',
-    industry: 'marketing',
-    tags: ['marketing', 'campaigns', 'strategy'],
-    preview_color: 'from-blue-500 to-cyan-500',
-    template_data: {
-      sections: [
-        { type: 'campaign_vision', content: 'Drive measurable results with strategic marketing that converts.' },
-        { type: 'strategy', items: ['Social Media Marketing', 'Content Creation', 'Paid Advertising', 'Analytics & Reporting'] },
-        { type: 'timeline', phases: [
-          { phase: 'Strategy', duration: '1 week', description: 'Campaign planning and setup' },
-          { phase: 'Execution', duration: '4-8 weeks', description: 'Campaign launch and optimization' },
-          { phase: 'Analysis', duration: '1 week', description: 'Performance review and reporting' }
-        ]},
-        { type: 'investment', total: '$5,000 - $15,000', payment_terms: '40% upfront, 60% on milestones' }
-      ]
-    }
-  },
-  {
-    name: 'Web Development',
-    description: 'Professional web development proposal for modern websites',
-    category: 'technology',
-    industry: 'technology',
-    tags: ['website', 'development', 'tech'],
-    preview_color: 'from-green-500 to-teal-500',
-    template_data: {
-      sections: [
-        { type: 'project_vision', content: 'Build a cutting-edge website that drives business growth and user engagement.' },
-        { type: 'deliverables', items: ['Responsive Web Design', 'Custom Development', 'Content Management', 'SEO Optimization'] },
-        { type: 'development_phases', phases: [
-          { phase: 'Planning', duration: '1-2 weeks', description: 'Requirements and architecture' },
-          { phase: 'Development', duration: '4-8 weeks', description: 'Frontend and backend development' },
-          { phase: 'Launch', duration: '1 week', description: 'Testing and deployment' }
-        ]},
-        { type: 'investment', total: '$10,000 - $30,000', payment_terms: '30% start, 50% development, 20% completion' }
-      ]
-    }
-  },
-  {
-    name: 'Business Consulting',
-    description: 'Strategic consulting proposal for business transformation',
-    category: 'consulting',
+    name: 'One-Page Sales Proposal Template',
+    description: 'Concise sales proposal perfect for quick client decisions',
+    category: 'sales',
     industry: 'business',
-    tags: ['consulting', 'strategy', 'business'],
-    preview_color: 'from-orange-500 to-red-500',
+    tags: ['sales', 'one-page', 'quick'],
+    preview_color: 'from-slate-100 to-gray-200',
+    preview_type: 'document',
     template_data: {
       sections: [
-        { type: 'consulting_approach', content: 'Transform your business with strategic insights and actionable solutions.' },
-        { type: 'services', items: ['Business Strategy', 'Process Optimization', 'Digital Transformation', 'Performance Analytics'] },
-        { type: 'engagement_phases', phases: [
-          { phase: 'Assessment', duration: '2 weeks', description: 'Current state analysis' },
-          { phase: 'Strategy Development', duration: '3-4 weeks', description: 'Solution design and planning' },
-          { phase: 'Implementation', duration: '8-12 weeks', description: 'Execution and optimization' }
-        ]},
-        { type: 'investment', total: '$15,000 - $50,000', payment_terms: '25% engagement, 50% milestones, 25% completion' }
+        { type: 'header', content: 'Executive Summary' },
+        { type: 'problem', content: 'Challenge identification and impact analysis' },
+        { type: 'solution', content: 'Our proven approach to solving your challenges' },
+        { type: 'pricing', content: 'Transparent pricing with clear value proposition' }
       ]
     }
   },
   {
-    name: 'E-commerce Store',
-    description: 'Complete e-commerce solution for online retail success',
-    category: 'ecommerce',
-    industry: 'retail',
-    tags: ['ecommerce', 'online store', 'retail'],
-    preview_color: 'from-indigo-500 to-purple-500',
+    name: 'Business Proposal Template',
+    description: 'Comprehensive business proposal for complex projects',
+    category: 'business', 
+    industry: 'business',
+    tags: ['business', 'comprehensive', 'professional'],
+    preview_color: 'from-green-50 to-green-100',
+    preview_type: 'document',
     template_data: {
       sections: [
-        { type: 'ecommerce_vision', content: 'Launch a profitable online store that converts visitors into customers.' },
-        { type: 'features', items: ['Custom Store Design', 'Product Management', 'Payment Integration', 'Inventory System'] },
-        { type: 'development_phases', phases: [
-          { phase: 'Store Setup', duration: '2 weeks', description: 'Platform configuration and design' },
-          { phase: 'Product Catalog', duration: '2-3 weeks', description: 'Product uploads and optimization' },
-          { phase: 'Testing & Launch', duration: '1 week', description: 'Quality assurance and go-live' }
-        ]},
-        { type: 'investment', total: '$12,000 - $35,000', payment_terms: '40% start, 40% development, 20% launch' }
+        { type: 'cover', content: 'Professional cover page with company branding' },
+        { type: 'executive_summary', content: 'Executive overview and key benefits' },
+        { type: 'scope', content: 'Detailed project scope and deliverables' },
+        { type: 'timeline', content: 'Project timeline and milestones' }
       ]
     }
   },
   {
-    name: 'Mobile App Development',
-    description: 'Native mobile app development for iOS and Android',
+    name: 'Digital Marketing Proposal',
+    description: 'Modern marketing proposal for digital campaigns',
+    category: 'marketing',
+    industry: 'marketing', 
+    tags: ['digital', 'marketing', 'campaigns'],
+    preview_color: 'from-blue-50 to-blue-100',
+    preview_type: 'document',
+    template_data: {
+      sections: [
+        { type: 'strategy', content: 'Digital marketing strategy and objectives' },
+        { type: 'channels', content: 'Multi-channel approach and tactics' },
+        { type: 'metrics', content: 'KPIs and success measurements' },
+        { type: 'budget', content: 'Campaign budget and ROI projections' }
+      ]
+    }
+  },
+  {
+    name: 'Conversion Rate Optimization Proposal', 
+    description: 'Data-driven CRO proposal with analytics insights',
+    category: 'optimization',
+    industry: 'marketing',
+    tags: ['CRO', 'analytics', 'optimization'],
+    preview_color: 'from-purple-50 to-purple-100',
+    preview_type: 'document',
+    template_data: {
+      sections: [
+        { type: 'analysis', content: 'Current performance analysis' },
+        { type: 'opportunities', content: 'Optimization opportunities identified' },
+        { type: 'testing_plan', content: 'A/B testing strategy and timeline' },
+        { type: 'projections', content: 'Expected conversion improvements' }
+      ]
+    }
+  },
+  {
+    name: 'HVAC Proposal Template',
+    description: 'Professional HVAC service proposal template',
+    category: 'services',
+    industry: 'construction',
+    tags: ['HVAC', 'construction', 'services'],
+    preview_color: 'from-yellow-50 to-yellow-100', 
+    preview_type: 'document',
+    template_data: {
+      sections: [
+        { type: 'assessment', content: 'System assessment and recommendations' },
+        { type: 'equipment', content: 'Equipment specifications and benefits' },
+        { type: 'installation', content: 'Installation process and timeline' },
+        { type: 'warranty', content: 'Service warranty and maintenance plans' }
+      ]
+    }
+  },
+  {
+    name: 'Advertising Sales Proposal Template',
+    description: 'Media and advertising sales proposal',
+    category: 'advertising',
+    industry: 'media',
+    tags: ['advertising', 'media', 'sales'],
+    preview_color: 'from-cyan-50 to-cyan-100',
+    preview_type: 'document', 
+    template_data: {
+      sections: [
+        { type: 'audience', content: 'Target audience analysis and reach' },
+        { type: 'packages', content: 'Advertising packages and options' },
+        { type: 'creative', content: 'Creative services and support' },
+        { type: 'reporting', content: 'Campaign reporting and analytics' }
+      ]
+    }
+  },
+  {
+    name: 'Mortgage Proposal Template',
+    description: 'Professional mortgage and lending proposal',
+    category: 'financial',
+    industry: 'finance',
+    tags: ['mortgage', 'lending', 'financial'],
+    preview_color: 'from-orange-50 to-orange-100',
+    preview_type: 'document',
+    template_data: {
+      sections: [
+        { type: 'loan_options', content: 'Available loan products and rates' },
+        { type: 'qualification', content: 'Qualification requirements and process' },
+        { type: 'timeline', content: 'Approval and closing timeline' },
+        { type: 'benefits', content: 'Benefits of choosing our services' }
+      ]
+    }
+  },
+  {
+    name: 'Investor Proposal Template', 
+    description: 'Professional investor pitch and funding proposal',
+    category: 'investment',
+    industry: 'finance',
+    tags: ['investor', 'funding', 'pitch'],
+    preview_color: 'from-gray-900 to-gray-800',
+    preview_type: 'document',
+    template_data: {
+      sections: [
+        { type: 'opportunity', content: 'Investment opportunity overview' },
+        { type: 'market', content: 'Market analysis and potential' },
+        { type: 'financials', content: 'Financial projections and returns' },
+        { type: 'team', content: 'Management team and expertise' }
+      ]
+    }
+  },
+  {
+    name: 'Android App Development Template',
+    description: 'Mobile app development proposal template',
     category: 'technology',
     industry: 'technology',
-    tags: ['mobile app', 'ios', 'android'],
-    preview_color: 'from-pink-500 to-rose-500',
+    tags: ['mobile', 'android', 'development'], 
+    preview_color: 'from-blue-500 to-blue-600',
+    preview_type: 'document',
     template_data: {
       sections: [
-        { type: 'app_vision', content: 'Create a powerful mobile app that engages users and drives business growth.' },
-        { type: 'features', items: ['Native iOS/Android Development', 'User Interface Design', 'Backend Integration', 'App Store Optimization'] },
-        { type: 'development_timeline', phases: [
-          { phase: 'Design & Planning', duration: '2-3 weeks', description: 'UX/UI design and technical planning' },
-          { phase: 'Development', duration: '8-16 weeks', description: 'Native app development and testing' },
-          { phase: 'Launch', duration: '1-2 weeks', description: 'App store submission and marketing' }
-        ]},
-        { type: 'investment', total: '$25,000 - $75,000', payment_terms: '30% start, 50% milestones, 20% completion' }
+        { type: 'app_concept', content: 'App concept and user experience' },
+        { type: 'features', content: 'Core features and functionality' },
+        { type: 'development', content: 'Development process and timeline' },
+        { type: 'launch', content: 'App store launch and marketing' }
       ]
     }
   },
   {
-    name: 'Content Creation',
-    description: 'Comprehensive content strategy and creation services',
-    category: 'content',
-    industry: 'marketing',
-    tags: ['content', 'copywriting', 'social media'],
-    preview_color: 'from-yellow-500 to-orange-500',
+    name: 'Printing Services Proposal Template',
+    description: 'Commercial printing services proposal',
+    category: 'services', 
+    industry: 'printing',
+    tags: ['printing', 'commercial', 'services'],
+    preview_color: 'from-amber-50 to-amber-100',
+    preview_type: 'document',
     template_data: {
       sections: [
-        { type: 'content_strategy', content: 'Engage your audience with compelling content that drives results.' },
-        { type: 'deliverables', items: ['Blog Content', 'Social Media Posts', 'Email Campaigns', 'Video Scripts'] },
-        { type: 'content_timeline', phases: [
-          { phase: 'Strategy', duration: '1 week', description: 'Content planning and calendar' },
-          { phase: 'Creation', duration: '4-6 weeks', description: 'Content production and optimization' },
-          { phase: 'Distribution', duration: 'Ongoing', description: 'Publishing and engagement' }
-        ]},
-        { type: 'investment', total: '$4,000 - $12,000', payment_terms: '50% upfront, 50% on delivery' }
-      ]
-    }
-  },
-  {
-    name: 'Brand Identity',
-    description: 'Complete brand identity design and style guide',
-    category: 'creative',
-    industry: 'branding',
-    tags: ['branding', 'logo', 'identity'],
-    preview_color: 'from-violet-500 to-purple-500',
-    template_data: {
-      sections: [
-        { type: 'brand_vision', content: 'Build a memorable brand that stands out and connects with your audience.' },
-        { type: 'deliverables', items: ['Logo Design', 'Brand Guidelines', 'Color Palette', 'Typography System'] },
-        { type: 'brand_phases', phases: [
-          { phase: 'Discovery', duration: '1 week', description: 'Brand research and positioning' },
-          { phase: 'Design', duration: '2-3 weeks', description: 'Logo and identity creation' },
-          { phase: 'Finalization', duration: '1 week', description: 'Guidelines and asset delivery' }
-        ]},
-        { type: 'investment', total: '$6,000 - $18,000', payment_terms: '50% start, 50% completion' }
+        { type: 'services', content: 'Available printing services and capabilities' },
+        { type: 'materials', content: 'Paper stocks and finishing options' },
+        { type: 'pricing', content: 'Competitive pricing structure' },
+        { type: 'turnaround', content: 'Production timeline and delivery' }
       ]
     }
   }
@@ -333,120 +343,139 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
       </div>
 
       {/* Canva-Style Templates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {/* Blank Document Option */}
+        <Card 
+          className="group relative overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 bg-background hover:border-primary/50 hover:bg-accent/5 transition-all duration-300 cursor-pointer"
+          onClick={() => onSelectTemplate({
+            id: 'blank',
+            name: 'Blank document',
+            description: 'Start with a blank proposal',
+            category: 'blank',
+            industry: 'general',
+            tags: ['blank', 'custom'],
+            preview_image_url: null,
+            template_data: { sections: [] },
+            is_public: true
+          })}
+        >
+          <div className="aspect-[3/4] flex flex-col items-center justify-center p-6">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+              <svg className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-background">
+            <h3 className="font-medium text-sm text-foreground text-center">Blank document</h3>
+          </div>
+        </Card>
+
         {filteredTemplates.length === 0 ? (
           <div className="col-span-full text-center py-20">
-            <div className="relative">
-              <FileText className="h-20 w-20 text-muted-foreground/30 mx-auto mb-6" />
-              <div className="absolute -top-1 -right-1 h-6 w-6 bg-primary/20 rounded-full animate-pulse" />
-            </div>
-            <h3 className="text-2xl font-bold mb-3 text-foreground">No templates found</h3>
-            <p className="text-muted-foreground text-lg">
+            <FileText className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2 text-foreground">No templates found</h3>
+            <p className="text-muted-foreground">
               Try adjusting your search or filters to discover templates
             </p>
           </div>
         ) : (
           filteredTemplates.map((template) => {
             const isSelected = selectedTemplate?.id === template.id;
-            const isStarter = template.id.startsWith('starter-');
             
             return (
               <Card 
                 key={template.id}
-                className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 ${
-                  isSelected ? 'ring-2 ring-primary shadow-xl shadow-primary/20 scale-105' : 'hover:border-primary/30'
+                className={`group relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer hover:shadow-lg ${
+                  isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:border-primary/30'
                 }`}
                 onClick={() => onSelectTemplate(template)}
               >
-                {/* Template Preview */}
-                <div className="aspect-[4/5] relative overflow-hidden">
+                {/* Document Preview */}
+                <div className="aspect-[3/4] relative overflow-hidden bg-white">
                   {template.preview_image_url ? (
-                    <>
-                      <img 
-                        src={template.preview_image_url} 
-                        alt={template.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-300" />
-                    </>
+                    <img 
+                      src={template.preview_image_url} 
+                      alt={template.name}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
-                    <div className={`w-full h-full bg-gradient-to-br ${template.preview_color || 'from-primary/20 to-secondary/20'} relative`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {/* Abstract shapes for visual interest */}
-                      <div className="absolute top-6 right-6 w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm" />
-                      <div className="absolute bottom-20 left-6 w-12 h-12 rounded-lg bg-white/15 backdrop-blur-sm rotate-12" />
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="text-6xl text-white/20">
-                          {industryIcons[template.industry as keyof typeof industryIcons] || <FileText />}
-                        </div>
+                    <div className={`w-full h-full ${template.preview_color || 'bg-white'} p-3 flex flex-col`}>
+                      {/* Document Header */}
+                      <div className="mb-3">
+                        <div className="h-1 bg-primary/60 w-12 mb-2 rounded-full"></div>
+                        <div className="h-3 bg-foreground/80 w-3/4 mb-1 rounded-sm"></div>
+                        <div className="h-2 bg-foreground/40 w-1/2 rounded-sm"></div>
                       </div>
-                    </div>
-                  )}
-                  
-                  {/* Top badges */}
-                  <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-                    {isStarter && (
-                      <Badge className="bg-primary/90 text-primary-foreground backdrop-blur-sm border-0 rounded-full px-3 py-1">
-                        <Star className="h-3 w-3 mr-1 fill-current" />
-                        Popular
-                      </Badge>
-                    )}
-                    <div className="bg-white/10 backdrop-blur-md rounded-full p-3 ml-auto border border-white/20">
-                      <div className="text-white">
-                        {industryIcons[template.industry as keyof typeof industryIcons] || <FileText className="h-4 w-4" />}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Content overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <div className="space-y-3">
-                      <h3 className="text-white font-bold text-xl leading-tight">
-                        {template.name}
-                      </h3>
-                      <p className="text-white/90 text-sm line-clamp-2 leading-relaxed">
-                        {template.description}
-                      </p>
                       
-                      {/* Tags */}
-                      {template.tags && template.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {template.tags.slice(0, 2).map((tag, index) => (
-                            <Badge key={index} className="text-xs bg-white/20 text-white backdrop-blur-sm border-0 rounded-full px-2 py-1">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {template.tags.length > 2 && (
-                            <Badge className="text-xs bg-white/20 text-white backdrop-blur-sm border-0 rounded-full px-2 py-1">
-                              +{template.tags.length - 2}
-                            </Badge>
-                          )}
+                      {/* Document Content Lines */}
+                      <div className="space-y-2 flex-1">
+                        <div className="space-y-1">
+                          <div className="h-1.5 bg-foreground/60 w-full rounded-full"></div>
+                          <div className="h-1.5 bg-foreground/60 w-5/6 rounded-full"></div>
+                          <div className="h-1.5 bg-foreground/60 w-4/5 rounded-full"></div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Selection indicator */}
-                  {isSelected && (
-                    <div className="absolute top-4 left-4">
-                      <div className="bg-primary text-primary-foreground rounded-full p-2 border-2 border-white/20">
-                        <Eye className="h-4 w-4" />
+                        
+                        {/* Section Divider */}
+                        <div className="py-2">
+                          <div className="h-2 bg-primary/20 w-16 rounded-sm"></div>
+                        </div>
+                        
+                        {/* More Content */}
+                        <div className="space-y-1">
+                          <div className="h-1.5 bg-foreground/40 w-full rounded-full"></div>
+                          <div className="h-1.5 bg-foreground/40 w-3/4 rounded-full"></div>
+                          <div className="h-1.5 bg-foreground/40 w-2/3 rounded-full"></div>
+                        </div>
+                        
+                        {/* Charts/Visual Elements */}
+                        {(template.category === 'investment' || template.category === 'business') && (
+                          <div className="mt-3 flex gap-1">
+                            <div className="w-4 h-6 bg-primary/40 rounded-sm"></div>
+                            <div className="w-4 h-4 bg-primary/60 rounded-sm mt-2"></div>
+                            <div className="w-4 h-8 bg-primary/80 rounded-sm"></div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Footer */}
+                      <div className="mt-auto pt-2">
+                        <div className="h-1 bg-foreground/20 w-full rounded-full"></div>
                       </div>
                     </div>
                   )}
                   
-                  {/* Hover preview button */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/20 backdrop-blur-sm">
+                  {/* Industry Icon Badge */}
+                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm">
+                    <div className="text-primary">
+                      {industryIcons[template.industry as keyof typeof industryIcons] || <FileText className="h-3 w-3" />}
+                    </div>
+                  </div>
+                  
+                  {/* Selection Indicator */}
+                  {isSelected && (
+                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground rounded-full p-1">
+                      <Eye className="h-3 w-3" />
+                    </div>
+                  )}
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Button 
-                      size="lg" 
+                      size="sm" 
                       variant={isSelected ? "default" : "secondary"}
-                      className="shadow-xl transform scale-90 group-hover:scale-100 transition-transform duration-300 rounded-full px-6 py-3 font-semibold"
+                      className="shadow-md transform scale-90 group-hover:scale-100 transition-transform duration-200"
                     >
-                      <Play className="h-4 w-4 mr-2" />
                       {isSelected ? 'Selected' : 'Use Template'}
                     </Button>
                   </div>
+                </div>
+                
+                {/* Template Info */}
+                <div className="p-3 bg-background">
+                  <h3 className="font-medium text-sm text-foreground line-clamp-2 leading-tight">
+                    {template.name}
+                  </h3>
                 </div>
               </Card>
             );
