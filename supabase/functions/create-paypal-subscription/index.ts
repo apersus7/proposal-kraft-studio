@@ -37,8 +37,12 @@ serve(async (req) => {
       throw new Error(`Invalid plan ID: ${planId}`);
     }
 
+    // Determine environment (live by default)
+    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
+    const baseUrl = paypalEnv === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+
     // Get PayPal access token
-    const authResponse = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
+    const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${btoa(`${paypalClientId}:${paypalClientSecret}`)}`,
@@ -57,7 +61,7 @@ serve(async (req) => {
     const accessToken = authData.access_token;
 
     // Create subscription with payment method
-    const subscriptionResponse = await fetch('https://api-m.paypal.com/v1/billing/subscriptions', {
+    const subscriptionResponse = await fetch(`${baseUrl}/v1/billing/subscriptions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

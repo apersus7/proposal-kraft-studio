@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const clientId = Deno.env.get('PAYPAL_CLIENT_ID');
-    
+    const env = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
     if (!clientId) {
       console.error('PayPal Client ID not configured');
       return new Response(
@@ -26,7 +26,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ clientId }), 
+      JSON.stringify({ clientId, env }), 
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }

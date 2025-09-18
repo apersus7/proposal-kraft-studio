@@ -76,7 +76,7 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [paypalPlanIds, setPaypalPlanIds] = useState<any>(null);
-
+  const [paypalEnv, setPaypalEnv] = useState<'live' | 'sandbox'>('live');
   useEffect(() => {
     // Get PayPal client ID, client token, and plan IDs
     const getPayPalCredentials = async () => {
@@ -92,6 +92,7 @@ const Checkout = () => {
         if (planIdsResponse.error) throw planIdsResponse.error;
         
         setPaypalClientId(clientIdResponse.data.clientId);
+        setPaypalEnv((clientIdResponse.data.env as 'live' | 'sandbox') || 'live');
         setClientToken(clientTokenResponse.data.clientToken);
         setPaypalPlanIds(planIdsResponse.data.planIds);
       } catch (error) {
@@ -110,11 +111,13 @@ const Checkout = () => {
   }, [user, selectedPlan, paypalPlanIds, toast]);
   
   useEffect(() => {
-    // Load PayPal SDK with enhanced card support
-    if (paypalClientId && !paypalLoaded && !(window as any).paypal) {
+    // Load PayPal SDK (respects live/sandbox) and provide client token for hosted fields
+    if (paypalClientId && clientToken && !paypalLoaded && !(window as any).paypal) {
       const script = document.createElement('script');
+      const domain = paypalEnv === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com';
       // Enhanced SDK loading with card fields and hosted fields for better card support
-      script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons,hosted-fields&enable-funding=card,venmo,paylater&disable-funding=sepa,bancontact,eps,giropay,ideal,mybank,p24,sofort&currency=USD`;
+      script.src = `${domain}/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons,hosted-fields&enable-funding=card,venmo,paylater&disable-funding=sepa,bancontact,eps,giropay,ideal,mybank,p24,sofort&currency=USD`;
+      script.setAttribute('data-client-token', clientToken);
       script.onload = () => {
         console.log('PayPal SDK loaded successfully');
         setPaypalLoaded(true);
@@ -133,7 +136,7 @@ const Checkout = () => {
       console.log('PayPal SDK already available');
       setPaypalLoaded(true);
     }
-  }, [paypalClientId, paypalLoaded, toast]);
+  }, [paypalClientId, clientToken, paypalEnv, paypalLoaded, toast]);
   
   const createPayPalSubscription = () => {
     if (!selectedPlan || !paypalPlanIds || !clientToken) return;
@@ -220,25 +223,36 @@ const Checkout = () => {
         
         let errorMessage = 'There was an issue processing your payment. Please try again.';
         
-        // Enhanced error handling for card-specific issues
+        // Enhanced error handling for card-specific and merchant/account issues
         if (err && typeof err === 'object') {
-          if (err.message) {
-            if (err.message.includes('card') || err.message.includes('CARD')) {
-              errorMessage = 'Card payment failed. Please verify your card details and try again, or use PayPal directly.';
-            } else if (err.message.includes('declined') || err.message.includes('DECLINED')) {
-              errorMessage = 'Payment was declined by your bank. Please contact your bank or try a different payment method.';
-            } else if (err.message.includes('expired') || err.message.includes('EXPIRED')) {
-              errorMessage = 'Your card has expired. Please use a different card.';
-            } else if (err.message.includes('insufficient') || err.message.includes('INSUFFICIENT')) {
-              errorMessage = 'Insufficient funds. Please check your account balance or use a different payment method.';
+          const msg = (err.message || '').toString();
+          if (msg.includes('merchant is not able') || msg.toLowerCase().includes('merchant')) {
+            errorMessage = 'Merchant account cannot accept payments yet. Check that you are using the correct environment (sandbox vs live), the plan IDs match that environment, and that Subscriptions are enabled for your PayPal account.';
+          } else if (msg.includes('card') || msg.includes('CARD')) {
+            errorMessage = 'Card payment failed. Please verify your card details and try again, or use PayPal directly.';
+          } else if (msg.includes('declined') || msg.includes('DECLINED')) {
+            errorMessage = 'Payment was declined by your bank. Please contact your bank or try a different payment method.';
+          } else if (msg.includes('expired') || msg.includes('EXPIRED')) {
+            errorMessage = 'Your card has expired. Please use a different card.';
+          } else if (msg.includes('insufficient') || msg.includes('INSUFFICIENT')) {
+            errorMessage = 'Insufficient funds. Please check your account balance or use a different payment method.';
+          }
+          
+          if (Array.isArray((err as any).details)) {
+            const merchantIssue = (err as any).details.find((d: any) =>
+              d?.issue?.toString().toUpperCase().includes('MERCHANT') ||
+              (d?.description || '').toLowerCase().includes('merchant')
+            );
+            if (merchantIssue) {
+              errorMessage = 'Merchant account cannot accept payments yet. Ensure environment and plan IDs match (sandbox/live) and that Subscriptions are enabled.';
             }
           }
           
           // Log detailed error for debugging
           console.error('Detailed PayPal error:', {
-            message: err.message,
-            details: err.details,
-            name: err.name
+            message: (err as any).message,
+            details: (err as any).details,
+            name: (err as any).name
           });
         }
         

@@ -19,8 +19,14 @@ serve(async (req) => {
       throw new Error('PayPal credentials not configured');
     }
 
+    // Determine environment (live by default)
+    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
+    const baseUrl = paypalEnv === 'sandbox'
+      ? 'https://api-m.sandbox.paypal.com'
+      : 'https://api-m.paypal.com';
+
     // Get PayPal access token
-    const authResponse = await fetch('https://api-m.paypal.com/v1/oauth2/token', {
+    const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${btoa(`${paypalClientId}:${paypalClientSecret}`)}`,
@@ -39,7 +45,7 @@ serve(async (req) => {
     const accessToken = authData.access_token;
 
     // Generate client token
-    const clientTokenResponse = await fetch('https://api-m.paypal.com/v1/identity/generate-token', {
+    const clientTokenResponse = await fetch(`${baseUrl}/v1/identity/generate-token`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
