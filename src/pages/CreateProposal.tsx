@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 import { CompanyResearch } from '@/components/CompanyResearch';
+import TemplateGallery from '@/components/TemplateGallery';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -23,15 +24,16 @@ interface Template {
   preview_image_url: string | null;
   template_data: any;
   is_public: boolean;
-  category?: string;
-  industry?: string;
+  category: string;
+  industry: string;
+  tags: string[];
 }
 
 export default function CreateProposal() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [templates, setTemplates] = useState<Template[]>([]);
+  // templates state removed
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [step, setStep] = useState<'template' | 'theme' | 'details' | 'content'>('template');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
@@ -64,28 +66,9 @@ export default function CreateProposal() {
       navigate('/auth');
       return;
     }
-    fetchTemplates();
   }, [user, navigate]);
 
-  const fetchTemplates = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('templates')
-        .select('*')
-        .eq('is_public', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTemplates(data || []);
-    } catch (error) {
-      console.error('Error fetching templates:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load templates",
-        variant: "destructive"
-      });
-    }
-  };
+  // fetchTemplates removed
 
   // Helpers to update content sections in local state
   const updateSectionValue = (sectionType: string, field: string, value: any) => {
@@ -254,6 +237,7 @@ export default function CreateProposal() {
               </p>
             </div>
 
+            {/* Upload a custom template */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="cursor-pointer hover:shadow-lg transition-shadow border-dashed border-2 border-primary/30 bg-primary/5">
                 <CardContent className="p-6 text-center">
@@ -278,62 +262,11 @@ export default function CreateProposal() {
                   </Button>
                 </CardContent>
               </Card>
+            </div>
 
-              {templates.map((template) => {
-                // Get appropriate icon based on template category/industry
-                const getTemplateIcon = () => {
-                  if (template.industry === 'technology' || template.category === 'business') return <Zap className="h-6 w-6" />;
-                  if (template.category === 'creative' || template.industry === 'marketing') return <Sparkles className="h-6 w-6" />;
-                  if (template.category === 'consulting' || template.industry === 'professional') return <Briefcase className="h-6 w-6" />;
-                  if (template.industry === 'healthcare') return <Shield className="h-6 w-6" />;
-                  return <FileText className="h-6 w-6" />;
-                };
-
-                const getTemplateTag = () => {
-                  if (template.industry === 'technology') return { label: 'Tech', color: 'bg-blue-100 text-blue-800' };
-                  if (template.category === 'creative') return { label: 'Creative', color: 'bg-purple-100 text-purple-800' };
-                  if (template.category === 'consulting') return { label: 'Professional', color: 'bg-gray-100 text-gray-800' };
-                  if (template.industry === 'healthcare') return { label: 'Healthcare', color: 'bg-green-100 text-green-800' };
-                  if (template.industry === 'retail') return { label: 'E-commerce', color: 'bg-orange-100 text-orange-800' };
-                  return { label: 'Business', color: 'bg-indigo-100 text-indigo-800' };
-                };
-
-                const templateTag = getTemplateTag();
-
-                return (
-                  <Card key={template.id} className="cursor-pointer hover:shadow-lg transition-all duration-200 group" onClick={() => handleTemplateSelect(template)}>
-                    {template.preview_image_url && (
-                      <div className="aspect-video bg-muted rounded-t-lg overflow-hidden relative">
-                        <img 
-                          src={template.preview_image_url} 
-                          alt={template.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        />
-                        <div className="absolute top-3 right-3">
-                          <Badge className={`${templateTag.color} border-0`}>
-                            {templateTag.label}
-                          </Badge>
-                        </div>
-                      </div>
-                    )}
-                    <CardContent className="p-6">
-                      <CardTitle className="text-lg mb-2 flex items-center gap-3">
-                        <div className="text-primary">
-                          {getTemplateIcon()}
-                        </div>
-                        {template.name}
-                      </CardTitle>
-                      <CardDescription className="mb-4 line-clamp-2">
-                        {template.description}
-                      </CardDescription>
-                      <Button className="w-full group-hover:bg-primary/90 transition-colors">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Use This Template
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            {/* Canva-like template gallery */}
+            <div className="mt-8">
+              <TemplateGallery onSelectTemplate={handleTemplateSelect} selectedTemplate={selectedTemplate} />
             </div>
           </div>
         )}
