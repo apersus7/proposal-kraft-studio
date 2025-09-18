@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, FileText, Star, Briefcase, Building, Code, Heart, Palette, TrendingUp, Users, Zap, Globe, ShoppingCart, Calendar, GraduationCap, Monitor, Rocket, Settings, Leaf, Scale, Camera, Utensils, Dumbbell, Plane, Music, Paintbrush, Smartphone, Video, Gift } from 'lucide-react';
+import { Search, Filter, FileText, Star, Briefcase, Building, Code, Heart, Palette, TrendingUp, Users, Zap, Globe, ShoppingCart, Calendar, GraduationCap, Monitor, Rocket, Settings, Leaf, Scale, Camera, Utensils, Dumbbell, Plane, Music, Paintbrush, Smartphone, Video, Gift, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -275,10 +275,10 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
       // Combine fetched templates with starter templates
       const combinedTemplates = [
-        ...starterTemplates.map(template => ({
+        ...starterTemplates.map((template, index) => ({
           id: `starter-${Math.random().toString(36).substr(2, 9)}`,
           ...template,
-          preview_image_url: null,
+          preview_image_url: `https://images.unsplash.com/photo-${getPreviewImageId(template.industry)}?w=400&h=300&fit=crop&auto=format`,
           is_public: true
         })),
         ...(data || [])
@@ -297,6 +297,25 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
     }
   };
 
+  // Generate preview image IDs based on template type
+  const getPreviewImageId = (industry: string) => {
+    const imageMap: { [key: string]: string } = {
+      creative: '1561070791-2526d30994c5',
+      photography: '1606107557083-e25fb8945fb3', 
+      events: '1511795409834-ef04bbd61622',
+      food: '1565958011703-acc6394b145e',
+      fitness: '1571019613454-1cb2f99b2d8b',
+      travel: '1469474968028-56623f02e42e',
+      music: '1493225457124-a3eb161ffa5f',
+      fashion: '1445205170230-053b83016050',
+      technology: '1519389950473-47ba0277781c',
+      marketing: '1557804506-7e78cb52d225',
+      lifestyle: '1512541471553-ac74c8b5e722',
+      business: '1507003211169-0a1dd7bf7020'
+    };
+    return imageMap[industry] || '1507003211169-0a1dd7bf7020';
+  };
+
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          template.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -313,136 +332,180 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
   if (loading) {
     return (
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Card key={i} className="animate-pulse">
-            <div className="aspect-video bg-muted rounded-t-lg"></div>
-            <CardContent className="p-4">
-              <div className="h-4 bg-muted rounded mb-2"></div>
-              <div className="h-3 bg-muted rounded w-3/4"></div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="group relative overflow-hidden rounded-xl border bg-card animate-pulse">
+            <div className="aspect-[4/5] bg-gradient-to-br from-muted to-muted/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-3 bg-muted/60 rounded w-1/2"></div>
+            </div>
+          </div>
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
+      <div className="flex flex-col lg:flex-row gap-4 items-center">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Search templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-background/50 backdrop-blur border-border/50"
           />
         </div>
-        <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-          <SelectTrigger className="w-full md:w-48">
-            <SelectValue placeholder="All Industries" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Industries</SelectItem>
-            {industries.map((industry) => (
-              <SelectItem key={industry} value={industry}>
-                <div className="flex items-center space-x-2">
-                  {industryIcons[industry as keyof typeof industryIcons]}
-                  <span className="capitalize">{industry.replace('-', ' ')}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full md:w-48">
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                <span className="capitalize">{category}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-3">
+          <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+            <SelectTrigger className="w-40 bg-background/50 backdrop-blur border-border/50">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Industry" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Industries</SelectItem>
+              {industries.map(industry => (
+                <SelectItem key={industry} value={industry}>
+                  <div className="flex items-center gap-2">
+                    {industryIcons[industry as keyof typeof industryIcons]}
+                    <span className="capitalize">{industry}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-40 bg-background/50 backdrop-blur border-border/50">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map(category => (
+                <SelectItem key={category} value={category}>
+                  <span className="capitalize">{category}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Results Count */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} found
-        </p>
-        {searchTerm && (
-          <Button variant="ghost" size="sm" onClick={() => setSearchTerm('')}>
-            Clear search
-          </Button>
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredTemplates.length === 0 ? (
+          <div className="col-span-full text-center py-16">
+            <div className="relative">
+              <FileText className="h-16 w-16 text-muted-foreground/50 mx-auto mb-6" />
+              <div className="absolute -top-2 -right-2 h-6 w-6 bg-primary/20 rounded-full animate-ping" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No templates found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search or filters to discover templates
+            </p>
+          </div>
+        ) : (
+          filteredTemplates.map((template) => {
+            const isSelected = selectedTemplate?.id === template.id;
+            const isStarter = template.id.startsWith('starter-');
+            
+            return (
+              <div 
+                key={template.id}
+                className={`group relative overflow-hidden rounded-xl border bg-card cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 ${
+                  isSelected ? 'ring-2 ring-primary shadow-lg shadow-primary/20' : 'hover:border-primary/50'
+                }`}
+                onClick={() => onSelectTemplate(template)}
+              >
+                {/* Template Preview */}
+                <div className="aspect-[4/5] relative overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
+                  {template.preview_image_url ? (
+                    <>
+                      <img 
+                        src={template.preview_image_url} 
+                        alt={template.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                    </>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 flex items-center justify-center">
+                      <FileText className="h-16 w-16 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  
+                  {/* Overlay Content */}
+                  <div className="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div className="flex justify-between items-start">
+                      {isStarter && (
+                        <Badge className="bg-primary/90 text-primary-foreground backdrop-blur-sm border-0">
+                          <Star className="h-3 w-3 mr-1 fill-current" />
+                          Starter
+                        </Badge>
+                      )}
+                      <div className="bg-background/80 backdrop-blur-sm rounded-full p-2 ml-auto">
+                        {industryIcons[template.industry as keyof typeof industryIcons] || (
+                          <FileText className="h-4 w-4 text-foreground" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Template Info */}
+                    <div className="space-y-2">
+                      <h3 className="text-background font-semibold text-lg leading-tight drop-shadow-sm">
+                        {template.name}
+                      </h3>
+                      <p className="text-background/90 text-sm line-clamp-2 drop-shadow-sm">
+                        {template.description}
+                      </p>
+                      
+                      {/* Tags */}
+                      {template.tags && template.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {template.tags.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs bg-background/20 text-background backdrop-blur-sm border-0">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {template.tags.length > 2 && (
+                            <Badge className="text-xs bg-background/20 text-background backdrop-blur-sm border-0">
+                              +{template.tags.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Selection Indicator */}
+                  {isSelected && (
+                    <div className="absolute top-3 left-3">
+                      <div className="bg-primary text-primary-foreground rounded-full p-1.5">
+                        <Eye className="h-4 w-4" />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <Button 
+                      size="sm" 
+                      variant={isSelected ? "default" : "secondary"}
+                      className="shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      {isSelected ? 'Selected' : 'Use Template'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
         )}
       </div>
-
-      {/* Template Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => (
-          <Card 
-            key={template.id} 
-            className={`cursor-pointer transition-all hover:shadow-lg hover:scale-105 ${
-              selectedTemplate?.id === template.id ? 'ring-2 ring-primary' : ''
-            }`}
-            onClick={() => onSelectTemplate(template)}
-          >
-            <div className="aspect-video bg-gradient-to-br from-primary/10 to-accent/10 rounded-t-lg flex items-center justify-center relative overflow-hidden">
-              {template.preview_image_url ? (
-                <img 
-                  src={template.preview_image_url} 
-                  alt={template.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="text-center">
-                  {industryIcons[template.industry as keyof typeof industryIcons] || <FileText className="h-12 w-12 text-primary mb-2" />}
-                  <p className="text-xs text-muted-foreground font-medium">{template.industry.replace('-', ' ').toUpperCase()}</p>
-                </div>
-              )}
-              {template.id.startsWith('starter-') && (
-                <div className="absolute top-2 right-2">
-                  <Badge variant="secondary" className="text-xs">
-                    <Star className="h-3 w-3 mr-1" />
-                    Starter
-                  </Badge>
-                </div>
-              )}
-            </div>
-            <CardContent className="p-4">
-              <CardTitle className="text-lg mb-2 line-clamp-1">{template.name}</CardTitle>
-              <CardDescription className="line-clamp-2 mb-3">{template.description}</CardDescription>
-              <div className="flex flex-wrap gap-1 mb-3">
-                {template.tags?.slice(0, 3).map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              <Button className="w-full" variant={selectedTemplate?.id === template.id ? "default" : "outline"}>
-                <FileText className="h-4 w-4 mr-2" />
-                {selectedTemplate?.id === template.id ? 'Selected' : 'Use This Template'}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredTemplates.length === 0 && (
-        <div className="text-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No templates found</h3>
-          <p className="text-muted-foreground max-w-sm mx-auto">
-            Try adjusting your search terms or filters to find the perfect template for your proposal.
-          </p>
-        </div>
-      )}
     </div>
   );
 }
