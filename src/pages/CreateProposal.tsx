@@ -140,11 +140,9 @@ export default function CreateProposal() {
       if (error) throw error;
 
       toast({
-        title: "Success",
+        title: "Success", 
         description: "Template uploaded successfully!"
       });
-
-      fetchTemplates();
     } catch (error) {
       console.error('Error uploading template:', error);
       toast({
