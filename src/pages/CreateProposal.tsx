@@ -43,6 +43,7 @@ export default function CreateProposal() {
     client_email: '',
     project_name: '',
     pricing: '',
+    currency: 'USD',
     content: {
       sections: [
         { type: 'cover_page', title: '', tagline: '', company_name: '', company_logo: '' },
@@ -189,6 +190,7 @@ export default function CreateProposal() {
             ...proposalData.content,
             project_name: proposalData.project_name,
             pricing: proposalData.pricing,
+            currency: proposalData.currency,
             colorTheme: selectedColorTheme
           },
           template_id: selectedTemplate?.id,
@@ -388,29 +390,59 @@ export default function CreateProposal() {
                     id="client_email"
                     type="email"
                     value={proposalData.client_email}
-                    onChange={(e) => setProposalData(prev => ({ ...prev, client_email: e.target.value }))}
+                    onChange={(e) => {
+                      const email = e.target.value;
+                      // Only allow valid email characters
+                      if (email === '' || /^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]*$/.test(email)) {
+                        setProposalData(prev => ({ ...prev, client_email: email }));
+                      }
+                    }}
                     placeholder="contact@acme.com"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                    required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="project_name">Project Name</Label>
+                  <Label htmlFor="project_name">Service to be Delivered</Label>
                   <Input
                     id="project_name"
                     value={proposalData.project_name}
                     onChange={(e) => setProposalData(prev => ({ ...prev, project_name: e.target.value }))}
-                    placeholder="Website Redesign Project"
+                    placeholder="Website Redesign & Development"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="pricing">Total Project Value</Label>
-                  <Input
-                    id="pricing"
-                    value={proposalData.pricing}
-                    onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
-                    placeholder="e.g., $15,000"
-                  />
+                  <div className="flex space-x-2">
+                    <Select
+                      value={proposalData.currency}
+                      onValueChange={(value) => setProposalData(prev => ({ ...prev, currency: value }))}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USD">USD ($)</SelectItem>
+                        <SelectItem value="EUR">EUR (€)</SelectItem>
+                        <SelectItem value="GBP">GBP (£)</SelectItem>
+                        <SelectItem value="CAD">CAD ($)</SelectItem>
+                        <SelectItem value="AUD">AUD ($)</SelectItem>
+                        <SelectItem value="JPY">JPY (¥)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="pricing"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={proposalData.pricing}
+                      onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
+                      placeholder="15000"
+                      className="flex-1"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">
