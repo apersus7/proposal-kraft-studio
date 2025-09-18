@@ -33,7 +33,6 @@ export default function CreateProposal() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  // templates state removed
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [step, setStep] = useState<'template' | 'theme' | 'details' | 'content'>('template');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
@@ -68,9 +67,13 @@ export default function CreateProposal() {
     }
   }, [user, navigate]);
 
-  // fetchTemplates removed
-
   // Helpers to update content sections in local state
+  const getContentValue = (sectionType: string, field?: string) => {
+    if (!proposalData.content?.sections) return field ? '' : {};
+    const section = proposalData.content.sections.find((s: any) => s.type === sectionType);
+    return section ? (field ? section[field] : section) : (field ? '' : {});
+  };
+
   const updateSectionValue = (sectionType: string, field: string, value: any) => {
     setProposalData(prev => {
       const sections = Array.isArray(prev.content?.sections) ? [...prev.content.sections] : [];
@@ -82,6 +85,25 @@ export default function CreateProposal() {
       }
       return { ...prev, content: { ...prev.content, sections } };
     });
+  };
+
+  const addScopeTimelinePhase = () => {
+    const currentPhases = getContentValue('scope_of_work', 'timeline') || [];
+    const newPhases = [...currentPhases, { phase: '', duration: '', description: '' }];
+    updateSectionValue('scope_of_work', 'timeline', newPhases);
+  };
+
+  const updateTimelinePhase = (phaseIndex: number, field: string, value: string) => {
+    const currentPhases = getContentValue('scope_of_work', 'timeline') || [];
+    const updatedPhases = [...currentPhases];
+    
+    if (updatedPhases[phaseIndex]) {
+      updatedPhases[phaseIndex] = { ...updatedPhases[phaseIndex], [field]: value };
+    } else {
+      updatedPhases[phaseIndex] = { [field]: value };
+    }
+    
+    updateSectionValue('scope_of_work', 'timeline', updatedPhases);
   };
 
   const generateAIContent = async (section: string, context?: string) => {
@@ -108,13 +130,13 @@ export default function CreateProposal() {
     setProposalData(prev => ({ ...prev, content: template.template_data }));
     setStep('theme');
   };
+
   const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
     setLoading(true);
     try {
-      // Upload file to storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
@@ -124,7 +146,6 @@ export default function CreateProposal() {
 
       if (uploadError) throw uploadError;
 
-      // Create template record
       const { data, error } = await supabase
         .from('templates')
         .insert({
@@ -241,7 +262,6 @@ export default function CreateProposal() {
               </p>
             </div>
 
-            {/* Upload a custom template */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="cursor-pointer hover:shadow-lg transition-shadow border-dashed border-2 border-primary/30 bg-primary/5">
                 <CardContent className="p-6 text-center">
@@ -268,7 +288,6 @@ export default function CreateProposal() {
               </Card>
             </div>
 
-            {/* Canva-like template gallery */}
             <div className="mt-8">
               <TemplateGallery onSelectTemplate={handleTemplateSelect} selectedTemplate={selectedTemplate} />
             </div>
@@ -329,7 +348,6 @@ export default function CreateProposal() {
                     value={proposalData.client_email}
                     onChange={(e) => {
                       const email = e.target.value;
-                      // Only allow valid email characters
                       if (email === '' || /^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]*$/.test(email)) {
                         setProposalData(prev => ({ ...prev, client_email: email }));
                       }
@@ -394,231 +412,589 @@ export default function CreateProposal() {
                   </Button>
                 </div>
               </CardContent>
-              </Card>
+            </Card>
 
-              <div className="mt-8">
-                <Card className="max-w-3xl">
-                  <CardHeader>
-                    <CardTitle>Company Research & Analysis</CardTitle>
-                    <CardDescription>
-                      Analyze the client's company to extract pain points and opportunities
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <CompanyResearch 
-                      onResearchComplete={(data) => {
-                        const bullets = data.painPoints.map((p: string) => `• ${p}`).join('\n');
-                        updateSectionValue('client_problem', 'content', `Key pain points for ${data.companyName}:\n${bullets}`);
-                        toast({ 
-                          title: 'Analysis added', 
-                          description: 'Pain points inserted into client needs section' 
-                        });
-                      }}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+            <div className="mt-8">
+              <Card className="max-w-3xl">
+                <CardHeader>
+                  <CardTitle>Company Research & Analysis</CardTitle>
+                  <CardDescription>
+                    Analyze the client's company to extract pain points and opportunities
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CompanyResearch 
+                    onResearchComplete={(data) => {
+                      const bullets = data.painPoints.map((p: string) => `• ${p}`).join('\n');
+                      updateSectionValue('client_problem', 'content', `Key pain points for ${data.companyName}:\n${bullets}`);
+                      toast({ 
+                        title: 'Analysis added', 
+                        description: 'Pain points inserted into client needs section' 
+                      });
+                    }}
+                  />
+                </CardContent>
+              </Card>
             </div>
-          )}
+          </div>
+        )}
 
         {step === 'content' && (
           <div>
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tight">Customize Content</h1>
               <p className="text-muted-foreground">
-                Review and customize your proposal content
+                Edit and customize every section of your proposal
               </p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">
-              <Card>
+              {/* Content Editor */}
+              <div className="space-y-6">
+                {/* Cover Page Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Cover Page
+                      <Badge variant="secondary">Required</Badge>
+                    </CardTitle>
+                    <CardDescription>
+                      The first impression of your proposal
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="cover-tagline">Tagline</Label>
+                      <Input
+                        id="cover-tagline"
+                        value={getContentValue('cover_page', 'tagline')}
+                        onChange={(e) => updateSectionValue('cover_page', 'tagline', e.target.value)}
+                        placeholder={`Helping ${proposalData.client_name} achieve success with innovative solutions`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cover-company">Your Company Name</Label>
+                      <Input
+                        id="cover-company"
+                        value={getContentValue('cover_page', 'company_name')}
+                        onChange={(e) => updateSectionValue('cover_page', 'company_name', e.target.value)}
+                        placeholder="Your Company Name"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Executive Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Executive Summary
+                      <Button 
+                        onClick={() => generateAIContent('executive_summary', `${proposalData.client_name} - ${proposalData.project_name}`)}
+                        disabled={generatingAI === 'executive_summary'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'executive_summary' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </CardTitle>
+                    <CardDescription>
+                      A high-level overview of your proposal
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      value={getContentValue('executive_summary', 'content')}
+                      onChange={(e) => updateSectionValue('executive_summary', 'content', e.target.value)}
+                      placeholder="Provide a high-level overview tailored to the client's main challenge and results you aim to deliver..."
+                      className="min-h-[120px]"
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Problem Statement */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Problem Statement</CardTitle>
+                    <CardDescription>
+                      Describe the client's challenges and needs
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      value={getContentValue('client_problem', 'content')}
+                      onChange={(e) => updateSectionValue('client_problem', 'content', e.target.value)}
+                      placeholder="Identify and describe the specific challenges your client is facing..."
+                      className="min-h-[100px]"
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Proposed Solution */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Proposed Solution
+                      <Button 
+                        onClick={() => generateAIContent('proposed_solution', proposalData.project_name)}
+                        disabled={generatingAI === 'proposed_solution'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'proposed_solution' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </CardTitle>
+                    <CardDescription>
+                      Your approach and methodology
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Solution Overview</Label>
+                      <Textarea
+                        value={getContentValue('proposed_solution', 'content')}
+                        onChange={(e) => updateSectionValue('proposed_solution', 'content', e.target.value)}
+                        placeholder="Describe your approach, process, methodology, and why this solution fits their specific situation..."
+                        className="min-h-[120px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Why This Solution Fits</Label>
+                      <Textarea
+                        value={getContentValue('proposed_solution', 'why_fits')}
+                        onChange={(e) => updateSectionValue('proposed_solution', 'why_fits', e.target.value)}
+                        placeholder="Explain why your solution is the perfect fit for their specific needs..."
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Tools & Technologies</Label>
+                      <Input
+                        value={getContentValue('proposed_solution', 'tools')?.join(', ') || ''}
+                        onChange={(e) => updateSectionValue('proposed_solution', 'tools', e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
+                        placeholder="React, Node.js, AWS, Figma"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Scope of Work */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Scope of Work
+                      <Button 
+                        onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                        disabled={generatingAI === 'scope_of_work'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </CardTitle>
+                    <CardDescription>
+                      Detailed breakdown of deliverables and activities
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Deliverables Overview</Label>
+                      <Textarea
+                        value={getContentValue('scope_of_work', 'content')}
+                        onChange={(e) => updateSectionValue('scope_of_work', 'content', e.target.value)}
+                        placeholder="Detailed breakdown of deliverables and activities..."
+                        className="min-h-[120px]"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Key Deliverables</Label>
+                      <Textarea
+                        value={getContentValue('scope_of_work', 'deliverables')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('scope_of_work', 'deliverables', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="Complete website redesign&#10;Mobile-responsive implementation&#10;SEO optimization&#10;Content management system"
+                        className="min-h-[100px]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>What's Included</Label>
+                      <Textarea
+                        value={getContentValue('scope_of_work', 'included')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('scope_of_work', 'included', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="Initial consultation&#10;Design mockups&#10;Development&#10;Testing & QA"
+                        className="min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>What's Not Included</Label>
+                      <Textarea
+                        value={getContentValue('scope_of_work', 'excluded')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('scope_of_work', 'excluded', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="Content creation&#10;Third-party integrations&#10;Ongoing maintenance"
+                        className="min-h-[60px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Timeline & Milestones */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Timeline & Milestones</CardTitle>
+                    <CardDescription>
+                      Project phases and delivery schedule
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {(getContentValue('scope_of_work', 'timeline') || []).map((phase: any, index: number) => (
+                      <div key={index} className="grid grid-cols-3 gap-3 p-3 border rounded-lg">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Phase</Label>
+                          <Input
+                            value={phase.phase || ''}
+                            onChange={(e) => updateTimelinePhase(index, 'phase', e.target.value)}
+                            placeholder="Discovery"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Duration</Label>
+                          <Input
+                            value={phase.duration || ''}
+                            onChange={(e) => updateTimelinePhase(index, 'duration', e.target.value)}
+                            placeholder="2 weeks"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Description</Label>
+                          <Input
+                            value={phase.description || ''}
+                            onChange={(e) => updateTimelinePhase(index, 'description', e.target.value)}
+                            placeholder="Requirements gathering"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <Button onClick={addScopeTimelinePhase} variant="outline" size="sm">
+                      Add Phase
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Pricing */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Investment & Pricing</CardTitle>
+                    <CardDescription>
+                      Project cost and payment terms
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Total Investment</Label>
+                        <Input
+                          value={proposalData.pricing}
+                          onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
+                          placeholder="15000"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Currency</Label>
+                        <Select
+                          value={proposalData.currency}
+                          onValueChange={(value) => setProposalData(prev => ({ ...prev, currency: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USD">USD ($)</SelectItem>
+                            <SelectItem value="EUR">EUR (€)</SelectItem>
+                            <SelectItem value="GBP">GBP (£)</SelectItem>
+                            <SelectItem value="CAD">CAD ($)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Payment Terms</Label>
+                      <Textarea
+                        value={getContentValue('pricing', 'payment_terms')}
+                        onChange={(e) => updateSectionValue('pricing', 'payment_terms', e.target.value)}
+                        placeholder="50% upfront, 50% on completion"
+                        className="min-h-[60px]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Value Breakdown (Optional)</Label>
+                      <Textarea
+                        value={getContentValue('pricing', 'breakdown')}
+                        onChange={(e) => updateSectionValue('pricing', 'breakdown', e.target.value)}
+                        placeholder="Design: $5,000&#10;Development: $8,000&#10;Testing: $2,000"
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* About Us / Team */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>About Us</CardTitle>
+                    <CardDescription>
+                      Your company background and team
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Company Overview</Label>
+                      <Textarea
+                        value={getContentValue('about_us', 'content')}
+                        onChange={(e) => updateSectionValue('about_us', 'content', e.target.value)}
+                        placeholder="Brief overview of your company, mission, and expertise..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Why Choose Us</Label>
+                      <Textarea
+                        value={getContentValue('value_proposition', 'advantages')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('value_proposition', 'advantages', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="5+ years experience&#10;100+ successful projects&#10;Dedicated support team"
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Terms & Conditions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Terms & Conditions</CardTitle>
+                    <CardDescription>
+                      Legal terms and project conditions
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      value={getContentValue('terms_conditions', 'content')}
+                      onChange={(e) => updateSectionValue('terms_conditions', 'content', e.target.value)}
+                      placeholder="Project terms, conditions, and legal requirements..."
+                      className="min-h-[120px]"
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Call to Action */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Next Steps</CardTitle>
+                    <CardDescription>
+                      Clear call to action for the client
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Next Steps</Label>
+                      <Textarea
+                        value={getContentValue('call_to_action', 'next_steps')}
+                        onChange={(e) => updateSectionValue('call_to_action', 'next_steps', e.target.value)}
+                        placeholder="Ready to get started? Let's schedule a kickoff call to begin transforming your vision into reality."
+                        className="min-h-[60px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Contact Details</Label>
+                      <Textarea
+                        value={getContentValue('call_to_action', 'contact_details')}
+                        onChange={(e) => updateSectionValue('call_to_action', 'contact_details', e.target.value)}
+                        placeholder="Email: contact@yourcompany.com&#10;Phone: (555) 123-4567&#10;Schedule: calendly.com/yourname"
+                        className="min-h-[60px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Live Preview */}
+              <Card className="sticky top-4">
                 <CardHeader>
-                  <CardTitle>Proposal Preview</CardTitle>
+                  <CardTitle>Live Preview</CardTitle>
                   <CardDescription>
-                    This is how your proposal will look to clients
+                    See your changes in real-time
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="aspect-[8.5/11] bg-white border rounded-lg p-6 text-sm text-black overflow-auto">
+                  <div className="aspect-[8.5/11] bg-white border rounded-lg p-4 text-xs text-black overflow-auto max-h-[600px]">
                     {/* Cover Page */}
-                    <div className="text-center mb-8 border-b pb-6">
-                      <h1 className="text-3xl font-bold mb-2">{proposalData.title}</h1>
-                      <p className="text-lg text-gray-600 mb-2">Project: {proposalData.project_name}</p>
-                      <p className="text-gray-600">Prepared for {proposalData.client_name}</p>
-                      <p className="text-gray-500 text-sm mt-2">
-                        Helping {proposalData.client_name} achieve success with innovative solutions
+                    <div className="text-center mb-6 border-b pb-4">
+                      <div className="text-xs text-gray-500 mb-1">
+                        {getContentValue('cover_page', 'company_name') || 'Your Company'}
+                      </div>
+                      <h1 className="text-lg font-bold mb-2">{proposalData.title}</h1>
+                      <p className="text-sm text-gray-600 mb-1">Project: {proposalData.project_name}</p>
+                      <p className="text-gray-600 text-sm">Prepared for {proposalData.client_name}</p>
+                      <p className="text-gray-500 text-xs mt-2">
+                        {getContentValue('cover_page', 'tagline') || `Helping ${proposalData.client_name} achieve success with innovative solutions`}
                       </p>
                     </div>
                     
-                    <div className="space-y-6">
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                    {/* Executive Summary */}
+                    {getContentValue('executive_summary', 'content') && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
                           Executive Summary
                         </h2>
-                        <p className="text-gray-700">
-                          This proposal outlines our comprehensive approach to delivering exceptional results for your {proposalData.project_name || 'project'}.
+                        <p className="text-xs text-gray-700 leading-relaxed">
+                          {getContentValue('executive_summary', 'content')}
                         </p>
                       </section>
-                      
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                          Understanding Your Needs
+                    )}
+                    
+                    {/* Problem Statement */}
+                    {getContentValue('client_problem', 'content') && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                          Problem Statement
                         </h2>
-                        <p className="text-gray-700">
-                          We understand the challenges you're facing and are committed to providing tailored solutions.
+                        <p className="text-xs text-gray-700 leading-relaxed">
+                          {getContentValue('client_problem', 'content')}
                         </p>
                       </section>
-                      
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                          Our Solution
+                    )}
+                    
+                    {/* Proposed Solution */}
+                    {(getContentValue('proposed_solution', 'content') || getContentValue('proposed_solution', 'why_fits')) && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                          Proposed Solution
                         </h2>
-                        <p className="text-gray-700">
-                          Our proven methodology and cutting-edge approach will deliver measurable results.
-                        </p>
+                        {getContentValue('proposed_solution', 'content') && (
+                          <p className="text-xs text-gray-700 leading-relaxed mb-2">
+                            {getContentValue('proposed_solution', 'content')}
+                          </p>
+                        )}
+                        {getContentValue('proposed_solution', 'why_fits') && (
+                          <div className="mb-2">
+                            <p className="text-xs font-medium text-gray-800 mb-1">Why This Solution Fits:</p>
+                            <p className="text-xs text-gray-700 leading-relaxed">
+                              {getContentValue('proposed_solution', 'why_fits')}
+                            </p>
+                          </div>
+                        )}
+                        {getContentValue('proposed_solution', 'tools')?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-800 mb-1">Tools & Technologies:</p>
+                            <p className="text-xs text-gray-600">
+                              {getContentValue('proposed_solution', 'tools').join(', ')}
+                            </p>
+                          </div>
+                        )}
                       </section>
-                      
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                    )}
+                    
+                    {/* Scope of Work */}
+                    {(getContentValue('scope_of_work', 'content') || getContentValue('scope_of_work', 'deliverables')?.length > 0) && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
                           Scope of Work
                         </h2>
-                        <ul className="list-disc list-inside text-gray-700 space-y-1">
-                          <li>Initial consultation and requirements gathering</li>
-                          <li>Strategic planning and design phase</li>
-                          <li>Development and implementation</li>
-                          <li>Testing, refinement, and launch</li>
-                        </ul>
+                        {getContentValue('scope_of_work', 'content') && (
+                          <p className="text-xs text-gray-700 leading-relaxed mb-2">
+                            {getContentValue('scope_of_work', 'content')}
+                          </p>
+                        )}
+                        {getContentValue('scope_of_work', 'deliverables')?.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-xs font-medium text-gray-800 mb-1">Key Deliverables:</p>
+                            <ul className="list-disc list-inside text-xs text-gray-700 space-y-0.5">
+                              {getContentValue('scope_of_work', 'deliverables').map((item: string, idx: number) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {getContentValue('scope_of_work', 'timeline')?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-800 mb-1">Timeline:</p>
+                            <div className="space-y-1">
+                              {getContentValue('scope_of_work', 'timeline').map((phase: any, idx: number) => (
+                                <div key={idx} className="text-xs text-gray-700">
+                                  <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </section>
-                      
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                          Investment
-                        </h2>
-                        <p className="text-lg font-medium text-gray-800">
-                          Total Project Investment: {proposalData.pricing || '$XX,XXX'}
+                    )}
+                    
+                    {/* Investment */}
+                    <section className="mb-4">
+                      <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                        Investment
+                      </h2>
+                      <p className="text-sm font-medium text-gray-800 mb-1">
+                        Total Project Investment: {proposalData.currency === 'EUR' ? '€' : proposalData.currency === 'GBP' ? '£' : '$'}{proposalData.pricing || 'XX,XXX'}
+                      </p>
+                      {getContentValue('pricing', 'payment_terms') && (
+                        <p className="text-xs text-gray-700">
+                          Payment Terms: {getContentValue('pricing', 'payment_terms')}
                         </p>
-                      </section>
-                      
-                      <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                      )}
+                    </section>
+                    
+                    {/* Next Steps */}
+                    {getContentValue('call_to_action', 'next_steps') && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
                           Next Steps
                         </h2>
-                        <p className="text-gray-700">
-                          Ready to get started? Let's schedule a kickoff call to begin transforming your vision into reality.
+                        <p className="text-xs text-gray-700 leading-relaxed">
+                          {getContentValue('call_to_action', 'next_steps')}
                         </p>
+                        {getContentValue('call_to_action', 'contact_details') && (
+                          <div className="mt-2 text-xs text-gray-600">
+                            {getContentValue('call_to_action', 'contact_details').split('\n').map((line: string, idx: number) => (
+                              <div key={idx}>{line}</div>
+                            ))}
+                          </div>
+                        )}
                       </section>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
+            </div>
 
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button 
-                      onClick={handleCreateProposal} 
-                      disabled={loading}
-                      className="w-full"
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      {loading ? 'Creating...' : 'Create Proposal'}
-                    </Button>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => createProposalAndNavigate('export')}
-                        disabled={loading}
-                      >
-                        <Eye className="h-4 w-4 mr-2" />
-                        Create & Export
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => createProposalAndNavigate('payment')}
-                        disabled={loading}
-                      >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Create & Payment Link
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => createProposalAndNavigate('signatures')}
-                        disabled={loading}
-                      >
-                        <PenTool className="h-4 w-4 mr-2" />
-                        Create & E‑Sign
-                      </Button>
-                    </div>
-                    
-                    <Button variant="outline" onClick={() => setStep('details')}>
-                      Back to Details
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>AI Assistant</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button 
-                      onClick={() => generateAIContent('executive_summary', `${proposalData.client_name} - ${proposalData.project_name}`)}
-                      disabled={generatingAI === 'executive_summary'}
-                      variant="outline"
-                      className="w-full justify-start"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      {generatingAI === 'executive_summary' ? 'Generating...' : 'Generate Executive Summary'}
-                    </Button>
-
-                    <Button 
-                      onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
-                      disabled={generatingAI === 'scope_of_work'}
-                      variant="outline"
-                      className="w-full justify-start"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      {generatingAI === 'scope_of_work' ? 'Generating...' : 'Generate Scope of Work'}
-                    </Button>
-
-                    <Button 
-                      onClick={() => generateAIContent('timeline', proposalData.project_name)}
-                      disabled={generatingAI === 'timeline'}
-                      variant="outline"
-                      className="w-full justify-start"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      {generatingAI === 'timeline' ? 'Generating...' : 'Generate Timeline'}
-                    </Button>
-
-                    <Button 
-                      onClick={() => generateAIContent('pricing', proposalData.pricing)}
-                      disabled={generatingAI === 'pricing'}
-                      variant="outline"
-                      className="w-full justify-start"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      {generatingAI === 'pricing' ? 'Generating...' : 'Generate Pricing'}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Template Info</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="font-medium">{selectedTemplate?.name}</p>
-                    <p className="text-sm text-muted-foreground">{selectedTemplate?.description}</p>
-                  </CardContent>
-                </Card>
+            {/* Action Buttons */}
+            <div className="mt-8 flex justify-between">
+              <Button variant="outline" onClick={() => setStep('details')}>
+                Back to Details
+              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleCreateProposal} 
+                  disabled={loading}
+                  variant="outline"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {loading ? 'Creating...' : 'Save as Draft'}
+                </Button>
+                <Button 
+                  onClick={handleCreateProposal} 
+                  disabled={loading}
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  {loading ? 'Creating...' : 'Create Proposal'}
+                </Button>
               </div>
             </div>
           </div>
