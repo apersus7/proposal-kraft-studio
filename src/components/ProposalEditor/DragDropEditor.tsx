@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { GripVertical, Plus, Type, FileText, Clock, DollarSign } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { GripVertical, Plus, Type, FileText, Clock, DollarSign, Trash2, MoveUp, MoveDown } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface Section {
   id: string;
@@ -21,23 +23,84 @@ interface DragDropEditorProps {
 
 export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropEditorProps) {
   const [selectedSection, setSelectedSection] = useState<Section | null>(null);
+  const [newSectionType, setNewSectionType] = useState('custom_text');
 
-  const addSection = (type: string) => {
+  const sectionTypes = [
+    { value: 'executive_summary', label: 'Executive Summary' },
+    { value: 'client_problem', label: 'Client Problem' },
+    { value: 'proposed_solution', label: 'Proposed Solution' },
+    { value: 'scope_of_work', label: 'Scope of Work' },
+    { value: 'pricing', label: 'Pricing' },
+    { value: 'terms', label: 'Terms & Conditions' },
+    { value: 'about_us', label: 'About Us' },
+    { value: 'custom_text', label: 'Custom Text' },
+  ];
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(sections);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update order property
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      order: index
+    }));
+
+    onSectionsUpdate(updatedItems);
+  };
+
+  const addSection = () => {
     const newSection: Section = {
       id: `section-${Date.now()}`,
-      type: type,
-      title: `New ${type.replace('_', ' ')} Section`,
+      type: newSectionType,
+      title: sectionTypes.find(t => t.value === newSectionType)?.label || 'New Section',
       content: { text: '' },
       order: sections.length
     };
     onSectionsUpdate([...sections, newSection]);
+    setSelectedSection(newSection);
   };
 
-  const updateSectionContent = (sectionId: string, content: any) => {
+  const deleteSection = (sectionId: string) => {
+    const updatedSections = sections.filter(section => section.id !== sectionId);
+    onSectionsUpdate(updatedSections);
+    if (selectedSection?.id === sectionId) {
+      setSelectedSection(null);
+    }
+  };
+
+  const updateSectionContent = (sectionId: string, updates: any) => {
     const updatedSections = sections.map(section =>
-      section.id === sectionId ? { ...section, content } : section
+      section.id === sectionId ? { ...section, ...updates } : section
     );
     onSectionsUpdate(updatedSections);
+    
+    // Update selected section if it's the one being edited
+    if (selectedSection?.id === sectionId) {
+      setSelectedSection(prev => prev ? { ...prev, ...updates } : null);
+    }
+  };
+
+  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
+    const currentIndex = sections.findIndex(s => s.id === sectionId);
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= sections.length) return;
+
+    const items = Array.from(sections);
+    const [movedItem] = items.splice(currentIndex, 1);
+    items.splice(newIndex, 0, movedItem);
+
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      order: index
+    }));
+
+    onSectionsUpdate(updatedItems);
   };
 
   return (
@@ -45,27 +108,90 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
       <Card>
         <CardHeader>
           <CardTitle>Sections</CardTitle>
-          <CardDescription>Manage your proposal structure</CardDescription>
+          <CardDescription>Drag to reorder sections or click to edit</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {sections.map((section) => (
-              <Card 
-                key={section.id}
-                className={`cursor-pointer p-3 ${selectedSection?.id === section.id ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setSelectedSection(section)}
-              >
-                <div className="flex items-center space-x-3">
-                  <GripVertical className="h-4 w-4" />
-                  <FileText className="h-4 w-4" />
-                  <span className="font-medium">{section.title}</span>
-                </div>
-              </Card>
-            ))}
-            <Button onClick={() => addSection('custom_text')} variant="outline" className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Section
-            </Button>
+          <div className="space-y-4">
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="sections">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
+                    {sections.map((section, index) => (
+                      <Draggable key={section.id} draggableId={section.id} index={index}>
+                        {(provided, snapshot) => (
+                          <Card 
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`p-3 transition-all ${
+                              selectedSection?.id === section.id ? 'ring-2 ring-primary' : ''
+                            } ${snapshot.isDragging ? 'shadow-lg rotate-2' : ''}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div 
+                                className="flex items-center space-x-3 flex-1 cursor-pointer"
+                                onClick={() => setSelectedSection(section)}
+                              >
+                                <div {...provided.dragHandleProps}>
+                                  <GripVertical className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                </div>
+                                <FileText className="h-4 w-4" />
+                                <span className="font-medium">{section.title}</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => moveSection(section.id, 'up')}
+                                  disabled={index === 0}
+                                >
+                                  <MoveUp className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => moveSection(section.id, 'down')}
+                                  disabled={index === sections.length - 1}
+                                >
+                                  <MoveDown className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => deleteSection(section.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            
+            <div className="flex space-x-2">
+              <Select value={newSectionType} onValueChange={setNewSectionType}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sectionTypes.map(type => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={addSection} variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Add
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -81,25 +207,80 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
           {selectedSection ? (
             <div className="space-y-4">
               <div className="space-y-2">
+                <Label>Section Type</Label>
+                <Select 
+                  value={selectedSection.type} 
+                  onValueChange={(value) => updateSectionContent(selectedSection.id, { type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sectionTypes.map(type => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
                 <Label>Title</Label>
                 <Input
                   value={selectedSection.title}
-                  onChange={(e) => {
-                    const updated = { ...selectedSection, title: e.target.value };
-                    setSelectedSection(updated);
-                    updateSectionContent(selectedSection.id, selectedSection.content);
-                  }}
+                  onChange={(e) => updateSectionContent(selectedSection.id, { title: e.target.value })}
                 />
               </div>
+              
               <div className="space-y-2">
                 <Label>Content</Label>
                 <Textarea
-                  value={selectedSection.content.text || ''}
-                  onChange={(e) => updateSectionContent(selectedSection.id, { text: e.target.value })}
+                  value={selectedSection.content?.text || ''}
+                  onChange={(e) => updateSectionContent(selectedSection.id, { 
+                    content: { ...selectedSection.content, text: e.target.value } 
+                  })}
                   placeholder="Enter content..."
-                  className="min-h-[150px]"
+                  className="min-h-[200px]"
                 />
               </div>
+
+              {selectedSection.type === 'pricing' && (
+                <div className="space-y-4 border-t pt-4">
+                  <Label>Pricing Details</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label>Price</Label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={selectedSection.content?.price || ''}
+                        onChange={(e) => updateSectionContent(selectedSection.id, { 
+                          content: { ...selectedSection.content, price: e.target.value } 
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Currency</Label>
+                      <Select 
+                        value={selectedSection.content?.currency || 'USD'} 
+                        onValueChange={(value) => updateSectionContent(selectedSection.id, { 
+                          content: { ...selectedSection.content, currency: value } 
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="EUR">EUR</SelectItem>
+                          <SelectItem value="GBP">GBP</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">

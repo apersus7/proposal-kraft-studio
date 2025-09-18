@@ -7,11 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building } from 'lucide-react';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { CompanyResearch } from '@/components/CompanyResearch';
+import DragDropEditor from '@/components/ProposalEditor/DragDropEditor';
+import ExportDialog from '@/components/ProposalEditor/ExportDialog';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -33,6 +35,7 @@ export default function ProposalEditor() {
   const [loading, setLoading] = useState(false);
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   const [proposal, setProposal] = useState<Proposal | null>(null);
+  const [editMode, setEditMode] = useState<'form' | 'drag'>('form');
 
   useEffect(() => {
     if (!user) {
@@ -216,6 +219,32 @@ export default function ProposalEditor() {
     }
   };
 
+  const convertToSections = () => {
+    if (!proposal?.content?.sections) return [];
+    
+    return proposal.content.sections.map((section: any, index: number) => ({
+      id: section.id || `section-${index}`,
+      type: section.type,
+      title: section.type.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+      content: { text: section.content },
+      order: index
+    }));
+  };
+
+  const updateSectionsFromDragDrop = (sections: any[]) => {
+    const updatedSections = sections.map(section => ({
+      type: section.type,
+      content: section.content.text,
+      id: section.id,
+      timeline: section.type === 'scope_of_work' ? getContentValue('scope_of_work', 'timeline') : undefined
+    }));
+
+    setProposal(prev => prev ? {
+      ...prev,
+      content: { ...prev.content, sections: updatedSections }
+    } : null);
+  };
+
   if (!user || !proposal) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center">
@@ -252,9 +281,14 @@ export default function ProposalEditor() {
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Export PDF
+                <ExportDialog proposal={proposal} />
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setEditMode(editMode === 'form' ? 'drag' : 'form')}
+                >
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  {editMode === 'form' ? 'Advanced Editor' : 'Form Editor'}
                 </Button>
                 <Button onClick={handleSave} disabled={loading} size="sm">
                   <Save className="h-4 w-4 mr-2" />
@@ -283,7 +317,13 @@ export default function ProposalEditor() {
           </TabsList>
           
           <TabsContent value="editor">
-            <div className="grid lg:grid-cols-2 gap-8">
+            {editMode === 'drag' ? (
+              <DragDropEditor 
+                sections={convertToSections()} 
+                onSectionsUpdate={updateSectionsFromDragDrop}
+              />
+            ) : (
+              <div className="grid lg:grid-cols-2 gap-8">
           {/* Editor */}
           <div className="space-y-6">
             <Card>
@@ -677,11 +717,12 @@ export default function ProposalEditor() {
                      </section>
                    </div>
                  </div>
-               </CardContent>
-             </Card>
-           </div>
-         </div>
-       </TabsContent>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+            )}
+        </TabsContent>
        
        <TabsContent value="research" className="space-y-6">
          <CompanyResearch 
