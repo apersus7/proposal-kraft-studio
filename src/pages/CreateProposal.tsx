@@ -69,9 +69,31 @@ export default function CreateProposal() {
 
   // Helpers to update content sections in local state
   const getContentValue = (sectionType: string, field?: string) => {
-    if (!proposalData.content?.sections) return field ? '' : {};
+    if (!proposalData.content?.sections) {
+      if (!field) return {};
+      // Return appropriate defaults for array fields
+      const arrayFields = ['timeline', 'deliverables', 'included', 'excluded', 'tools', 'advantages', 'case_studies', 'testimonials', 'team', 'packages'];
+      return arrayFields.includes(field) ? [] : '';
+    }
+    
     const section = proposalData.content.sections.find((s: any) => s.type === sectionType);
-    return section ? (field ? section[field] : section) : (field ? '' : {});
+    if (!section) {
+      if (!field) return {};
+      // Return appropriate defaults for array fields
+      const arrayFields = ['timeline', 'deliverables', 'included', 'excluded', 'tools', 'advantages', 'case_studies', 'testimonials', 'team', 'packages'];
+      return arrayFields.includes(field) ? [] : '';
+    }
+    
+    if (!field) return section;
+    
+    const value = section[field];
+    if (value === undefined || value === null) {
+      // Return appropriate defaults for array fields
+      const arrayFields = ['timeline', 'deliverables', 'included', 'excluded', 'tools', 'advantages', 'case_studies', 'testimonials', 'team', 'packages'];
+      return arrayFields.includes(field) ? [] : '';
+    }
+    
+    return value;
   };
 
   const updateSectionValue = (sectionType: string, field: string, value: any) => {
@@ -651,7 +673,7 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {(getContentValue('scope_of_work', 'timeline') || []).map((phase: any, index: number) => (
+                    {Array.isArray(getContentValue('scope_of_work', 'timeline')) ? getContentValue('scope_of_work', 'timeline').map((phase: any, index: number) => (
                       <div key={index} className="grid grid-cols-3 gap-3 p-3 border rounded-lg">
                         <div className="space-y-1">
                           <Label className="text-xs">Phase</Label>
@@ -678,7 +700,7 @@ export default function CreateProposal() {
                           />
                         </div>
                       </div>
-                    ))}
+                    )) : []}
                     <Button onClick={addScopeTimelinePhase} variant="outline" size="sm">
                       Add Phase
                     </Button>
@@ -925,11 +947,11 @@ export default function CreateProposal() {
                           <div>
                             <p className="text-xs font-medium text-gray-800 mb-1">Timeline:</p>
                             <div className="space-y-1">
-                              {getContentValue('scope_of_work', 'timeline').map((phase: any, idx: number) => (
+                              {Array.isArray(getContentValue('scope_of_work', 'timeline')) ? getContentValue('scope_of_work', 'timeline').map((phase: any, idx: number) => (
                                 <div key={idx} className="text-xs text-gray-700">
                                   <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
                                 </div>
-                              ))}
+                              )) : []}
                             </div>
                           </div>
                         )}
