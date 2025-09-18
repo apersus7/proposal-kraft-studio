@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -260,6 +260,10 @@ export default function ProposalEditor() {
     );
   }
 
+  const [searchParams] = useSearchParams();
+  const goTarget = searchParams.get('go');
+  const defaultTab = goTarget === 'signatures' ? 'signatures' : 'editor';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -285,7 +289,7 @@ export default function ProposalEditor() {
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
-                <ExportDialog proposal={proposal} />
+                <ExportDialog proposal={proposal} defaultOpen={goTarget === 'export'} />
                 <ProposalSharing 
                   proposalId={proposal.id} 
                   proposalTitle={proposal.title} 
@@ -294,6 +298,7 @@ export default function ProposalEditor() {
                   proposalId={proposal.id}
                   proposalAmount={proposal.content?.pricing}
                   proposalCurrency={proposal.content?.currency}
+                  defaultOpen={goTarget === 'payment'}
                 />
                 <ProposalAnalytics 
                   proposalId={proposal.id}
@@ -324,7 +329,7 @@ export default function ProposalEditor() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="editor" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="editor">Proposal Editor</TabsTrigger>
             <TabsTrigger value="research">

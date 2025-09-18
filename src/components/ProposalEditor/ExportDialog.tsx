@@ -12,9 +12,11 @@ import { toast } from '@/hooks/use-toast';
 interface ExportDialogProps {
   proposal: any;
   trigger?: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
-export default function ExportDialog({ proposal, trigger }: ExportDialogProps) {
+export default function ExportDialog({ proposal, trigger, defaultOpen = false }: ExportDialogProps) {
+  const [open, setOpen] = useState(!!defaultOpen);
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<'pdf' | 'image'>('pdf');
   const [includeSections, setIncludeSections] = useState({
@@ -213,7 +215,7 @@ export default function ExportDialog({ proposal, trigger }: ExportDialogProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm">

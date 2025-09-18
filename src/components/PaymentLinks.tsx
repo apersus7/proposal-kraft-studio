@@ -14,10 +14,11 @@ interface PaymentLinksProps {
   proposalId: string;
   proposalAmount?: string;
   proposalCurrency?: string;
+  defaultOpen?: boolean;
 }
 
-export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD' }: PaymentLinksProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD', defaultOpen = false }: PaymentLinksProps) {
+  const [isOpen, setIsOpen] = useState(!!defaultOpen);
   const [loading, setLoading] = useState(false);
   const [paymentLinks, setPaymentLinks] = useState<any[]>([]);
   const [paymentData, setPaymentData] = useState({
@@ -55,10 +56,6 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
   const createPayPalPaymentLink = async () => {
     setLoading(true);
     try {
-      // Get PayPal client configuration
-      const { data: configData, error: configError } = await supabase.functions.invoke('get-paypal-client-id');
-      if (configError) throw configError;
-
       // Create payment intent via edge function
       const { data, error } = await supabase.functions.invoke('create-payment-link', {
         body: {
@@ -73,12 +70,27 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
 
       if (error) throw error;
 
+      if (data?.approvalUrl) {
+        try { await navigator.clipboard.writeText(data.approvalUrl); } catch {}
+        setPaymentLinks(prev => [
+          ...prev,
+          {
+            id: data.id || `${Date.now()}`,
+            provider: 'PayPal',
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            description: paymentData.description || `Payment for Proposal`,
+            paymentType: paymentData.paymentType,
+            intervalType: paymentData.intervalType,
+            url: data.approvalUrl,
+          },
+        ]);
+      }
+
       toast({
         title: "Payment Link Created",
-        description: "PayPal payment link generated successfully"
+        description: data?.approvalUrl ? 'Link copied to clipboard' : 'PayPal payment link generated'
       });
-
-      fetchPaymentLinks();
     } catch (error) {
       console.error('Error creating payment link:', error);
       toast({
@@ -107,12 +119,27 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
 
       if (error) throw error;
 
+      if (data?.url) {
+        try { await navigator.clipboard.writeText(data.url); } catch {}
+        setPaymentLinks(prev => [
+          ...prev,
+          {
+            id: data.id || `${Date.now()}`,
+            provider: 'Stripe',
+            amount: paymentData.amount,
+            currency: paymentData.currency,
+            description: paymentData.description || `Payment for Proposal`,
+            paymentType: paymentData.paymentType,
+            intervalType: paymentData.intervalType,
+            url: data.url,
+          },
+        ]);
+      }
+
       toast({
         title: "Payment Link Created", 
-        description: "Stripe payment link generated successfully"
+        description: data?.url ? 'Link copied to clipboard' : 'Stripe payment link generated successfully'
       });
-
-      fetchPaymentLinks();
     } catch (error) {
       console.error('Error creating Stripe payment link:', error);
       toast({
@@ -296,6 +323,7 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
                 >
                   Create Stripe Link
                 </Button>
+                <p className="text-xs text-muted-foreground mt-2">Requires Stripe setup</p>
               </CardContent>
             </Card>
           </div>

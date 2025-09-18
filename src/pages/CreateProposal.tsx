@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles } from 'lucide-react';
+import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -156,8 +156,12 @@ export default function CreateProposal() {
   };
 
   const handleCreateProposal = async () => {
+    return createProposalAndNavigate();
+  };
+
+  const createProposalAndNavigate = async (go?: 'export' | 'payment' | 'signatures') => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -187,7 +191,9 @@ export default function CreateProposal() {
         description: "Proposal created successfully!"
       });
 
-      navigate(`/proposal/${data.id}`);
+      const suffix = go ? `?go=${go}` : '';
+      navigate(`/proposal/${data.id}${suffix}`);
+      return data.id;
     } catch (error) {
       console.error('Error creating proposal:', error);
       toast({
@@ -511,20 +517,45 @@ export default function CreateProposal() {
                   <CardHeader>
                     <CardTitle>Actions</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3">
                     <Button 
                       onClick={handleCreateProposal} 
                       disabled={loading}
                       className="w-full"
                     >
                       <Save className="h-4 w-4 mr-2" />
-                      {loading ? 'Creating...' : 'Save as Draft'}
+                      {loading ? 'Creating...' : 'Create Proposal'}
                     </Button>
-                    
-                    <Button variant="outline" className="w-full">
-                      <Eye className="h-4 w-4 mr-2" />
-                      Preview Full Proposal
-                    </Button>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => createProposalAndNavigate('export')}
+                        disabled={loading}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Create & Export
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => createProposalAndNavigate('payment')}
+                        disabled={loading}
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Create & Payment Link
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => createProposalAndNavigate('signatures')}
+                        disabled={loading}
+                      >
+                        <PenTool className="h-4 w-4 mr-2" />
+                        Create & E‑Sign
+                      </Button>
+                    </div>
                     
                     <Button variant="outline" onClick={() => setStep('details')}>
                       Back to Details
