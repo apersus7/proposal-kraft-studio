@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool } from 'lucide-react';
+import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool, Download } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -1027,7 +1027,7 @@ export default function CreateProposal() {
               <Button variant="outline" onClick={() => setStep('details')}>
                 Back to Details
               </Button>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <Button 
                   onClick={handleCreateProposal} 
                   disabled={loading}
@@ -1039,9 +1039,37 @@ export default function CreateProposal() {
                 <Button 
                   onClick={handleCreateProposal} 
                   disabled={loading}
+                  variant="secondary"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   {loading ? 'Creating...' : 'Create Proposal'}
+                </Button>
+                <Button 
+                  onClick={() => createProposalAndNavigate('export')} 
+                  disabled={loading}
+                  variant="outline"
+                  className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  {loading ? 'Creating...' : 'Create & Export'}
+                </Button>
+                <Button 
+                  onClick={() => createProposalAndNavigate('payment')} 
+                  disabled={loading}
+                  variant="outline"
+                  className="bg-green-50 hover:bg-green-100 border-green-200"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  {loading ? 'Creating...' : 'Create & Payment Link'}
+                </Button>
+                <Button 
+                  onClick={() => createProposalAndNavigate('signatures')} 
+                  disabled={loading}
+                  variant="outline"
+                  className="bg-purple-50 hover:bg-purple-100 border-purple-200"
+                >
+                  <PenTool className="h-4 w-4 mr-2" />
+                  {loading ? 'Creating...' : 'Create & E‑Sign'}
                 </Button>
               </div>
             </div>
