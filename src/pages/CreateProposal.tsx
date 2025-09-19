@@ -205,29 +205,55 @@ export default function CreateProposal() {
   const createProposalAndNavigate = async (go?: 'export' | 'payment' | 'signatures') => {
     if (!user) return;
 
+    // Validate required fields
+    if (!proposalData.title?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a proposal title",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!proposalData.client_name?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter client name",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
+      const proposalToInsert = {
+        user_id: user.id,
+        title: proposalData.title.trim(),
+        client_name: proposalData.client_name.trim(),
+        client_email: proposalData.client_email?.trim() || null,
+        content: {
+          sections: proposalData.content?.sections || [],
+          project_name: proposalData.project_name || '',
+          pricing: proposalData.pricing || 0,
+          currency: proposalData.currency || 'USD',
+          colorTheme: selectedColorTheme || 'blue'
+        },
+        template_id: selectedTemplate?.id || null,
+        status: 'draft'
+      };
+
+      console.log('Creating proposal with data:', proposalToInsert);
+
       const { data, error } = await supabase
         .from('proposals')
-        .insert({
-          user_id: user.id,
-          title: proposalData.title,
-          client_name: proposalData.client_name,
-          client_email: proposalData.client_email,
-          content: {
-            ...proposalData.content,
-            project_name: proposalData.project_name,
-            pricing: proposalData.pricing,
-            currency: proposalData.currency,
-            colorTheme: selectedColorTheme
-          },
-          template_id: selectedTemplate?.id,
-          status: 'draft'
-        })
+        .insert(proposalToInsert)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
         title: "Success",
