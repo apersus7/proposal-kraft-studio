@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_kits: {
+        Row: {
+          accent_color: string
+          created_at: string
+          font_primary: string
+          font_secondary: string
+          id: string
+          is_default: boolean
+          logo_url: string | null
+          name: string
+          primary_color: string
+          secondary_color: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string
+          created_at?: string
+          font_primary?: string
+          font_secondary?: string
+          id?: string
+          is_default?: boolean
+          logo_url?: string | null
+          name: string
+          primary_color?: string
+          secondary_color?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string
+          created_at?: string
+          font_primary?: string
+          font_secondary?: string
+          id?: string
+          is_default?: boolean
+          logo_url?: string | null
+          name?: string
+          primary_color?: string
+          secondary_color?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -43,6 +88,168 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      proposal_analytics: {
+        Row: {
+          device_type: string | null
+          id: string
+          proposal_id: string
+          section_viewed: string | null
+          time_spent: number | null
+          viewed_at: string
+          viewer_ip: string | null
+          viewer_location: string | null
+        }
+        Insert: {
+          device_type?: string | null
+          id?: string
+          proposal_id: string
+          section_viewed?: string | null
+          time_spent?: number | null
+          viewed_at?: string
+          viewer_ip?: string | null
+          viewer_location?: string | null
+        }
+        Update: {
+          device_type?: string | null
+          id?: string
+          proposal_id?: string
+          section_viewed?: string | null
+          time_spent?: number | null
+          viewed_at?: string
+          viewer_ip?: string | null
+          viewer_location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_analytics_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_signatures: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string | null
+          proposal_id: string
+          signature_data: string | null
+          signed_at: string | null
+          signer_email: string
+          signer_name: string
+          status: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          proposal_id: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email: string
+          signer_name: string
+          status?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          proposal_id?: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string
+          signer_name?: string
+          status?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_signatures_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          client_email: string | null
+          client_name: string
+          content: Json | null
+          created_at: string
+          id: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_email?: string | null
+          client_name: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_email?: string | null
+          client_name?: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      secure_proposal_shares: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          permissions: string
+          proposal_id: string
+          share_token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          permissions?: string
+          proposal_id: string
+          share_token?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          permissions?: string
+          proposal_id?: string
+          share_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secure_proposal_shares_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
