@@ -78,23 +78,30 @@ const Checkout = () => {
   const [paypalPlanIds, setPaypalPlanIds] = useState<any>(null);
   const [paypalEnv, setPaypalEnv] = useState<'live' | 'sandbox'>('live');
   useEffect(() => {
-    // Get PayPal client ID, client token, and plan IDs
+    // Get PayPal client ID and plan IDs; client token is optional
     const getPayPalCredentials = async () => {
       try {
-        const [clientIdResponse, clientTokenResponse, planIdsResponse] = await Promise.all([
+        const [clientIdResponse, planIdsResponse] = await Promise.all([
           supabase.functions.invoke('get-paypal-client-id'),
-          supabase.functions.invoke('generate-paypal-client-token'),
           supabase.functions.invoke('get-paypal-plan-ids')
         ]);
         
         if (clientIdResponse.error) throw clientIdResponse.error;
-        if (clientTokenResponse.error) throw clientTokenResponse.error;
         if (planIdsResponse.error) throw planIdsResponse.error;
         
         setPaypalClientId(clientIdResponse.data.clientId);
         setPaypalEnv((clientIdResponse.data.env as 'live' | 'sandbox') || 'live');
-        setClientToken(clientTokenResponse.data.clientToken);
         setPaypalPlanIds(planIdsResponse.data.planIds);
+
+        // Try to get a client token for hosted fields (optional)
+        try {
+          const clientTokenResponse = await supabase.functions.invoke('generate-paypal-client-token');
+          if (!clientTokenResponse.error && clientTokenResponse.data?.clientToken) {
+            setClientToken(clientTokenResponse.data.clientToken);
+          }
+        } catch (e) {
+          console.warn('Client token fetch optional failed:', e);
+        }
       } catch (error) {
         console.error('Error getting PayPal credentials:', error);
         toast({
@@ -111,13 +118,15 @@ const Checkout = () => {
   }, [user, selectedPlan, paypalPlanIds, toast]);
   
   useEffect(() => {
-    // Load PayPal SDK (respects live/sandbox) and provide client token for hosted fields
-    if (paypalClientId && clientToken && !paypalLoaded && !(window as any).paypal) {
+    // Load PayPal SDK (respects live/sandbox). Client token is optional for hosted fields
+    if (paypalClientId && !paypalLoaded && !(window as any).paypal) {
       const script = document.createElement('script');
       const domain = paypalEnv === 'sandbox' ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com';
       // Enhanced SDK loading with card fields and hosted fields for better card support
       script.src = `${domain}/sdk/js?client-id=${paypalClientId}&vault=true&intent=subscription&components=buttons,hosted-fields&enable-funding=card,venmo,paylater&disable-funding=sepa,bancontact,eps,giropay,ideal,mybank,p24,sofort&currency=USD`;
-      script.setAttribute('data-client-token', clientToken);
+      if (clientToken) {
+        script.setAttribute('data-client-token', clientToken);
+      }
       script.onload = () => {
         console.log('PayPal SDK loaded successfully');
         setPaypalLoaded(true);
@@ -139,7 +148,7 @@ const Checkout = () => {
   }, [paypalClientId, clientToken, paypalEnv, paypalLoaded, toast]);
   
   const createPayPalSubscription = () => {
-    if (!selectedPlan || !paypalPlanIds || !clientToken) return;
+    if (!selectedPlan || !paypalPlanIds) return;
     if (!(window as any).paypal) {
       console.error('PayPal SDK not available on window');
       return;
@@ -274,10 +283,10 @@ const Checkout = () => {
   };
   
   useEffect(() => {
-    if (paypalLoaded && selectedPlan && paypalPlanIds && clientToken) {
+    if (paypalLoaded && selectedPlan && paypalPlanIds) {
       createPayPalSubscription();
     }
-  }, [paypalLoaded, selectedPlan, paypalPlanIds, clientToken]);
+  }, [paypalLoaded, selectedPlan, paypalPlanIds]);
 
   if (!user) {
     return (
@@ -356,7 +365,7 @@ const Checkout = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {paypalLoaded && clientToken ? (
+                {paypalLoaded ? (
                   <div className="space-y-4">
                     <div className="text-center">
                       <h3 className="font-semibold mb-2">Complete Your Payment</h3>

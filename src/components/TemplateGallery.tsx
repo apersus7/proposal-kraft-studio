@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Filter, FileText, Star, Briefcase, Building, Code, Heart, Palette, TrendingUp, Users, Zap, Globe, ShoppingCart, Calendar, GraduationCap, Monitor, Rocket, Settings, Leaf, Scale, Camera, Utensils, Dumbbell, Plane, Music, Paintbrush, Smartphone, Video, Gift, Eye, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+const sb = supabase as any;
 
 interface Template {
   id: string;
@@ -232,7 +233,7 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
   const fetchTemplates = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('templates')
         .select('*')
         .eq('is_public', true)
@@ -241,14 +242,29 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
       if (error) throw error;
 
       // Combine fetched templates with starter templates
-      const combinedTemplates = [
-        ...starterTemplates.map((template, index) => ({
-          id: `starter-${Math.random().toString(36).substr(2, 9)}`,
-          ...template,
-          preview_image_url: null,
-          is_public: true
-        })),
-        ...(data || [])
+      const starter = starterTemplates.map((template) => ({
+        id: `starter-${Math.random().toString(36).substr(2, 9)}`,
+        ...template,
+        preview_image_url: null,
+        is_public: true
+      }));
+
+      const dbTemplates: Template[] = ((data || []) as any[]).map((d) => ({
+        id: d.id,
+        name: d.name || 'Untitled',
+        description: d.description || '',
+        preview_image_url: d.preview_image_url ?? null,
+        template_data: d.template_data ?? {},
+        is_public: !!d.is_public,
+        category: d.category || 'general',
+        industry: d.industry || 'general',
+        tags: Array.isArray(d.tags) ? d.tags : [],
+        preview_color: d.preview_color,
+      }));
+
+      const combinedTemplates: Template[] = [
+        ...starter,
+        ...dbTemplates,
       ];
 
       setTemplates(combinedTemplates);

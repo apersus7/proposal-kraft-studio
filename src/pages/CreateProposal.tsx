@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool, Download } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 import { CompanyResearch } from '@/components/CompanyResearch';
@@ -162,13 +163,13 @@ export default function CreateProposal() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
       
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await sb.storage
         .from('templates')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('templates')
         .insert({
           name: file.name.replace(/\.[^/.]+$/, ""),
@@ -244,7 +245,7 @@ export default function CreateProposal() {
 
       console.log('Creating proposal with data:', proposalToInsert);
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('proposals')
         .insert(proposalToInsert)
         .select()

@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     try {
       // Check subscription status from subscribers table
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('subscribers')
         .select('subscribed, subscription_tier, subscription_end')
         .or(`user_id.eq.${user.id},email.eq.${user.email}`)

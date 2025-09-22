@@ -12,6 +12,7 @@ import { Share2, Copy, Calendar as CalendarIcon, Link, Eye, Clock, Users } from 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+const sb = supabase as any;
 
 interface ProposalSharingProps {
   proposalId: string;
@@ -39,7 +40,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
-          created_by: (await supabase.auth.getUser()).data.user?.id,
+          created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: shareSettings.expiresAt?.toISOString(),
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
@@ -79,12 +80,12 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
     
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('proposal_shares')
         .insert({
           proposal_id: proposalId,
           shared_with_email: emailShare,
-          created_by: (await supabase.auth.getUser()).data.user?.id,
+          created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: shareSettings.expiresAt?.toISOString(),
           permissions: 'view'
         })
@@ -116,11 +117,11 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
   const fetchShareLinks = async () => {
     try {
       const [secureShares, emailShares] = await Promise.all([
-        supabase
+        sb
           .from('secure_proposal_shares')
           .select('*')
           .eq('proposal_id', proposalId),
-        supabase
+        sb
           .from('proposal_shares')
           .select('*')
           .eq('proposal_id', proposalId)
@@ -138,7 +139,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
   const revokeAccess = async (shareId: string, type: 'secure' | 'email') => {
     try {
       const table = type === 'secure' ? 'secure_proposal_shares' : 'proposal_shares';
-      const { error } = await supabase
+      const { error } = await sb
         .from(table)
         .delete()
         .eq('id', shareId);
