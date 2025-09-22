@@ -187,10 +187,14 @@ export type Database = {
           content: Json | null
           created_at: string
           id: string
+          last_viewed_at: string | null
+          payment_status: string | null
           status: string
           title: string
           updated_at: string
           user_id: string
+          view_count: number | null
+          worth: number | null
         }
         Insert: {
           client_email?: string | null
@@ -198,10 +202,14 @@ export type Database = {
           content?: Json | null
           created_at?: string
           id?: string
+          last_viewed_at?: string | null
+          payment_status?: string | null
           status?: string
           title: string
           updated_at?: string
           user_id: string
+          view_count?: number | null
+          worth?: number | null
         }
         Update: {
           client_email?: string | null
@@ -209,10 +217,14 @@ export type Database = {
           content?: Json | null
           created_at?: string
           id?: string
+          last_viewed_at?: string | null
+          payment_status?: string | null
           status?: string
           title?: string
           updated_at?: string
           user_id?: string
+          view_count?: number | null
+          worth?: number | null
         }
         Relationships: []
       }

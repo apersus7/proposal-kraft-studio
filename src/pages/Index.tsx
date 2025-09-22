@@ -1,23 +1,233 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FileText, Zap, Shield, Users } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
-// Using uploaded logo directly
+
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
+interface Proposal {
+  id: string;
+  title: string;
+  client_name: string;
+  status: string;
+  worth: number;
+  view_count: number;
+  last_viewed_at: string | null;
+  payment_status: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const Index = () => {
-  const { user } = useAuth();
+  const { user, loading, subscriptionStatus } = useAuth();
   const navigate = useNavigate();
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loadingProposals, setLoadingProposals] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
+    if (user && subscriptionStatus.subscribed) {
+      fetchProposals();
     }
-  }, [user, navigate]);
+  }, [user, subscriptionStatus]);
 
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = proposals.filter(proposal => 
+        proposal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        proposal.client_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProposals(filtered);
+    } else {
+      setFilteredProposals(proposals);
+    }
+  }, [searchQuery, proposals]);
+
+  const fetchProposals = async () => {
+    setLoadingProposals(true);
+    try {
+      const { data, error } = await supabase
+        .from('proposals')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      if (error) throw error;
+      setProposals(data || []);
+    } catch (error) {
+      console.error('Error fetching proposals:', error);
+    } finally {
+      setLoadingProposals(false);
+    }
+  };
+
+  const getStatusBadge = (proposal: Proposal) => {
+    if (proposal.payment_status === 'paid') {
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Payment Done</Badge>;
+    }
+    
+    if (proposal.status === 'sent' && proposal.view_count > 0) {
+      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Opened</Badge>;
+    }
+    
+    if (proposal.status === 'sent') {
+      return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Sent</Badge>;
+    }
+    
+    if (proposal.status === 'draft') {
+      return <Badge variant="secondary">Draft</Badge>;
+    }
+    
+    if (proposal.status === 'accepted') {
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Accepted</Badge>;
+    }
+    
+    return <Badge variant="outline">{proposal.status}</Badge>;
+  };
+
+  // If user is authenticated and has subscription, show proposals dashboard
+  if (user && subscriptionStatus.subscribed) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+        {/* Header */}
+        <header className="border-b bg-card/80 backdrop-blur">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-3">
+                <img src={logo} alt="ProposalKraft" className="h-8" />
+                <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" onClick={() => navigate('/settings')}>
+                  Settings
+                </Button>
+                <Button onClick={() => navigate('/create-proposal')}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Proposal
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Your Proposals</h2>
+              <p className="text-muted-foreground mt-2">
+                Manage and track your business proposals
+              </p>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="mb-6 flex items-center space-x-2">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search proposals by title or client..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {loadingProposals ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader className="pb-3">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-muted rounded w-full"></div>
+                      <div className="h-3 bg-muted rounded w-2/3"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredProposals.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                  <Plus className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No proposals yet</h3>
+                <p className="text-muted-foreground text-center max-w-sm mb-6">
+                  Get started by creating your first proposal. Choose from our professional templates.
+                </p>
+                <Button onClick={() => navigate('/create-proposal')}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Proposal
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredProposals.map((proposal) => (
+                <Card 
+                  key={proposal.id} 
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02]" 
+                  onClick={() => navigate(`/proposal/${proposal.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-lg line-clamp-2 flex-1 mr-2">
+                        {proposal.title}
+                      </CardTitle>
+                      {getStatusBadge(proposal)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Worth */}
+                    <div className="flex items-center space-x-2 text-lg font-semibold">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <span className="text-green-600">
+                        ${proposal.worth?.toLocaleString() || '0'}
+                      </span>
+                    </div>
+                    
+                    {/* Client Name */}
+                    <div className="flex items-center space-x-2">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground font-medium">
+                        {proposal.client_name}
+                      </span>
+                    </div>
+                    
+                    {/* View Stats */}
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-1">
+                        <Eye className="h-4 w-4" />
+                        <span>{proposal.view_count || 0} views</span>
+                      </div>
+                      <span>
+                        {new Date(proposal.updated_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  // If user is not authenticated or doesn't have subscription, show landing page
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
