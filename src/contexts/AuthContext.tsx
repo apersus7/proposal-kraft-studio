@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
   subscriptionStatus: {
     subscribed: boolean;
     subscription_tier?: string;
@@ -24,17 +25,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<{
     subscribed: boolean;
     subscription_tier?: string;
     subscription_end?: string;
   }>({ subscribed: false });
 
+  const checkAdminRole = async () => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking admin role:', error);
+        setIsAdmin(false);
+        return;
+      }
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      console.error('Error checking admin role:', error);
+      setIsAdmin(false);
+    }
+  };
+
   const checkSubscription = async () => {
     if (!user) {
       setSubscriptionStatus({ subscribed: false });
       return;
     }
+    
+    // Check if user is admin first
+    await checkAdminRole();
     
     try {
       // Check subscription status from subscribers table
@@ -76,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }, 0);
         } else {
           setSubscriptionStatus({ subscribed: false });
+          setIsAdmin(false);
         }
       }
     );
@@ -183,7 +216,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       session,
       loading,
-      subscriptionStatus,
+      isAdmin,
+      subscriptionStatus: {
+        ...subscriptionStatus,
+        subscribed: subscriptionStatus.subscribed || isAdmin // Admin users have access to all features
+      },
       checkSubscription,
       signUp,
       signIn,
