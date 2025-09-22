@@ -10,14 +10,14 @@ const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user, loading, subscriptionStatus } = useAuth();
+  const { user, loading } = useAuth();
 
-  // Redirect authenticated users with subscriptions to home dashboard
+  // Redirect authenticated users to home dashboard
   useEffect(() => {
-    if (!loading && user && subscriptionStatus.subscribed) {
+    if (!loading && user) {
       navigate('/');
     }
-  }, [user, loading, subscriptionStatus, navigate]);
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">

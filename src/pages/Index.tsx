@@ -25,7 +25,7 @@ interface Proposal {
 }
 
 const Index = () => {
-  const { user, loading, subscriptionStatus } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
@@ -33,10 +33,10 @@ const Index = () => {
   const [loadingProposals, setLoadingProposals] = useState(false);
 
   useEffect(() => {
-    if (user && subscriptionStatus.subscribed) {
+    if (user) {
       fetchProposals();
     }
-  }, [user, subscriptionStatus]);
+  }, [user]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -91,8 +91,8 @@ const Index = () => {
     return <Badge variant="outline">{proposal.status}</Badge>;
   };
 
-  // If user is authenticated and has subscription, show proposals dashboard
-  if (user && subscriptionStatus.subscribed) {
+  // If user is authenticated, show proposals dashboard
+  if (user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
         {/* Header */}
@@ -227,7 +227,7 @@ const Index = () => {
     );
   }
 
-  // If user is not authenticated or doesn't have subscription, show landing page
+  // If user is not authenticated, show landing page
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}

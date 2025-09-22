@@ -26,7 +26,7 @@ interface Profile {
 }
 
 export default function Dashboard() {
-  const { user, signOut, loading, subscriptionStatus } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
@@ -37,17 +37,15 @@ export default function Dashboard() {
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
-    } else if (user && !loading && !subscriptionStatus.subscribed) {
-      navigate('/pricing');
     }
-  }, [user, loading, navigate, subscriptionStatus]);
+  }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (user && subscriptionStatus.subscribed) {
+    if (user) {
       fetchProposals();
       fetchProfile();
     }
-  }, [user, subscriptionStatus]);
+  }, [user]);
 
   useEffect(() => {
     if (searchQuery) {

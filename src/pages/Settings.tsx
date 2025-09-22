@@ -44,7 +44,7 @@ interface Profile {
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { user, subscriptionStatus } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -165,8 +165,8 @@ export default function Settings() {
                 <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
-            <Badge variant={subscriptionStatus.subscribed ? "default" : "secondary"}>
-              {subscriptionStatus.subscribed ? `${subscriptionStatus.subscription_tier} Plan` : 'Free Plan'}
+            <Badge variant="default">
+              All Features Enabled
             </Badge>
           </div>
         </div>
@@ -321,102 +321,20 @@ export default function Settings() {
                     <div>
                       <h3 className="font-medium">Current Plan</h3>
                       <p className="text-sm text-muted-foreground">
-                        {subscriptionStatus.subscribed 
-                          ? `${subscriptionStatus.subscription_tier} - Active until ${new Date(subscriptionStatus.subscription_end || '').toLocaleDateString()}`
-                          : 'Free Plan - Limited features'
-                        }
+                        All features enabled - No subscription required
                       </p>
                     </div>
-                    <Badge variant={subscriptionStatus.subscribed ? "default" : "secondary"}>
-                      {subscriptionStatus.subscribed ? 'Active' : 'Free'}
+                    <Badge variant="default">
+                      Active
                     </Badge>
                   </div>
                 </div>
 
-                {!subscriptionStatus.subscribed && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Upgrade Your Plan</h3>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Freelance</CardTitle>
-                          <CardDescription>$19/month</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-2 text-sm">
-                            <li>✓ 5 proposals (with watermark)</li>
-                            <li>✓ Unlimited templates</li>
-                            <li>✓ Tracking & E-signature</li>
-                            <li>✓ Export in various formats</li>
-                          </ul>
-                          <Button 
-                            variant="outline" 
-                            className="mt-4 w-full"
-                            onClick={() => navigate('/checkout?plan=freelance')}
-                          >
-                            Get Started
-                          </Button>
-                        </CardContent>
-                      </Card>
-
-                      <Card className="border-primary">
-                        <CardHeader>
-                          <CardTitle>Agency</CardTitle>
-                          <CardDescription>$49/month</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-2 text-sm">
-                            <li>✓ Unlimited proposals</li>
-                            <li>✓ CRM integration</li>
-                            <li>✓ Team collaboration</li>
-                            <li>✓ Custom templates</li>
-                          </ul>
-                          <Button 
-                            className="mt-4 w-full"
-                            onClick={() => navigate('/checkout?plan=agency')}
-                          >
-                            Start Free Trial
-                          </Button>
-                        </CardContent>
-                      </Card>
-
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Enterprise</CardTitle>
-                          <CardDescription>$69/month</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-2 text-sm">
-                            <li>✓ Everything in Agency</li>
-                            <li>✓ Payment integration</li>
-                            <li>✓ Advanced features</li>
-                            <li>✓ Priority support</li>
-                          </ul>
-                          <Button 
-                            variant="outline" 
-                            className="mt-4 w-full"
-                            onClick={() => navigate('/checkout?plan=enterprise')}
-                          >
-                            Get Enterprise
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-                )}
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Payment Methods</h3>
-                  <div className="p-4 border rounded-lg border-dashed">
-                    <p className="text-center text-muted-foreground">
-                      No payment methods on file
-                    </p>
-                    <Button variant="outline" className="w-full mt-4">
-                      Add Payment Method
-                    </Button>
-                  </div>
+                <div className="text-center p-8 border rounded-lg border-dashed">
+                  <h3 className="font-medium mb-2">Free Access</h3>
+                  <p className="text-sm text-muted-foreground">
+                    All features are currently available at no cost. Enjoy creating unlimited proposals!
+                  </p>
                 </div>
               </CardContent>
             </Card>
