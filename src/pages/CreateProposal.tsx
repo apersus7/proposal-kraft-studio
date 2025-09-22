@@ -35,7 +35,7 @@ export default function CreateProposal() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [step, setStep] = useState<'template' | 'theme' | 'details' | 'content'>('template');
+  const [step, setStep] = useState<'details' | 'theme' | 'template' | 'content'>('details');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   
@@ -151,7 +151,7 @@ export default function CreateProposal() {
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
     setProposalData(prev => ({ ...prev, content: template.template_data }));
-    setStep('theme');
+    setStep('content');
   };
 
   const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -295,13 +295,149 @@ export default function CreateProposal() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">Step {step === 'template' ? '1' : step === 'theme' ? '2' : step === 'details' ? '3' : '4'} of 4</Badge>
+              <Badge variant="outline">Step {step === 'details' ? '1' : step === 'theme' ? '2' : step === 'template' ? '3' : '4'} of 4</Badge>
             </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {step === 'details' && (
+          <div>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold tracking-tight">Project Details</h1>
+              <p className="text-muted-foreground">
+                Let's start with the basic information about your project and client
+              </p>
+            </div>
+
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Briefcase className="h-5 w-5" />
+                  Project Information
+                </CardTitle>
+                <CardDescription>
+                  Tell us about your project and who you're creating this proposal for
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Project Title *</Label>
+                  <Input
+                    id="title"
+                    value={proposalData.title}
+                    onChange={(e) => setProposalData(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Website Redesign Project"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="project_name">Service to be Delivered *</Label>
+                  <Textarea
+                    id="project_name"
+                    value={proposalData.project_name}
+                    onChange={(e) => setProposalData(prev => ({ ...prev, project_name: e.target.value }))}
+                    placeholder="e.g., Complete website redesign with modern UI/UX, responsive design, and content management system"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="pricing">Total Project Value *</Label>
+                  <div className="flex space-x-2">
+                    <Select
+                      value={proposalData.currency}
+                      onValueChange={(value) => setProposalData(prev => ({ ...prev, currency: value }))}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USD">USD ($)</SelectItem>
+                        <SelectItem value="EUR">EUR (€)</SelectItem>
+                        <SelectItem value="GBP">GBP (£)</SelectItem>
+                        <SelectItem value="CAD">CAD ($)</SelectItem>
+                        <SelectItem value="AUD">AUD ($)</SelectItem>
+                        <SelectItem value="JPY">JPY (¥)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="pricing"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={proposalData.pricing}
+                      onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
+                      placeholder="15000"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t pt-6">
+                  <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Client Information
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="client_name">Client Name *</Label>
+                      <Input
+                        id="client_name"
+                        value={proposalData.client_name}
+                        onChange={(e) => setProposalData(prev => ({ ...prev, client_name: e.target.value }))}
+                        placeholder="e.g., Acme Corporation or John Smith"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="client_email">Client Email *</Label>
+                      <Input
+                        id="client_email"
+                        type="email"
+                        value={proposalData.client_email}
+                        onChange={(e) => {
+                          const email = e.target.value;
+                          if (email === '' || /^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]*$/.test(email)) {
+                            setProposalData(prev => ({ ...prev, client_email: email }));
+                          }
+                        }}
+                        placeholder="contact@acme.com"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-6">
+                  <Button variant="outline" onClick={() => navigate('/dashboard')}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={() => setStep('theme')}
+                    disabled={!proposalData.title || !proposalData.client_name || !proposalData.client_email || !proposalData.project_name || !proposalData.pricing}
+                    className="flex-1"
+                  >
+                    Continue to Theme Selection
+                    <Palette className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {step === 'theme' && (
+          <ColorThemeSelector
+            selectedTheme={selectedColorTheme}
+            onThemeSelect={setSelectedColorTheme}
+            onNext={() => setStep('template')}
+            onBack={() => setStep('details')}
+          />
+        )}
+
         {step === 'template' && (
           <div>
             <div className="mb-8">
@@ -343,16 +479,7 @@ export default function CreateProposal() {
           </div>
         )}
 
-        {step === 'theme' && (
-          <ColorThemeSelector
-            selectedTheme={selectedColorTheme}
-            onThemeSelect={setSelectedColorTheme}
-            onNext={() => setStep('details')}
-            onBack={() => setStep('template')}
-          />
-        )}
-
-        {step === 'details' && (
+        {step === 'content' && (
           <div>
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tight">Proposal Details</h1>
