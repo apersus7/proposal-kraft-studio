@@ -34,13 +34,11 @@ interface Profile {
   id: string;
   user_id: string;
   company_name: string | null;
-  company_email: string | null;
-  company_phone: string | null;
-  company_address: string | null;
-  company_website: string | null;
-  company_logo_url: string | null;
-  brand_color_primary: string | null;
-  brand_color_secondary: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  email: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 
@@ -134,7 +132,7 @@ export default function Settings() {
         .from('logos')
         .getPublicUrl(fileName);
 
-      await handleProfileUpdate({ company_logo_url: data.publicUrl });
+      await handleProfileUpdate({ avatar_url: data.publicUrl });
       setLogoFile(null);
     } catch (error) {
       console.error('Error uploading logo:', error);
@@ -262,57 +260,26 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="company_email">Company Email</Label>
+                    <Label htmlFor="display_name">Display Name</Label>
                     <Input
-                      id="company_email"
-                      type="email"
-                      value={profile?.company_email || ''}
-                      onChange={(e) => setProfile(prev => prev ? { ...prev, company_email: e.target.value } : null)}
-                      placeholder="contact@acme.com"
+                      id="display_name"
+                      value={profile?.display_name || ''}
+                      onChange={(e) => setProfile(prev => prev ? { ...prev, display_name: e.target.value } : null)}
+                      placeholder="John Doe"
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="company_phone">Phone Number</Label>
-                    <Input
-                      id="company_phone"
-                      value={profile?.company_phone || ''}
-                      onChange={(e) => setProfile(prev => prev ? { ...prev, company_phone: e.target.value } : null)}
-                      placeholder="+1 (555) 123-4567"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="company_website">Website</Label>
-                    <Input
-                      id="company_website"
-                      value={profile?.company_website || ''}
-                      onChange={(e) => setProfile(prev => prev ? { ...prev, company_website: e.target.value } : null)}
-                      placeholder="https://acme.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="company_address">Address</Label>
-                  <Input
-                    id="company_address"
-                    value={profile?.company_address || ''}
-                    onChange={(e) => setProfile(prev => prev ? { ...prev, company_address: e.target.value } : null)}
-                    placeholder="123 Main St, City, State 12345"
-                  />
                 </div>
 
                 <Separator />
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Company Logo</h3>
+                  <h3 className="text-lg font-medium">Avatar</h3>
                   <div className="flex items-center space-x-4">
-                    {profile?.company_logo_url && (
+                    {profile?.avatar_url && (
                       <img 
-                        src={profile.company_logo_url} 
-                        alt="Company Logo" 
-                        className="h-16 w-16 rounded-lg object-contain border"
+                        src={profile.avatar_url} 
+                        alt="Avatar" 
+                        className="h-16 w-16 rounded-full object-cover border"
                       />
                     )}
                     <div className="space-y-2">
@@ -327,49 +294,8 @@ export default function Settings() {
                         size="sm"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        Upload Logo
+                        Upload Avatar
                       </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Brand Colors</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="primary_color">Primary Color</Label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          id="primary_color"
-                          type="color"
-                          value={profile?.brand_color_primary || '#22c55e'}
-                          onChange={(e) => setProfile(prev => prev ? { ...prev, brand_color_primary: e.target.value } : null)}
-                          className="w-16 h-10"
-                        />
-                        <Input
-                          value={profile?.brand_color_primary || '#22c55e'}
-                          onChange={(e) => setProfile(prev => prev ? { ...prev, brand_color_primary: e.target.value } : null)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="secondary_color">Secondary Color</Label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          id="secondary_color"
-                          type="color"
-                          value={profile?.brand_color_secondary || '#16a34a'}
-                          onChange={(e) => setProfile(prev => prev ? { ...prev, brand_color_secondary: e.target.value } : null)}
-                          className="w-16 h-10"
-                        />
-                        <Input
-                          value={profile?.brand_color_secondary || '#16a34a'}
-                          onChange={(e) => setProfile(prev => prev ? { ...prev, brand_color_secondary: e.target.value } : null)}
-                        />
-                      </div>
                     </div>
                   </div>
                 </div>

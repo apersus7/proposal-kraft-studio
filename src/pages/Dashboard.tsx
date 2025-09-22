@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Plus, FileText, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -18,29 +19,47 @@ interface Proposal {
 }
 
 interface Profile {
-  company_name: string;
-  company_logo_url: string | null;
+  company_name: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  email: string | null;
 }
 
 export default function Dashboard() {
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading, subscriptionStatus } = useAuth();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
+    } else if (user && !loading && !subscriptionStatus.subscribed) {
+      navigate('/pricing');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, subscriptionStatus]);
 
   useEffect(() => {
-    if (user) {
+    if (user && subscriptionStatus.subscribed) {
       fetchProposals();
       fetchProfile();
     }
-  }, [user]);
+  }, [user, subscriptionStatus]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = proposals.filter(proposal => 
+        proposal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        proposal.client_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProposals(filtered);
+    } else {
+      setFilteredProposals(proposals);
+    }
+  }, [searchQuery, proposals]);
 
   const fetchProposals = async () => {
     try {
@@ -62,7 +81,7 @@ export default function Dashboard() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('company_name, company_logo_url')
+        .select('company_name, display_name, avatar_url, email')
         .eq('user_id', user?.id)
         .single();
 
@@ -139,6 +158,17 @@ export default function Dashboard() {
           </Button>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <Input
+            type="text"
+            placeholder="Search proposals by title or client name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
+
         {loadingData ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
@@ -170,7 +200,7 @@ export default function Dashboard() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {proposals.map((proposal) => (
+            {filteredProposals.map((proposal) => (
               <Card key={proposal.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate(`/proposal/${proposal.id}`)}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
