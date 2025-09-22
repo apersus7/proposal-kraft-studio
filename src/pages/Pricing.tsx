@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,7 +10,14 @@ const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading, subscriptionStatus } = useAuth();
+
+  // Redirect authenticated users with subscriptions to home dashboard
+  useEffect(() => {
+    if (!loading && user && subscriptionStatus.subscribed) {
+      navigate('/');
+    }
+  }, [user, loading, subscriptionStatus, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -31,12 +39,20 @@ const Pricing = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              <Link to="/auth">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link to="/auth">
-                <Button>Get Started</Button>
-              </Link>
+              {user ? (
+                <Button onClick={() => navigate('/')}>
+                  Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" onClick={() => navigate('/auth')}>
+                    Sign In
+                  </Button>
+                  <Button onClick={() => navigate('/auth')}>
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
