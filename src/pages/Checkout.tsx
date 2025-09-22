@@ -82,8 +82,8 @@ const Checkout = () => {
     const getPayPalCredentials = async () => {
       try {
         const [clientIdResponse, planIdsResponse] = await Promise.all([
-          supabase.functions.invoke('get-paypal-client-id'),
-          supabase.functions.invoke('get-paypal-plan-ids')
+          supabase.functions.invoke('get-payment-client-id'),
+          supabase.functions.invoke('get-plan-ids')
         ]);
         
         if (clientIdResponse.error) throw clientIdResponse.error;
@@ -95,7 +95,7 @@ const Checkout = () => {
 
         // Try to get a client token for hosted fields (optional)
         try {
-          const clientTokenResponse = await supabase.functions.invoke('generate-paypal-client-token');
+          const clientTokenResponse = await supabase.functions.invoke('generate-payment-client-token');
           if (!clientTokenResponse.error && clientTokenResponse.data?.clientToken) {
             setClientToken(clientTokenResponse.data.clientToken);
           }
