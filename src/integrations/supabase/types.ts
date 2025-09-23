@@ -190,6 +190,7 @@ export type Database = {
           last_viewed_at: string | null
           payment_status: string | null
           status: string
+          template_id: string | null
           title: string
           updated_at: string
           user_id: string
@@ -205,6 +206,7 @@ export type Database = {
           last_viewed_at?: string | null
           payment_status?: string | null
           status?: string
+          template_id?: string | null
           title: string
           updated_at?: string
           user_id: string
@@ -220,13 +222,22 @@ export type Database = {
           last_viewed_at?: string | null
           payment_status?: string | null
           status?: string
+          template_id?: string | null
           title?: string
           updated_at?: string
           user_id?: string
           view_count?: number | null
           worth?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "proposals_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       secure_proposal_shares: {
         Row: {

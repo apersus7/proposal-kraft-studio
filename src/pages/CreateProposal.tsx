@@ -609,116 +609,19 @@ export default function CreateProposal() {
 
         {step === 'content' && (
           <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Proposal Details</h1>
-              <p className="text-muted-foreground">
-                Enter the basic information for your proposal
-              </p>
+            <div className="mb-8 flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Customize Content</h1>
+                <p className="text-muted-foreground">
+                  Edit and customize every section of your proposal
+                </p>
+              </div>
+              <Button variant="outline" onClick={() => setStep('details')}>
+                Edit Basic Information
+              </Button>
             </div>
 
-            <Card className="max-w-2xl">
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>
-                  Fill in the details about your proposal and client
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Proposal Title</Label>
-                  <Input
-                    id="title"
-                    value={proposalData.title}
-                    onChange={(e) => setProposalData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Website Redesign Proposal"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="client_name">Client Name</Label>
-                  <Input
-                    id="client_name"
-                    value={proposalData.client_name}
-                    onChange={(e) => setProposalData(prev => ({ ...prev, client_name: e.target.value }))}
-                    placeholder="Acme Corporation"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="client_email">Client Email</Label>
-                  <Input
-                    id="client_email"
-                    type="email"
-                    value={proposalData.client_email}
-                    onChange={(e) => {
-                      const email = e.target.value;
-                      if (email === '' || /^[a-zA-Z0-9._%+-]*@?[a-zA-Z0-9.-]*\.?[a-zA-Z]*$/.test(email)) {
-                        setProposalData(prev => ({ ...prev, client_email: email }));
-                      }
-                    }}
-                    placeholder="contact@acme.com"
-                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="project_name">Service to be Delivered</Label>
-                  <Input
-                    id="project_name"
-                    value={proposalData.project_name}
-                    onChange={(e) => setProposalData(prev => ({ ...prev, project_name: e.target.value }))}
-                    placeholder="Website Redesign & Development"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pricing">Total Project Value</Label>
-                  <div className="flex space-x-2">
-                    <Select
-                      value={proposalData.currency}
-                      onValueChange={(value) => setProposalData(prev => ({ ...prev, currency: value }))}
-                    >
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="USD">USD ($)</SelectItem>
-                        <SelectItem value="EUR">EUR (€)</SelectItem>
-                        <SelectItem value="GBP">GBP (£)</SelectItem>
-                        <SelectItem value="CAD">CAD ($)</SelectItem>
-                        <SelectItem value="AUD">AUD ($)</SelectItem>
-                        <SelectItem value="JPY">JPY (¥)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      id="pricing"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={proposalData.pricing}
-                      onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
-                      placeholder="15000"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <Button variant="outline" onClick={() => setStep('theme')}>
-                    Back
-                  </Button>
-                  <Button 
-                    onClick={() => setStep('content')}
-                    disabled={!proposalData.title || !proposalData.client_name || !proposalData.project_name || !proposalData.pricing}
-                  >
-                    Continue to Content
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="mt-8">
+            <div className="mb-8">
               <Card className="max-w-3xl">
                 <CardHeader>
                   <CardTitle>Company Research & Analysis</CardTitle>
@@ -739,17 +642,6 @@ export default function CreateProposal() {
                   />
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        )}
-
-        {step === 'content' && (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Customize Content</h1>
-              <p className="text-muted-foreground">
-                Edit and customize every section of your proposal
-              </p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">
