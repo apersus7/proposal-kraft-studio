@@ -139,10 +139,19 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
       setTemplates([...dbTemplates, ...starter]);
     } catch (error) {
       console.error('Error loading templates:', error);
+      
+      // Fallback to starter templates if database fails
+      const starter = starterTemplates.map((template) => ({
+        id: `starter-${Math.random().toString(36).substr(2, 9)}`,
+        ...template,
+        preview_image_url: null,
+        is_public: true
+      }));
+      setTemplates(starter);
+      
       toast({
-        title: "Error", 
-        description: "Failed to load templates",
-        variant: "destructive"
+        title: "Templates loaded", 
+        description: "Using default templates"
       });
     } finally {
       setLoading(false);
