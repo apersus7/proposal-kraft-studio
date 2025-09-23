@@ -368,8 +368,8 @@ export default function Settings() {
                             <span>Export in various formats</span>
                           </div>
                         </div>
-                        <Button variant="outline" className="w-full" disabled>
-                          Current Plan
+                        <Button variant="outline" className="w-full">
+                          Subscribe
                         </Button>
                       </CardContent>
                     </Card>
@@ -427,8 +427,8 @@ export default function Settings() {
                             <span>Team collaboration</span>
                           </div>
                         </div>
-                        <Button className="w-full" disabled>
-                          Current Plan
+                        <Button className="w-full">
+                          Subscribe
                         </Button>
                       </CardContent>
                     </Card>
@@ -487,8 +487,8 @@ export default function Settings() {
                             <span>Team collaboration</span>
                           </div>
                         </div>
-                        <Button variant="outline" className="w-full" disabled>
-                          Current Plan
+                        <Button variant="outline" className="w-full">
+                          Subscribe
                         </Button>
                       </CardContent>
                     </Card>
