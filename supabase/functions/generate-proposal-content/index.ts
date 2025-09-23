@@ -7,98 +7,44 @@ const corsHeaders = {
 
 // Simple content templates for different sections
 const contentTemplates = {
-  'executive_summary': (context: string) => `
-## Executive Summary
+  'executive_summary': (context: string) => `Based on your requirements for ${context}, we provide a comprehensive solution that addresses your key business objectives:
 
-Based on your requirements for ${context}, we have developed a comprehensive solution that addresses your key business objectives. Our approach combines industry best practices with innovative strategies to deliver measurable results.
-
-**Key Benefits:**
 • Strategic alignment with your business goals
-• Proven methodologies and frameworks
+• Proven methodologies and frameworks  
 • Experienced team with relevant expertise
 • Clear timeline and deliverables
 • Competitive pricing with exceptional value
 
-**Expected Outcomes:**
-We anticipate significant improvements in efficiency, cost savings, and overall business performance. Our solution is designed to provide both immediate impact and long-term sustainable growth.
-`,
+Expected outcomes include improved efficiency, cost savings, and measurable business performance improvements.`,
   
-  'scope_of_work': (context: string) => `
-## Scope of Work
+  'scope_of_work': (context: string) => `This project focuses on ${context} and includes:
 
-### Project Overview
-This project focuses on ${context} and includes the following key components:
+• Current state assessment and requirements gathering
+• Solution development with testing and quality assurance  
+• Training and knowledge transfer
+• Post-implementation support and optimization
+• Performance monitoring and improvement recommendations
 
-### Deliverables
-1. **Analysis & Planning Phase**
-   - Current state assessment
-   - Requirements gathering
-   - Strategic planning documentation
+The project is structured in phases to ensure systematic progress and regular milestone reviews.`,
 
-2. **Implementation Phase**
-   - Solution development
-   - Testing and quality assurance
-   - Training and knowledge transfer
+  'pricing': (context: string) => `Professional services breakdown:
 
-3. **Support & Optimization**
-   - Post-implementation support
-   - Performance monitoring
-   - Continuous improvement recommendations
+• Discovery & Planning: Assessment, strategic planning, documentation
+• Implementation: Core development, testing, training
+• Support & Optimization: 3-month support, performance optimization
 
-### Timeline
-The project is structured in phases to ensure systematic progress and regular milestone reviews.
-`,
+Payment terms typically include milestone-based payments with project management, reporting, and standard revisions included.`,
 
-  'pricing': (context: string) => `
-## Investment & Pricing
+  'about_us': (context: string) => `We deliver exceptional results that drive business growth and success. With extensive experience in ${context}, we understand your industry challenges and opportunities:
 
-### Professional Services Package
+• Proven track record with 100+ completed projects
+• Deep industry knowledge and expertise
+• Certified professionals with relevant skills
+• Rigorous quality assurance processes
+• Results-driven approach with transparent communication
+• Flexible solutions adaptable to specific needs
 
-**Phase 1: Discovery & Planning**
-- Comprehensive assessment: $5,000
-- Strategic planning: $3,000
-- Documentation: $2,000
-
-**Phase 2: Implementation**
-- Core development: $15,000
-- Testing & QA: $5,000
-- Training: $3,000
-
-**Phase 3: Support & Optimization**
-- 3-month support: $6,000
-- Performance optimization: $4,000
-
-### Total Investment: $43,000
-
-**Payment Terms:**
-- 25% upon contract signing
-- 50% at project milestones
-- 25% upon completion
-
-*All pricing includes project management, regular reporting, and standard revisions.*
-`,
-
-  'about_us': (context: string) => `
-## About Our Company
-
-### Our Mission
-We are dedicated to delivering exceptional results that drive business growth and success. With years of experience in ${context}, we understand the challenges and opportunities in your industry.
-
-### Our Expertise
-• **Proven Track Record:** Successfully completed 100+ projects
-• **Industry Experience:** Deep knowledge in your sector
-• **Expert Team:** Certified professionals with relevant expertise
-• **Quality Commitment:** Rigorous quality assurance processes
-
-### Why Choose Us
-1. **Results-Driven Approach:** Focus on measurable outcomes
-2. **Transparent Communication:** Regular updates and clear reporting
-3. **Flexible Solutions:** Adaptable to your specific needs
-4. **Ongoing Support:** Commitment beyond project completion
-
-### Client Success Stories
-Our clients have achieved an average of 30% improvement in efficiency and 25% cost reduction through our solutions.
-`
+Our clients typically achieve 30% efficiency improvements and 25% cost reductions through our solutions.`
 };
 
 serve(async (req) => {
@@ -120,21 +66,14 @@ serve(async (req) => {
       generatedContent = templateFunction(context || 'your business needs');
     } else {
       // Default content for unknown sections
-      generatedContent = `
-## ${section.charAt(0).toUpperCase() + section.slice(1).replace('_', ' ')}
+      generatedContent = `Based on your requirements for ${context || 'this project'}, this ${section.replace('_', ' ')} section covers:
 
-Based on your requirements for ${context || 'this project'}, we have prepared the following information:
-
-This section addresses the key aspects of ${section.replace('_', ' ')} relevant to your business objectives. Our approach ensures comprehensive coverage of all necessary components while maintaining focus on practical implementation and measurable results.
-
-**Key Points:**
-• Tailored to your specific requirements
-• Industry best practices implementation
+• Tailored approach to your specific requirements
+• Industry best practices implementation  
 • Clear deliverables and timelines
 • Ongoing support and optimization
 
-We believe this approach will provide significant value and help achieve your desired outcomes.
-`;
+This approach provides significant value and helps achieve your desired outcomes.`;
     }
 
     console.log('Generated content successfully');

@@ -992,40 +992,23 @@ export default function CreateProposal() {
                 {/* Pricing */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Investment & Pricing</CardTitle>
+                    <CardTitle className="flex items-center justify-between">
+                      Investment & Pricing
+                      <Button 
+                        onClick={() => generateAIContent('pricing', proposalData.project_name)}
+                        disabled={generatingAI === 'pricing'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'pricing' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </CardTitle>
                     <CardDescription>
-                      Project cost and payment terms
+                      Payment terms and pricing breakdown
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Total Investment</Label>
-                        <Input
-                          value={proposalData.pricing}
-                          onChange={(e) => setProposalData(prev => ({ ...prev, pricing: e.target.value }))}
-                          placeholder="15000"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Currency</Label>
-                        <Select
-                          value={proposalData.currency}
-                          onValueChange={(value) => setProposalData(prev => ({ ...prev, currency: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="EUR">EUR (€)</SelectItem>
-                            <SelectItem value="GBP">GBP (£)</SelectItem>
-                            <SelectItem value="CAD">CAD ($)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    
                     <div className="space-y-2">
                       <Label>Payment Terms</Label>
                       <Textarea
@@ -1281,7 +1264,7 @@ export default function CreateProposal() {
             {/* Action Buttons */}
             <div className="mt-8 flex justify-between">
               <Button variant="outline" onClick={() => setStep('details')}>
-                Back to Details
+                Edit Basic Information
               </Button>
               <div className="flex flex-wrap gap-3">
                 <Button 
