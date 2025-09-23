@@ -266,6 +266,54 @@ export type Database = {
           },
         ]
       }
+      templates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          industry: string
+          is_public: boolean
+          name: string
+          preview_color: string | null
+          preview_image_url: string | null
+          tags: string[] | null
+          template_data: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          industry?: string
+          is_public?: boolean
+          name: string
+          preview_color?: string | null
+          preview_image_url?: string | null
+          tags?: string[] | null
+          template_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          industry?: string
+          is_public?: boolean
+          name?: string
+          preview_color?: string | null
+          preview_image_url?: string | null
+          tags?: string[] | null
+          template_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

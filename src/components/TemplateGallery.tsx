@@ -107,7 +107,15 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
   const fetchTemplates = async () => {
     try {
-      // Use only the starter templates for now (no database dependency)
+      const { data, error } = await sb
+        .from('templates')
+        .select('*')
+        .eq('is_public', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Combine database templates with any additional starter templates
       const starter = starterTemplates.map((template) => ({
         id: `starter-${Math.random().toString(36).substr(2, 9)}`,
         ...template,
@@ -115,7 +123,20 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
         is_public: true
       }));
 
-      setTemplates(starter);
+      const dbTemplates: Template[] = ((data || []) as any[]).map((d) => ({
+        id: d.id,
+        name: d.name || 'Untitled',
+        description: d.description || '',
+        preview_image_url: d.preview_image_url ?? null,
+        template_data: d.template_data ?? {},
+        is_public: !!d.is_public,
+        category: d.category || 'general',
+        industry: d.industry || 'general',
+        tags: Array.isArray(d.tags) ? d.tags : [],
+        preview_color: d.preview_color,
+      }));
+
+      setTemplates([...dbTemplates, ...starter]);
     } catch (error) {
       console.error('Error loading templates:', error);
       toast({
@@ -166,6 +187,39 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 rounded-full"
           />
+        </div>
+        <div className="flex gap-3">
+          <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
+            <SelectTrigger className="w-44 h-12 rounded-full">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Industry" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Industries</SelectItem>
+              {industries.map(industry => (
+                <SelectItem key={industry} value={industry}>
+                  <div className="flex items-center gap-2">
+                    {industryIcons[industry as keyof typeof industryIcons]}
+                    <span className="capitalize">{industry}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-44 h-12 rounded-full">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map(category => (
+                <SelectItem key={category} value={category}>
+                  <span className="capitalize">{category}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
