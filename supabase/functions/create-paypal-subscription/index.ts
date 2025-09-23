@@ -30,14 +30,25 @@ serve(async (req) => {
     const agencyPlanId = Deno.env.get('PAYPAL_PLAN_ID_AGENCY');
     const enterprisePlanId = Deno.env.get('PAYPAL_PLAN_ID_ENTERPRISE');
 
+    console.log('Env plan IDs present:', {
+      freelance: freelancePlanId ? `${freelancePlanId.substring(0,6)}...` : 'MISSING',
+      agency: agencyPlanId ? `${agencyPlanId.substring(0,6)}...` : 'MISSING',
+      enterprise: enterprisePlanId ? `${enterprisePlanId.substring(0,6)}...` : 'MISSING',
+    });
+
+    if (!freelancePlanId || !agencyPlanId || !enterprisePlanId) {
+      throw new Error('One or more PayPal plan IDs are missing in Supabase secrets: PAYPAL_PLAN_ID_FREELANCE, PAYPAL_PLAN_ID_AGENCY, PAYPAL_PLAN_ID_ENTERPRISE');
+    }
+
     const paypalPlanIds = {
       freelance: freelancePlanId,
       agency: agencyPlanId,
       enterprise: enterprisePlanId
-    };
+    } as const;
 
     const planIdToUse = paypalPlanIds[planId as keyof typeof paypalPlanIds];
     console.log('Available plan IDs:', paypalPlanIds);
+    console.log('Requested plan ID:', planId, 'Mapped to:', planIdToUse);
     console.log('Requested plan ID:', planId, 'Mapped to:', planIdToUse);
     
     if (!planIdToUse) {
