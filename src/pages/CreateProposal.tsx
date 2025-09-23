@@ -37,6 +37,8 @@ export default function CreateProposal() {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [step, setStep] = useState<'details' | 'theme' | 'template' | 'content'>('details');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
+  const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
+  const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   
   const [proposalData, setProposalData] = useState<any>({
@@ -237,7 +239,8 @@ export default function CreateProposal() {
           project_name: proposalData.project_name || '',
           pricing: proposalData.pricing || 0,
           currency: proposalData.currency || 'USD',
-          colorTheme: selectedColorTheme || 'blue'
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor
         },
         template_id: selectedTemplate?.id || null,
         status: 'draft'
@@ -430,12 +433,137 @@ export default function CreateProposal() {
         )}
 
         {step === 'theme' && (
-          <ColorThemeSelector
-            selectedTheme={selectedColorTheme}
-            onThemeSelect={setSelectedColorTheme}
-            onNext={() => setStep('template')}
-            onBack={() => setStep('details')}
-          />
+          <div>
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold tracking-tight">Theme & Template Selection</h1>
+              <p className="text-muted-foreground">
+                Customize your proposal colors and choose a professional template
+              </p>
+            </div>
+
+            {/* Color Selection Section */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Choose Your Colors
+                </CardTitle>
+                <CardDescription>
+                  Select your brand colors to personalize your proposal
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="primary-color">Primary Color</Label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        id="primary-color"
+                        type="color"
+                        value={primaryColor}
+                        onChange={(e) => setPrimaryColor(e.target.value)}
+                        className="w-16 h-16 border-2 border-border rounded-lg cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <Input
+                          value={primaryColor}
+                          onChange={(e) => setPrimaryColor(e.target.value)}
+                          placeholder="#3b82f6"
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Used for headings and key elements
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Label htmlFor="secondary-color">Secondary Color</Label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        id="secondary-color"
+                        type="color"
+                        value={secondaryColor}
+                        onChange={(e) => setSecondaryColor(e.target.value)}
+                        className="w-16 h-16 border-2 border-border rounded-lg cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <Input
+                          value={secondaryColor}
+                          onChange={(e) => setSecondaryColor(e.target.value)}
+                          placeholder="#1e40af"
+                        />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Used for accents and highlights
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Color Preview */}
+                <div className="border rounded-lg p-6 bg-muted/20">
+                  <h3 className="text-lg font-medium mb-4">Color Preview</h3>
+                  <div className="space-y-3">
+                    <div 
+                      className="h-4 rounded"
+                      style={{ backgroundColor: primaryColor, width: '70%' }}
+                    />
+                    <div 
+                      className="h-3 rounded"
+                      style={{ backgroundColor: secondaryColor, width: '85%' }}
+                    />
+                    <div className="flex gap-2">
+                      <div 
+                        className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                        style={{ backgroundColor: primaryColor }}
+                      />
+                      <div 
+                        className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
+                        style={{ backgroundColor: secondaryColor }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Template Selection Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Choose Template
+                </CardTitle>
+                <CardDescription>
+                  Select a professional template for your proposal
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TemplateGallery 
+                  onSelectTemplate={(template) => {
+                    setSelectedTemplate(template);
+                    setProposalData(prev => ({ ...prev, content: template.template_data }));
+                  }}
+                  selectedTemplate={selectedTemplate}
+                />
+              </CardContent>
+            </Card>
+
+            <div className="flex gap-4 mt-8">
+              <Button variant="outline" onClick={() => setStep('details')}>
+                Back to Details
+              </Button>
+              <Button 
+                onClick={() => setStep('content')}
+                disabled={!selectedTemplate}
+                className="flex-1"
+              >
+                Continue to Content
+                <PenTool className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </div>
         )}
 
         {step === 'template' && (
