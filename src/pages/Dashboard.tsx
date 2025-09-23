@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, FileText, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
@@ -46,6 +47,30 @@ export default function Dashboard() {
       fetchProfile();
     }
   }, [user]);
+
+  // Check for payment success/failure parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const planType = urlParams.get('plan');
+    
+    if (paymentStatus === 'success' && planType) {
+      toast({
+        title: "Payment Successful! 🎉",
+        description: `Your ${planType.charAt(0).toUpperCase() + planType.slice(1)} plan has been activated. Welcome to ProposalKraft Pro!`,
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/dashboard');
+    } else if (paymentStatus === 'failed') {
+      toast({
+        title: "Payment Failed",
+        description: "Your payment could not be processed. Please try again or contact support.",
+        variant: "destructive"
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/dashboard');
+    }
+  }, []);
 
   useEffect(() => {
     if (searchQuery) {
@@ -126,17 +151,25 @@ export default function Dashboard() {
               <img src={logo} alt="ProposalKraft" className="h-8" />
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">
-                {profile?.company_name || user.email}
-              </span>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+             <div className="flex items-center space-x-4">
+               <span className="text-sm text-muted-foreground">
+                 {profile?.company_name || user.email}
+               </span>
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 onClick={() => navigate('/payment')}
+                 className="bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700"
+               >
+                 Upgrade Plan
+               </Button>
+               <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
+                 <Settings className="h-4 w-4" />
+               </Button>
+               <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                 <LogOut className="h-4 w-4" />
+               </Button>
+             </div>
           </div>
         </div>
       </header>

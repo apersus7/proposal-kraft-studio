@@ -478,12 +478,19 @@ export default function Settings() {
                         </div>
                         <Button 
                           variant="outline" 
-                          className="w-full"
+                          className="w-full mb-2"
                           onClick={() => handleSubscribe('freelance')}
                           disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'freelance')}
                         >
                           {subscriptionActionLoading ? 'Processing...' : 
-                           (subscription.hasActiveSubscription && subscription.planType === 'freelance') ? 'Current Plan' : 'Subscribe'}
+                           (subscription.hasActiveSubscription && subscription.planType === 'freelance') ? 'Current Plan' : 'Subscribe Monthly'}
+                        </Button>
+                        <Button 
+                          className="w-full"
+                          onClick={() => navigate(`/payment?plan=freelance`)}
+                          disabled={subscription.hasActiveSubscription && subscription.planType === 'freelance'}
+                        >
+                          {(subscription.hasActiveSubscription && subscription.planType === 'freelance') ? 'Current Plan' : 'Pay Once - $19'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -542,12 +549,20 @@ export default function Settings() {
                           </div>
                         </div>
                         <Button 
-                          className="w-full"
+                          variant="outline" 
+                          className="w-full mb-2"
                           onClick={() => handleSubscribe('agency')}
                           disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'agency')}
                         >
                           {subscriptionActionLoading ? 'Processing...' : 
-                           (subscription.hasActiveSubscription && subscription.planType === 'agency') ? 'Current Plan' : 'Subscribe'}
+                           (subscription.hasActiveSubscription && subscription.planType === 'agency') ? 'Current Plan' : 'Subscribe Monthly'}
+                        </Button>
+                        <Button 
+                          className="w-full"
+                          onClick={() => navigate(`/payment?plan=agency`)}
+                          disabled={subscription.hasActiveSubscription && subscription.planType === 'agency'}
+                        >
+                          {(subscription.hasActiveSubscription && subscription.planType === 'agency') ? 'Current Plan' : 'Pay Once - $49'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -608,12 +623,19 @@ export default function Settings() {
                         </div>
                         <Button 
                           variant="outline" 
-                          className="w-full"
+                          className="w-full mb-2"
                           onClick={() => handleSubscribe('enterprise')}
                           disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'enterprise')}
                         >
                           {subscriptionActionLoading ? 'Processing...' : 
-                           (subscription.hasActiveSubscription && subscription.planType === 'enterprise') ? 'Current Plan' : 'Subscribe'}
+                           (subscription.hasActiveSubscription && subscription.planType === 'enterprise') ? 'Current Plan' : 'Subscribe Monthly'}
+                        </Button>
+                        <Button 
+                          className="w-full"
+                          onClick={() => navigate(`/payment?plan=enterprise`)}
+                          disabled={subscription.hasActiveSubscription && subscription.planType === 'enterprise'}
+                        >
+                          {(subscription.hasActiveSubscription && subscription.planType === 'enterprise') ? 'Current Plan' : 'Pay Once - $69'}
                         </Button>
                       </CardContent>
                     </Card>

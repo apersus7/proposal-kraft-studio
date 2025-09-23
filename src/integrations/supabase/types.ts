@@ -59,6 +59,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          id: string
+          payment_method: string
+          paypal_order_id: string | null
+          plan_type: string
+          status: string
+          updated_at: string
+          user_country: string
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          payment_method: string
+          paypal_order_id?: string | null
+          plan_type: string
+          status?: string
+          updated_at?: string
+          user_country: string
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          payment_method?: string
+          paypal_order_id?: string | null
+          plan_type?: string
+          status?: string
+          updated_at?: string
+          user_country?: string
+          user_email?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

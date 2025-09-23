@@ -3,7 +3,13 @@ project_id = "kmgmjfifunncweqgnbvz"
 [functions.create-paypal-subscription]
 verify_jwt = false
 
-[functions.paypal-webhook] 
+[functions.create-paypal-payment]
+verify_jwt = false
+
+[functions.paypal-webhook]
+verify_jwt = false
+
+[functions.paypal-payment-webhook]
 verify_jwt = false
 
 [functions.get-subscription-status]
