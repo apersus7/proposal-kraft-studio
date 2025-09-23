@@ -45,10 +45,15 @@ serve(async (req) => {
       throw new Error(`Invalid plan ID: ${planId}`);
     }
 
-    // Determine environment (sandbox by default for testing)
-    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'sandbox').toLowerCase();
+    // Determine environment (live by default)
+    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
     const baseUrl = paypalEnv === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
     console.log('PayPal environment:', paypalEnv, 'Base URL:', baseUrl);
+
+    const origin = req.headers.get('origin') || Deno.env.get('APP_URL') || 'https://lovable.app';
+    const returnUrl = `${origin}/settings?paypal=success`;
+    const cancelUrl = `${origin}/settings?paypal=cancelled`;
+    console.log('Return URL:', returnUrl, 'Cancel URL:', cancelUrl);
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
@@ -81,6 +86,13 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         plan_id: planIdToUse,
+        application_context: {
+          brand_name: 'ProposalKraft',
+          locale: 'en-US',
+          user_action: 'SUBSCRIBE_NOW',
+          return_url: returnUrl,
+          cancel_url: cancelUrl
+        },
         payment_method: {
           payer_selected: 'PAYPAL',
           payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
