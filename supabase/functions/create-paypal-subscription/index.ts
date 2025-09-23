@@ -45,8 +45,8 @@ serve(async (req) => {
       throw new Error(`Invalid plan ID: ${planId}`);
     }
 
-    // Determine environment (live by default)
-    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
+    // Determine environment (sandbox by default for testing)
+    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'sandbox').toLowerCase();
     const baseUrl = paypalEnv === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
     console.log('PayPal environment:', paypalEnv, 'Base URL:', baseUrl);
 
