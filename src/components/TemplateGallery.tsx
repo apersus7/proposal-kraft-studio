@@ -107,14 +107,7 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
   const fetchTemplates = async () => {
     try {
-      const { data, error } = await sb
-        .from('templates')
-        .select('*')
-        .eq('is_public', true)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
+      // Use only the starter templates for now (no database dependency)
       const starter = starterTemplates.map((template) => ({
         id: `starter-${Math.random().toString(36).substr(2, 9)}`,
         ...template,
@@ -122,24 +115,11 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
         is_public: true
       }));
 
-      const dbTemplates: Template[] = ((data || []) as any[]).map((d) => ({
-        id: d.id,
-        name: d.name || 'Untitled',
-        description: d.description || '',
-        preview_image_url: d.preview_image_url ?? null,
-        template_data: d.template_data ?? {},
-        is_public: !!d.is_public,
-        category: d.category || 'general',
-        industry: d.industry || 'general',
-        tags: Array.isArray(d.tags) ? d.tags : [],
-        preview_color: d.preview_color,
-      }));
-
-      setTemplates([...starter, ...dbTemplates]);
+      setTemplates(starter);
     } catch (error) {
-      console.error('Error fetching templates:', error);
+      console.error('Error loading templates:', error);
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Failed to load templates",
         variant: "destructive"
       });
