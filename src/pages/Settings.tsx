@@ -26,6 +26,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import CRMIntegration from '@/components/CRMIntegration';
 import PaymentIntegration from '@/components/PaymentIntegration';
+import { useSubscription } from '@/hooks/useSubscription';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -45,8 +46,9 @@ interface Profile {
 export default function Settings() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { subscription, loading: subscriptionLoading, refresh: refreshSubscription } = useSubscription();
   const [loading, setLoading] = useState(false);
-  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [subscriptionActionLoading, setSubscriptionActionLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
@@ -160,7 +162,7 @@ export default function Settings() {
       return;
     }
 
-    setSubscriptionLoading(true);
+    setSubscriptionActionLoading(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('create-paypal-subscription', {
@@ -168,10 +170,17 @@ export default function Settings() {
       });
 
       if (error) {
-        throw new Error(error.message);
+        console.error('Subscription creation error:', error);
+        throw new Error(error.message || 'Failed to create subscription');
+      }
+
+      if (data?.error) {
+        console.error('PayPal error:', data.error);
+        throw new Error(data.error);
       }
 
       if (data?.approvalUrl) {
+        console.log('Redirecting to PayPal:', data.approvalUrl);
         // Redirect to PayPal for approval
         window.location.href = data.approvalUrl;
       } else {
@@ -185,9 +194,34 @@ export default function Settings() {
         variant: "destructive"
       });
     } finally {
-      setSubscriptionLoading(false);
+      setSubscriptionActionLoading(false);
+      // Refresh subscription status after a delay
+      setTimeout(() => refreshSubscription(), 2000);
     }
   };
+
+  // Check for PayPal return parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paypalStatus = urlParams.get('paypal');
+    
+    if (paypalStatus === 'success') {
+      toast({
+        title: "Subscription Successful!",
+        description: "Your PayPal subscription has been activated. It may take a few moments to update.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/settings');
+    } else if (paypalStatus === 'cancelled') {
+      toast({
+        title: "Subscription Cancelled",
+        description: "Your subscription was cancelled. You can try again anytime.",
+        variant: "destructive"
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/settings');
+    }
+  }, []);
 
   // Check for PayPal return parameters
   useEffect(() => {
@@ -382,13 +416,24 @@ export default function Settings() {
                 <div className="p-4 border rounded-lg bg-accent/10">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Current Plan: Free Access</h3>
+                      <h3 className="font-medium">
+                        Current Plan: {subscription.hasActiveSubscription 
+                          ? `${subscription.planType?.charAt(0).toUpperCase()}${subscription.planType?.slice(1)} Plan`
+                          : 'Free Access'
+                        }
+                      </h3>
                       <p className="text-sm text-muted-foreground">
-                        All features enabled - No subscription required
+                        {subscription.hasActiveSubscription
+                          ? `Active until ${subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : 'N/A'}`
+                          : 'All features enabled - No subscription required'
+                        }
                       </p>
+                      {subscriptionLoading && (
+                        <p className="text-xs text-muted-foreground mt-1">Loading subscription status...</p>
+                      )}
                     </div>
-                    <Badge variant="default">
-                      Active
+                    <Badge variant={subscription.hasActiveSubscription ? "default" : "secondary"}>
+                      {subscription.hasActiveSubscription ? subscription.status : 'Free'}
                     </Badge>
                   </div>
                 </div>
@@ -435,9 +480,10 @@ export default function Settings() {
                           variant="outline" 
                           className="w-full"
                           onClick={() => handleSubscribe('freelance')}
-                          disabled={subscriptionLoading}
+                          disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'freelance')}
                         >
-                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
+                          {subscriptionActionLoading ? 'Processing...' : 
+                           (subscription.hasActiveSubscription && subscription.planType === 'freelance') ? 'Current Plan' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -498,9 +544,10 @@ export default function Settings() {
                         <Button 
                           className="w-full"
                           onClick={() => handleSubscribe('agency')}
-                          disabled={subscriptionLoading}
+                          disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'agency')}
                         >
-                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
+                          {subscriptionActionLoading ? 'Processing...' : 
+                           (subscription.hasActiveSubscription && subscription.planType === 'agency') ? 'Current Plan' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -563,9 +610,10 @@ export default function Settings() {
                           variant="outline" 
                           className="w-full"
                           onClick={() => handleSubscribe('enterprise')}
-                          disabled={subscriptionLoading}
+                          disabled={subscriptionActionLoading || (subscription.hasActiveSubscription && subscription.planType === 'enterprise')}
                         >
-                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
+                          {subscriptionActionLoading ? 'Processing...' : 
+                           (subscription.hasActiveSubscription && subscription.planType === 'enterprise') ? 'Current Plan' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>

@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,57 +13,55 @@ serve(async (req) => {
   }
 
   try {
-    // Get authorization header for user authentication
+    // Get user from auth header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('No authorization header provided');
+      throw new Error('No authorization header');
     }
 
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
 
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      throw new Error('User not authenticated');
+      throw new Error('Unauthorized');
     }
-
-    console.log('Getting subscription status for user:', user.id);
 
     // Get user's subscription from database
-    const { data: subscription, error } = await supabase
+    const { data: subscription, error } = await supabaseClient
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'active')
-      .maybeSingle();
+      .single();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
       console.error('Database query error:', error);
-      throw new Error('Failed to fetch subscription status');
+      throw new Error('Failed to fetch subscription');
     }
 
-    const hasActiveSubscription = !!subscription;
-    
-    return new Response(JSON.stringify({ 
-      hasActiveSubscription,
-      subscription: subscription || null,
+    const subscriptionData = {
+      hasActiveSubscription: !!subscription,
       planType: subscription?.plan_type || null,
-      status: subscription?.status || 'none'
-    }), {
+      status: subscription?.status || 'none',
+      currentPeriodEnd: subscription?.current_period_end || null,
+      paypalSubscriptionId: subscription?.paypal_subscription_id || null,
+    };
+
+    console.log('Subscription status for user:', user.id, subscriptionData);
+
+    return new Response(JSON.stringify(subscriptionData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error getting subscription status:', error);
+    console.error('Error fetching subscription status:', error);
     return new Response(JSON.stringify({ 
       error: error.message,
       hasActiveSubscription: false,
-      subscription: null,
       planType: null,
       status: 'error'
     }), {
