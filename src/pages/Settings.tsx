@@ -334,30 +334,38 @@ export default function Settings() {
                   <h3 className="text-lg font-semibold">Available Plans</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
-                    {/* Starter Plan */}
+                    {/* Freelance Plan */}
                     <Card className="relative">
                       <CardHeader>
-                        <CardTitle className="text-lg">Starter</CardTitle>
-                        <div className="text-2xl font-bold">$9<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>Perfect for freelancers</CardDescription>
+                        <CardTitle className="text-lg">Freelance</CardTitle>
+                        <div className="text-2xl font-bold">$19<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>Perfect for freelancers and small businesses</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Up to 5 proposals/month</span>
+                            <span>5 proposals with watermark</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Basic templates</span>
+                            <span>Unlimited templates</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Email support</span>
+                            <span>Unlimited customisation</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Basic analytics</span>
+                            <span>Tracking</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>E-signature</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Export in various formats</span>
                           </div>
                         </div>
                         <Button variant="outline" className="w-full" disabled>
@@ -366,15 +374,15 @@ export default function Settings() {
                       </CardContent>
                     </Card>
 
-                    {/* Professional Plan */}
+                    {/* Agency Plan */}
                     <Card className="relative border-primary">
                       <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                         <Badge variant="default" className="px-3">Most Popular</Badge>
                       </div>
                       <CardHeader>
-                        <CardTitle className="text-lg">Professional</CardTitle>
-                        <div className="text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>Best for growing businesses</CardDescription>
+                        <CardTitle className="text-lg">Agency</CardTitle>
+                        <div className="text-2xl font-bold">$49<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>Best for growing businesses and teams</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="space-y-2 text-sm">
@@ -384,23 +392,39 @@ export default function Settings() {
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Premium templates</span>
+                            <span>Unlimited templates</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Priority support</span>
+                            <span>Unlimited customisation</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Advanced analytics</span>
+                            <span>Tracking</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>E-signature integration</span>
+                            <span>E-signature</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>CRM integrations</span>
+                            <span>Export in various formats</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>CRM integration</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Upload custom template</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Reminders</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Team collaboration</span>
                           </div>
                         </div>
                         <Button className="w-full" disabled>
@@ -413,34 +437,54 @@ export default function Settings() {
                     <Card className="relative">
                       <CardHeader>
                         <CardTitle className="text-lg">Enterprise</CardTitle>
-                        <div className="text-2xl font-bold">$99<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>For large organizations</CardDescription>
+                        <div className="text-2xl font-bold">$69<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>For large organizations with advanced needs</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Everything in Professional</span>
+                            <span>Unlimited proposals</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Custom branding</span>
+                            <span>Unlimited templates</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>White-label solutions</span>
+                            <span>Unlimited customisation</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>API access</span>
+                            <span>Tracking</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Dedicated support</span>
+                            <span>E-signature</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Custom integrations</span>
+                            <span>Export in various formats</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>CRM integration</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Upload custom template</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Payment integration</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Reminders</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Team collaboration</span>
                           </div>
                         </div>
                         <Button variant="outline" className="w-full" disabled>
