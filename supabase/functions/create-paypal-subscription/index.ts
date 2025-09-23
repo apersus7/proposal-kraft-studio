@@ -13,13 +13,17 @@ serve(async (req) => {
 
   try {
     const { planId } = await req.json();
+    console.log('Creating PayPal subscription for plan:', planId);
     
     const paypalClientId = Deno.env.get('PAYPAL_CLIENT_ID');
     const paypalClientSecret = Deno.env.get('PAYPAL_CLIENT_SECRET');
     
     if (!paypalClientId || !paypalClientSecret) {
+      console.error('PayPal credentials not configured');
       throw new Error('PayPal credentials not configured');
     }
+
+    console.log('PayPal credentials found, client ID:', paypalClientId?.substring(0, 10) + '...');
 
     // Get the actual PayPal plan ID from environment
     const freelancePlanId = Deno.env.get('PAYPAL_PLAN_ID_FREELANCE');
@@ -33,13 +37,18 @@ serve(async (req) => {
     };
 
     const planIdToUse = paypalPlanIds[planId as keyof typeof paypalPlanIds];
+    console.log('Available plan IDs:', paypalPlanIds);
+    console.log('Requested plan ID:', planId, 'Mapped to:', planIdToUse);
+    
     if (!planIdToUse) {
+      console.error(`Invalid plan ID: ${planId}. Available: ${Object.keys(paypalPlanIds)}`);
       throw new Error(`Invalid plan ID: ${planId}`);
     }
 
     // Determine environment (live by default)
     const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
     const baseUrl = paypalEnv === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+    console.log('PayPal environment:', paypalEnv, 'Base URL:', baseUrl);
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
@@ -53,12 +62,14 @@ serve(async (req) => {
 
     if (!authResponse.ok) {
       const error = await authResponse.text();
-      console.error('PayPal auth error:', error);
-      throw new Error('Failed to authenticate with PayPal');
+      console.error('PayPal auth error status:', authResponse.status);
+      console.error('PayPal auth error response:', error);
+      throw new Error(`Failed to authenticate with PayPal: ${authResponse.status} - ${error}`);
     }
 
     const authData = await authResponse.json();
     const accessToken = authData.access_token;
+    console.log('PayPal authentication successful, got access token');
 
     // Create subscription with payment method
     const subscriptionResponse = await fetch(`${baseUrl}/v1/billing/subscriptions`, {
@@ -79,8 +90,9 @@ serve(async (req) => {
 
     if (!subscriptionResponse.ok) {
       const error = await subscriptionResponse.text();
-      console.error('PayPal subscription error:', error);
-      throw new Error('Failed to create subscription');
+      console.error('PayPal subscription error status:', subscriptionResponse.status);
+      console.error('PayPal subscription error response:', error);
+      throw new Error(`Failed to create subscription: ${subscriptionResponse.status} - ${error}`);
     }
 
     const subscriptionData = await subscriptionResponse.json();
@@ -96,8 +108,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error creating PayPal subscription:', error);
+    console.error('Error stack:', error.stack);
     return new Response(JSON.stringify({ 
-      error: error.message 
+      error: error.message || 'Unknown error occurred'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
