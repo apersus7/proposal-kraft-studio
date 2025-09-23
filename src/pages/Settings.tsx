@@ -189,6 +189,29 @@ export default function Settings() {
     }
   };
 
+  // Check for PayPal return parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paypalStatus = urlParams.get('paypal');
+    
+    if (paypalStatus === 'success') {
+      toast({
+        title: "Subscription Successful!",
+        description: "Your PayPal subscription has been activated. Welcome aboard!",
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/settings');
+    } else if (paypalStatus === 'cancelled') {
+      toast({
+        title: "Subscription Cancelled",
+        description: "Your PayPal subscription was cancelled. You can try again anytime.",
+        variant: "destructive"
+      });
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/settings');
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}

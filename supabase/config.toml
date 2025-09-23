@@ -1,5 +1,14 @@
 project_id = "kmgmjfifunncweqgnbvz"
 
+[functions.create-paypal-subscription]
+verify_jwt = false
+
+[functions.paypal-webhook] 
+verify_jwt = false
+
+[functions.get-subscription-status]
+verify_jwt = false
+
 [functions.get-payment-client-id]
 verify_jwt = false
 
