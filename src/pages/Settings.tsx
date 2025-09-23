@@ -316,10 +316,10 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="p-4 border rounded-lg">
+                <div className="p-4 border rounded-lg bg-accent/10">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">Current Plan</h3>
+                      <h3 className="font-medium">Current Plan: Free Access</h3>
                       <p className="text-sm text-muted-foreground">
                         All features enabled - No subscription required
                       </p>
@@ -330,10 +330,132 @@ export default function Settings() {
                   </div>
                 </div>
 
-                <div className="text-center p-8 border rounded-lg border-dashed">
-                  <h3 className="font-medium mb-2">Free Access</h3>
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Available Plans</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    {/* Starter Plan */}
+                    <Card className="relative">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Starter</CardTitle>
+                        <div className="text-2xl font-bold">$9<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>Perfect for freelancers</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Up to 5 proposals/month</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Basic templates</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Email support</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Basic analytics</span>
+                          </div>
+                        </div>
+                        <Button variant="outline" className="w-full" disabled>
+                          Current Plan
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Professional Plan */}
+                    <Card className="relative border-primary">
+                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                        <Badge variant="default" className="px-3">Most Popular</Badge>
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Professional</CardTitle>
+                        <div className="text-2xl font-bold">$29<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>Best for growing businesses</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Unlimited proposals</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Premium templates</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Priority support</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Advanced analytics</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>E-signature integration</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>CRM integrations</span>
+                          </div>
+                        </div>
+                        <Button className="w-full" disabled>
+                          Current Plan
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Enterprise Plan */}
+                    <Card className="relative">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Enterprise</CardTitle>
+                        <div className="text-2xl font-bold">$99<span className="text-sm font-normal text-muted-foreground">/month</span></div>
+                        <CardDescription>For large organizations</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Everything in Professional</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Custom branding</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>White-label solutions</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>API access</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Dedicated support</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                            <span>Custom integrations</span>
+                          </div>
+                        </div>
+                        <Button variant="outline" className="w-full" disabled>
+                          Current Plan
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                  </div>
+                </div>
+
+                <div className="text-center p-6 border rounded-lg border-dashed bg-muted/20">
+                  <h3 className="font-medium mb-2">🎉 Special Access</h3>
                   <p className="text-sm text-muted-foreground">
-                    All features are currently available at no cost. Enjoy creating unlimited proposals!
+                    You currently have complimentary access to all Professional features. Enjoy creating unlimited proposals with full functionality!
                   </p>
                 </div>
               </CardContent>
