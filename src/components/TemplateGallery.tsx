@@ -47,174 +47,48 @@ const industryIcons = {
   branding: <Palette className="h-4 w-4" />
 };
 
+// Beautiful Canva-inspired templates
 const starterTemplates = [
   {
-    name: 'One-Page Sales Proposal Template',
-    description: 'Concise sales proposal perfect for quick client decisions',
-    category: 'sales',
-    industry: 'business',
-    tags: ['sales', 'one-page', 'quick'],
-    preview_color: 'from-slate-100 to-gray-200',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'header', content: 'Executive Summary' },
-        { type: 'problem', content: 'Challenge identification and impact analysis' },
-        { type: 'solution', content: 'Our proven approach to solving your challenges' },
-        { type: 'pricing', content: 'Transparent pricing with clear value proposition' }
-      ]
-    }
-  },
-  {
-    name: 'Business Proposal Template',
-    description: 'Comprehensive business proposal for complex projects',
-    category: 'business', 
-    industry: 'business',
-    tags: ['business', 'comprehensive', 'professional'],
-    preview_color: 'from-green-50 to-green-100',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'cover', content: 'Professional cover page with company branding' },
-        { type: 'executive_summary', content: 'Executive overview and key benefits' },
-        { type: 'scope', content: 'Detailed project scope and deliverables' },
-        { type: 'timeline', content: 'Project timeline and milestones' }
-      ]
-    }
-  },
-  {
-    name: 'Digital Marketing Proposal',
-    description: 'Modern marketing proposal for digital campaigns',
-    category: 'marketing',
-    industry: 'marketing', 
-    tags: ['digital', 'marketing', 'campaigns'],
-    preview_color: 'from-blue-50 to-blue-100',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'strategy', content: 'Digital marketing strategy and objectives' },
-        { type: 'channels', content: 'Multi-channel approach and tactics' },
-        { type: 'metrics', content: 'KPIs and success measurements' },
-        { type: 'budget', content: 'Campaign budget and ROI projections' }
-      ]
-    }
-  },
-  {
-    name: 'Conversion Rate Optimization Proposal', 
-    description: 'Data-driven CRO proposal with analytics insights',
-    category: 'optimization',
-    industry: 'marketing',
-    tags: ['CRO', 'analytics', 'optimization'],
-    preview_color: 'from-purple-50 to-purple-100',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'analysis', content: 'Current performance analysis' },
-        { type: 'opportunities', content: 'Optimization opportunities identified' },
-        { type: 'testing_plan', content: 'A/B testing strategy and timeline' },
-        { type: 'projections', content: 'Expected conversion improvements' }
-      ]
-    }
-  },
-  {
-    name: 'HVAC Proposal Template',
-    description: 'Professional HVAC service proposal template',
-    category: 'services',
-    industry: 'construction',
-    tags: ['HVAC', 'construction', 'services'],
-    preview_color: 'from-yellow-50 to-yellow-100', 
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'assessment', content: 'System assessment and recommendations' },
-        { type: 'equipment', content: 'Equipment specifications and benefits' },
-        { type: 'installation', content: 'Installation process and timeline' },
-        { type: 'warranty', content: 'Service warranty and maintenance plans' }
-      ]
-    }
-  },
-  {
-    name: 'Advertising Sales Proposal Template',
-    description: 'Media and advertising sales proposal',
-    category: 'advertising',
-    industry: 'media',
-    tags: ['advertising', 'media', 'sales'],
-    preview_color: 'from-cyan-50 to-cyan-100',
-    preview_type: 'document', 
-    template_data: {
-      sections: [
-        { type: 'audience', content: 'Target audience analysis and reach' },
-        { type: 'packages', content: 'Advertising packages and options' },
-        { type: 'creative', content: 'Creative services and support' },
-        { type: 'reporting', content: 'Campaign reporting and analytics' }
-      ]
-    }
-  },
-  {
-    name: 'Mortgage Proposal Template',
-    description: 'Professional mortgage and lending proposal',
-    category: 'financial',
-    industry: 'finance',
-    tags: ['mortgage', 'lending', 'financial'],
-    preview_color: 'from-orange-50 to-orange-100',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'loan_options', content: 'Available loan products and rates' },
-        { type: 'qualification', content: 'Qualification requirements and process' },
-        { type: 'timeline', content: 'Approval and closing timeline' },
-        { type: 'benefits', content: 'Benefits of choosing our services' }
-      ]
-    }
-  },
-  {
-    name: 'Investor Proposal Template', 
-    description: 'Professional investor pitch and funding proposal',
-    category: 'investment',
-    industry: 'finance',
-    tags: ['investor', 'funding', 'pitch'],
-    preview_color: 'from-gray-900 to-gray-800',
-    preview_type: 'document',
-    template_data: {
-      sections: [
-        { type: 'opportunity', content: 'Investment opportunity overview' },
-        { type: 'market', content: 'Market analysis and potential' },
-        { type: 'financials', content: 'Financial projections and returns' },
-        { type: 'team', content: 'Management team and expertise' }
-      ]
-    }
-  },
-  {
-    name: 'Android App Development Template',
-    description: 'Mobile app development proposal template',
-    category: 'technology',
+    name: 'Modern Minimalist',
+    description: 'Clean, minimal design perfect for tech and consulting',
+    category: 'business',
     industry: 'technology',
-    tags: ['mobile', 'android', 'development'], 
-    preview_color: 'from-blue-500 to-blue-600',
-    preview_type: 'document',
+    tags: ['minimal', 'clean', 'modern'],
+    preview_color: 'from-slate-50 via-white to-blue-50',
     template_data: {
       sections: [
-        { type: 'app_concept', content: 'App concept and user experience' },
-        { type: 'features', content: 'Core features and functionality' },
-        { type: 'development', content: 'Development process and timeline' },
-        { type: 'launch', content: 'App store launch and marketing' }
+        { type: 'cover_page', title: 'Project Proposal', tagline: 'Innovative Solutions for Modern Challenges' },
+        { type: 'executive_summary', content: 'Executive overview with key value propositions' },
+        { type: 'scope_of_work', deliverables: ['Strategy Development', 'Implementation Plan'] },
+        { type: 'pricing', packages: [{ name: 'Complete Solution', price: 15000 }] }
       ]
     }
   },
   {
-    name: 'Printing Services Proposal Template',
-    description: 'Commercial printing services proposal',
-    category: 'services', 
-    industry: 'printing',
-    tags: ['printing', 'commercial', 'services'],
-    preview_color: 'from-amber-50 to-amber-100',
-    preview_type: 'document',
+    name: 'Creative Studio',
+    description: 'Bold, creative design for agencies and designers',
+    category: 'creative',
+    industry: 'creative',
+    tags: ['creative', 'bold', 'colorful'],
+    preview_color: 'from-purple-400 via-pink-500 to-red-500',
     template_data: {
       sections: [
-        { type: 'services', content: 'Available printing services and capabilities' },
-        { type: 'materials', content: 'Paper stocks and finishing options' },
-        { type: 'pricing', content: 'Competitive pricing structure' },
-        { type: 'turnaround', content: 'Production timeline and delivery' }
+        { type: 'cover_page', title: 'Creative Proposal', tagline: 'Where Ideas Come to Life' },
+        { type: 'value_proposition', advantages: ['Unique Creative Vision', 'Award-Winning Team'] }
+      ]
+    }
+  },
+  {
+    name: 'Corporate Elite',
+    description: 'Professional corporate design for enterprise clients',
+    category: 'corporate',
+    industry: 'business',
+    tags: ['corporate', 'professional', 'enterprise'],
+    preview_color: 'from-gray-900 via-gray-700 to-blue-900',
+    template_data: {
+      sections: [
+        { type: 'cover_page', title: 'Strategic Proposal', tagline: 'Excellence in Every Detail' }
       ]
     }
   }
@@ -241,7 +115,6 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
 
       if (error) throw error;
 
-      // Combine fetched templates with starter templates
       const starter = starterTemplates.map((template) => ({
         id: `starter-${Math.random().toString(36).substr(2, 9)}`,
         ...template,
@@ -262,12 +135,7 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
         preview_color: d.preview_color,
       }));
 
-      const combinedTemplates: Template[] = [
-        ...starter,
-        ...dbTemplates,
-      ];
-
-      setTemplates(combinedTemplates);
+      setTemplates([...starter, ...dbTemplates]);
     } catch (error) {
       console.error('Error fetching templates:', error);
       toast({
@@ -300,10 +168,6 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <Card key={i} className="group relative overflow-hidden rounded-2xl border bg-card animate-pulse">
             <div className="aspect-[4/5] bg-gradient-to-br from-muted/50 to-muted"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-              <div className="h-4 bg-muted-foreground/20 rounded-lg w-3/4"></div>
-              <div className="h-3 bg-muted-foreground/10 rounded-lg w-1/2"></div>
-            </div>
           </Card>
         ))}
       </div>
@@ -320,49 +184,16 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
             placeholder="Search templates..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 h-12 rounded-full border-border/20 bg-card/50 backdrop-blur-sm focus:bg-card transition-colors"
+            className="pl-12 h-12 rounded-full"
           />
-        </div>
-        <div className="flex gap-3">
-          <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
-            <SelectTrigger className="w-44 h-12 rounded-full border-border/20 bg-card/50 backdrop-blur-sm">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Industry" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Industries</SelectItem>
-              {industries.map(industry => (
-                <SelectItem key={industry} value={industry}>
-                  <div className="flex items-center gap-2">
-                    {industryIcons[industry as keyof typeof industryIcons]}
-                    <span className="capitalize">{industry}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-44 h-12 rounded-full border-border/20 bg-card/50 backdrop-blur-sm">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map(category => (
-                <SelectItem key={category} value={category}>
-                  <span className="capitalize">{category}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
-      {/* Canva-Style Templates Grid */}
+      {/* Templates Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {/* Blank Document Option */}
+        {/* Blank Document */}
         <Card 
-          className="group relative overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 bg-background hover:border-primary/50 hover:bg-accent/5 transition-all duration-300 cursor-pointer"
+          className="group relative overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 bg-background hover:border-primary/50 transition-all duration-300 cursor-pointer"
           onClick={() => onSelectTemplate({
             id: 'blank',
             name: 'Blank document',
@@ -376,8 +207,8 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
           })}
         >
           <div className="aspect-[3/4] flex flex-col items-center justify-center p-6">
-            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
-              <svg className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
             </div>
@@ -387,522 +218,63 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
           </div>
         </Card>
 
-        {filteredTemplates.length === 0 ? (
-          <div className="col-span-full text-center py-20">
-            <FileText className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2 text-foreground">No templates found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search or filters to discover templates
-            </p>
-          </div>
-        ) : (
-          filteredTemplates.map((template) => {
-            const isSelected = selectedTemplate?.id === template.id;
-            
-            return (
-              <Card 
-                key={template.id}
-                className={`group relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer hover:shadow-lg ${
-                  isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:border-primary/30'
-                }`}
-                onClick={() => onSelectTemplate(template)}
-              >
-                {/* Document Preview */}
-                <div className="aspect-[3/4] relative overflow-hidden bg-white shadow-inner">
-                  {template.preview_image_url ? (
-                    <img 
-                      src={template.preview_image_url} 
-                      alt={template.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-white p-4 flex flex-col relative">
-                      {/* Professional Template Previews */}
-                      {template.category === 'sales' && (
-                        <>
-                          {/* Header Section */}
-                          <div className="border-l-4 border-blue-500 pl-3 mb-4">
-                            <div className="text-xs font-bold text-gray-800 mb-1">SALES PROPOSAL</div>
-                            <div className="w-20 h-3 bg-gray-800 rounded mb-1"></div>
-                            <div className="w-16 h-2 bg-gray-400 rounded"></div>
-                          </div>
-                          
-                          {/* Content Blocks */}
-                          <div className="space-y-3 flex-1">
-                            <div className="bg-blue-50 p-2 rounded">
-                              <div className="w-12 h-2 bg-blue-600 rounded mb-1"></div>
-                              <div className="space-y-1">
-                                <div className="w-full h-1 bg-gray-300 rounded"></div>
-                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="bg-gray-50 p-2 rounded">
-                                <div className="w-8 h-1.5 bg-gray-600 rounded mb-1"></div>
-                                <div className="w-full h-1 bg-gray-300 rounded"></div>
-                              </div>
-                              <div className="bg-gray-50 p-2 rounded">
-                                <div className="w-10 h-1.5 bg-gray-600 rounded mb-1"></div>
-                                <div className="w-full h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Pricing Section */}
-                            <div className="bg-blue-500 text-white p-2 rounded text-center">
-                              <div className="w-8 h-2 bg-white/80 rounded mx-auto mb-1"></div>
-                              <div className="w-12 h-1 bg-white/60 rounded mx-auto"></div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'business' && (
-                        <>
-                          {/* Professional Header */}
-                          <div className="text-center mb-4 pb-2 border-b-2 border-green-500">
-                            <div className="w-16 h-2 bg-gray-800 rounded mx-auto mb-2"></div>
-                            <div className="w-20 h-1.5 bg-green-600 rounded mx-auto mb-1"></div>
-                            <div className="w-12 h-1 bg-gray-400 rounded mx-auto"></div>
-                          </div>
-                          
-                          {/* Executive Summary */}
-                          <div className="mb-3">
-                            <div className="w-16 h-1.5 bg-green-600 rounded mb-2"></div>
-                            <div className="space-y-1">
-                              <div className="w-full h-1 bg-gray-400 rounded"></div>
-                              <div className="w-5/6 h-1 bg-gray-400 rounded"></div>
-                              <div className="w-4/5 h-1 bg-gray-400 rounded"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Two Column Layout */}
-                          <div className="grid grid-cols-3 gap-2 mb-3">
-                            <div className="col-span-2 space-y-1">
-                              <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
-                              <div className="w-full h-1 bg-gray-300 rounded"></div>
-                              <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
-                            </div>
-                            <div className="space-y-1">
-                              <div className="w-full h-4 bg-green-100 rounded"></div>
-                              <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Chart Area */}
-                          <div className="bg-gray-50 p-2 rounded flex items-end gap-1 mt-auto">
-                            <div className="w-2 h-3 bg-green-400 rounded-sm"></div>
-                            <div className="w-2 h-5 bg-green-500 rounded-sm"></div>
-                            <div className="w-2 h-4 bg-green-600 rounded-sm"></div>
-                            <div className="w-2 h-6 bg-green-700 rounded-sm"></div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'marketing' && (
-                        <>
-                          {/* Creative Header */}
-                          <div className="relative mb-4">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded opacity-20"></div>
-                            <div className="relative p-3 text-center">
-                              <div className="w-18 h-2 bg-purple-600 rounded mx-auto mb-2"></div>
-                              <div className="w-14 h-1.5 bg-pink-500 rounded mx-auto"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Strategy Blocks */}
-                          <div className="space-y-2 flex-1">
-                            <div className="flex gap-2">
-                              <div className="w-6 h-6 bg-purple-500 rounded-full flex-shrink-0"></div>
-                              <div className="flex-1 space-y-1">
-                                <div className="w-3/4 h-1.5 bg-gray-700 rounded"></div>
-                                <div className="w-full h-1 bg-gray-400 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            <div className="flex gap-2">
-                              <div className="w-6 h-6 bg-pink-500 rounded-full flex-shrink-0"></div>
-                              <div className="flex-1 space-y-1">
-                                <div className="w-2/3 h-1.5 bg-gray-700 rounded"></div>
-                                <div className="w-5/6 h-1 bg-gray-400 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Metrics Dashboard */}
-                            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-2 rounded mt-auto">
-                              <div className="grid grid-cols-3 gap-1 text-center">
-                                <div>
-                                  <div className="w-full h-1.5 bg-purple-500 rounded mb-1"></div>
-                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
-                                </div>
-                                <div>
-                                  <div className="w-full h-2 bg-pink-500 rounded mb-1"></div>
-                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
-                                </div>
-                                <div>
-                                  <div className="w-full h-1 bg-purple-400 rounded mb-1"></div>
-                                  <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'optimization' && (
-                        <>
-                          {/* Analytics Header */}
-                          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2 rounded mb-3">
-                            <div className="w-16 h-1.5 bg-white/90 rounded mb-1"></div>
-                            <div className="w-20 h-1 bg-white/70 rounded"></div>
-                          </div>
-                          
-                          {/* Data Visualization */}
-                          <div className="space-y-3 flex-1">
-                            {/* Current vs Projected */}
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="text-center">
-                                <div className="w-8 h-8 bg-red-100 rounded-full mx-auto mb-1 flex items-center justify-center">
-                                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                </div>
-                                <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
-                              </div>
-                              <div className="text-center">
-                                <div className="w-8 h-8 bg-green-100 rounded-full mx-auto mb-1 flex items-center justify-center">
-                                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                </div>
-                                <div className="w-3/4 h-1 bg-gray-400 rounded mx-auto"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Funnel Visualization */}
-                            <div className="space-y-1">
-                              <div className="w-full h-2 bg-indigo-500 rounded"></div>
-                              <div className="w-4/5 h-2 bg-indigo-400 rounded"></div>
-                              <div className="w-3/5 h-2 bg-indigo-300 rounded"></div>
-                              <div className="w-2/5 h-2 bg-indigo-200 rounded"></div>
-                            </div>
-                            
-                            {/* Testing Plan */}
-                            <div className="bg-purple-50 p-2 rounded">
-                              <div className="w-12 h-1.5 bg-purple-600 rounded mb-1"></div>
-                              <div className="space-y-1">
-                                <div className="flex justify-between">
-                                  <div className="w-1/3 h-1 bg-purple-300 rounded"></div>
-                                  <div className="w-1/4 h-1 bg-purple-400 rounded"></div>
-                                </div>
-                                <div className="w-2/3 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'services' && (
-                        <>
-                          {/* Service Header */}
-                          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-yellow-300">
-                            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                            <div className="flex-1">
-                              <div className="w-3/4 h-1.5 bg-gray-800 rounded mb-1"></div>
-                              <div className="w-1/2 h-1 bg-gray-500 rounded"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Service Details */}
-                          <div className="space-y-3 flex-1">
-                            {/* Assessment Section */}
-                            <div className="bg-yellow-50 p-2 rounded">
-                              <div className="w-16 h-1.5 bg-yellow-600 rounded mb-1"></div>
-                              <div className="space-y-1">
-                                <div className="w-full h-1 bg-gray-400 rounded"></div>
-                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Equipment/Timeline */}
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <div className="w-3/4 h-1.5 bg-gray-600 rounded mb-1"></div>
-                                <div className="space-y-0.5">
-                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
-                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
-                                </div>
-                              </div>
-                              <div>
-                                <div className="w-2/3 h-1.5 bg-gray-600 rounded mb-1"></div>
-                                <div className="space-y-0.5">
-                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
-                                  <div className="w-4/5 h-0.5 bg-gray-300 rounded"></div>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Warranty/Guarantee */}
-                            <div className="bg-yellow-500 text-white p-2 rounded text-center mt-auto">
-                              <div className="w-10 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
-                              <div className="w-16 h-1 bg-white/70 rounded mx-auto"></div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'advertising' && (
-                        <>
-                          {/* Media Header */}
-                          <div className="bg-cyan-500 text-white p-2 rounded-t mb-3">
-                            <div className="w-18 h-1.5 bg-white/90 rounded mb-1"></div>
-                            <div className="w-14 h-1 bg-white/70 rounded"></div>
-                          </div>
-                          
-                          {/* Campaign Elements */}
-                          <div className="space-y-2 flex-1">
-                            {/* Audience Targeting */}
-                            <div className="flex gap-2">
-                              <div className="w-1/3">
-                                <div className="w-full h-6 bg-cyan-100 rounded mb-1"></div>
-                                <div className="w-3/4 h-1 bg-gray-400 rounded"></div>
-                              </div>
-                              <div className="flex-1 space-y-1">
-                                <div className="w-full h-1 bg-gray-400 rounded"></div>
-                                <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
-                                <div className="w-3/4 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Ad Packages */}
-                            <div className="grid grid-cols-3 gap-1">
-                              <div className="bg-cyan-50 p-1 rounded text-center">
-                                <div className="w-full h-1.5 bg-cyan-400 rounded mb-1"></div>
-                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
-                              </div>
-                              <div className="bg-cyan-100 p-1 rounded text-center">
-                                <div className="w-full h-1.5 bg-cyan-500 rounded mb-1"></div>
-                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
-                              </div>
-                              <div className="bg-cyan-50 p-1 rounded text-center">
-                                <div className="w-full h-1.5 bg-cyan-400 rounded mb-1"></div>
-                                <div className="w-3/4 h-0.5 bg-gray-400 rounded mx-auto"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Analytics Preview */}
-                            <div className="bg-gray-50 p-2 rounded mt-auto">
-                              <div className="flex justify-between items-end">
-                                <div className="w-2 h-4 bg-cyan-400 rounded-sm"></div>
-                                <div className="w-2 h-6 bg-cyan-500 rounded-sm"></div>
-                                <div className="w-2 h-3 bg-cyan-400 rounded-sm"></div>
-                                <div className="w-2 h-5 bg-cyan-600 rounded-sm"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'financial' && (
-                        <>
-                          {/* Financial Header */}
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                            <div className="flex-1">
-                              <div className="w-3/4 h-1.5 bg-gray-800 rounded mb-1"></div>
-                              <div className="w-1/2 h-1 bg-orange-500 rounded"></div>
-                            </div>
-                          </div>
-                          
-                          {/* Loan Products */}
-                          <div className="space-y-2 flex-1">
-                            <div className="bg-orange-50 p-2 rounded">
-                              <div className="w-16 h-1.5 bg-orange-600 rounded mb-2"></div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div>
-                                  <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
-                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
-                                </div>
-                                <div>
-                                  <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
-                                  <div className="w-2/3 h-0.5 bg-gray-300 rounded"></div>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Rates Table */}
-                            <div className="space-y-1">
-                              <div className="flex justify-between">
-                                <div className="w-1/3 h-1 bg-orange-400 rounded"></div>
-                                <div className="w-1/4 h-1 bg-orange-500 rounded"></div>
-                              </div>
-                              <div className="flex justify-between">
-                                <div className="w-1/3 h-1 bg-gray-300 rounded"></div>
-                                <div className="w-1/4 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                              <div className="flex justify-between">
-                                <div className="w-1/3 h-1 bg-gray-300 rounded"></div>
-                                <div className="w-1/4 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Call to Action */}
-                            <div className="bg-orange-500 text-white p-2 rounded text-center mt-auto">
-                              <div className="w-12 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
-                              <div className="w-8 h-1 bg-white/70 rounded mx-auto"></div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'investment' && (
-                        <>
-                          {/* Executive Header */}
-                          <div className="bg-gradient-to-r from-gray-800 to-gray-600 text-white p-2 rounded mb-3">
-                            <div className="w-16 h-1.5 bg-white/90 rounded mb-1"></div>
-                            <div className="w-20 h-1 bg-white/70 rounded"></div>
-                          </div>
-                          
-                          {/* Investment Highlights */}
-                          <div className="space-y-2 flex-1">
-                            {/* Opportunity Overview */}
-                            <div className="border border-gray-300 p-2 rounded">
-                              <div className="w-14 h-1.5 bg-gray-700 rounded mb-1"></div>
-                              <div className="space-y-0.5">
-                                <div className="w-full h-1 bg-gray-400 rounded"></div>
-                                <div className="w-5/6 h-1 bg-gray-300 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Market & Financials */}
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="bg-gray-50 p-1 rounded">
-                                <div className="w-3/4 h-1 bg-gray-600 rounded mb-1"></div>
-                                <div className="flex items-end gap-0.5">
-                                  <div className="w-1 h-2 bg-gray-400 rounded-sm"></div>
-                                  <div className="w-1 h-3 bg-gray-500 rounded-sm"></div>
-                                  <div className="w-1 h-4 bg-gray-600 rounded-sm"></div>
-                                </div>
-                              </div>
-                              <div className="bg-gray-50 p-1 rounded">
-                                <div className="w-2/3 h-1 bg-gray-600 rounded mb-1"></div>
-                                <div className="w-full h-2 bg-green-400 rounded mb-0.5"></div>
-                                <div className="w-3/4 h-0.5 bg-gray-400 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* ROI Projection */}
-                            <div className="bg-gray-800 text-white p-2 rounded text-center mt-auto">
-                              <div className="w-8 h-1.5 bg-white/90 rounded mx-auto mb-1"></div>
-                              <div className="w-12 h-2 bg-green-400 rounded mx-auto"></div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {template.category === 'technology' && (
-                        <>
-                          {/* Tech Header */}
-                          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2 rounded mb-3">
-                            <div className="flex items-center gap-1 mb-1">
-                              <div className="w-2 h-2 bg-white rounded-full"></div>
-                              <div className="w-16 h-1.5 bg-white/90 rounded"></div>
-                            </div>
-                            <div className="w-18 h-1 bg-white/70 rounded"></div>
-                          </div>
-                          
-                          {/* App Features */}
-                          <div className="space-y-2 flex-1">
-                            {/* Feature List */}
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                <div className="w-3/4 h-1 bg-gray-600 rounded"></div>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                <div className="w-2/3 h-1 bg-gray-600 rounded"></div>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                                <div className="w-3/4 h-1 bg-gray-600 rounded"></div>
-                              </div>
-                            </div>
-                            
-                            {/* Mobile Preview */}
-                            <div className="bg-blue-50 p-2 rounded flex justify-center">
-                              <div className="w-8 h-12 bg-white rounded border-2 border-blue-200 flex flex-col">
-                                <div className="bg-blue-500 h-2 rounded-t"></div>
-                                <div className="flex-1 p-1 space-y-0.5">
-                                  <div className="w-full h-0.5 bg-gray-300 rounded"></div>
-                                  <div className="w-3/4 h-0.5 bg-gray-300 rounded"></div>
-                                  <div className="w-full h-1 bg-blue-200 rounded"></div>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Development Timeline */}
-                            <div className="bg-indigo-50 p-2 rounded">
-                              <div className="w-12 h-1 bg-indigo-600 rounded mb-1"></div>
-                              <div className="flex justify-between">
-                                <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
-                                <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                                <div className="w-2 h-2 bg-indigo-300 rounded-full"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      
-                      {/* Default fallback for other categories */}
-                      {!['sales', 'business', 'marketing', 'optimization', 'services', 'advertising', 'financial', 'investment', 'technology'].includes(template.category) && (
-                        <>
-                          <div className="mb-3">
-                            <div className="w-20 h-2 bg-gray-800 rounded mb-2"></div>
-                            <div className="w-16 h-1.5 bg-gray-500 rounded"></div>
-                          </div>
-                          <div className="space-y-2 flex-1">
-                            <div className="w-full h-1 bg-gray-400 rounded"></div>
-                            <div className="w-5/6 h-1 bg-gray-300 rounded"></div>
-                            <div className="w-4/5 h-1 bg-gray-300 rounded"></div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
+        {filteredTemplates.map((template) => {
+          const isSelected = selectedTemplate?.id === template.id;
+          
+          return (
+            <Card 
+              key={template.id}
+              className={`group relative overflow-hidden rounded-lg border transition-all duration-300 cursor-pointer hover:shadow-lg ${
+                isSelected ? 'ring-2 ring-primary shadow-lg' : 'hover:border-primary/30'
+              }`}
+              onClick={() => onSelectTemplate(template)}
+            >
+              <div className="aspect-[3/4] relative overflow-hidden">
+                <div className={`w-full h-full bg-gradient-to-br ${template.preview_color || 'from-white to-gray-50'} p-4 flex flex-col relative`}>
+                  {/* Template Header */}
+                  <div className="w-full h-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm flex items-center px-2 mb-3">
+                    <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-1"></div>
+                    <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full mr-1"></div>
+                    <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
+                    <div className="w-12 h-1.5 bg-gray-300 rounded"></div>
+                  </div>
                   
-                  {/* Industry Icon Badge */}
-                  <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm">
-                    <div className="text-primary">
-                      {industryIcons[template.industry as keyof typeof industryIcons] || <FileText className="h-3 w-3" />}
+                  {/* Content Layout */}
+                  <div className="bg-white/90 backdrop-blur rounded-lg p-2 mb-2 shadow-sm flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-8 h-2 bg-gray-800 rounded"></div>
+                      <div className="w-6 h-1.5 bg-blue-500 rounded"></div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="w-full h-1 bg-gray-400 rounded"></div>
+                      <div className="w-3/4 h-1 bg-gray-300 rounded"></div>
                     </div>
                   </div>
                   
-                  {/* Selection Indicator */}
-                  {isSelected && (
-                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground rounded-full p-1">
-                      <Eye className="h-3 w-3" />
+                  {/* Footer */}
+                  <div className="bg-white/70 backdrop-blur rounded p-1.5 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="w-6 h-1 bg-gray-600 rounded"></div>
+                      <div className="w-8 h-1.5 bg-blue-500 rounded-full"></div>
                     </div>
-                  )}
-                  
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <Button 
-                      size="sm" 
-                      variant={isSelected ? "default" : "secondary"}
-                      className="shadow-md transform scale-90 group-hover:scale-100 transition-transform duration-200"
-                    >
-                      {isSelected ? 'Selected' : 'Use Template'}
-                    </Button>
                   </div>
                 </div>
                 
-                {/* Template Info */}
-                <div className="p-3 bg-background">
-                  <h3 className="font-medium text-sm text-foreground line-clamp-2 leading-tight">
-                    {template.name}
-                  </h3>
-                </div>
-              </Card>
-            );
-          })
-        )}
+                {isSelected && (
+                  <Badge className="absolute top-2 right-2 bg-primary">
+                    <Eye className="h-3 w-3 mr-1" />
+                    Selected
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="p-3 bg-background border-t">
+                <h3 className="font-medium text-sm mb-1 truncate">{template.name}</h3>
+                <p className="text-xs text-muted-foreground line-clamp-2">{template.description}</p>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
