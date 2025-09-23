@@ -46,6 +46,7 @@ export default function Settings() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
@@ -148,6 +149,45 @@ export default function Settings() {
 
 
   if (!user) return null;
+
+  const handleSubscribe = async (planId: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to subscribe to a plan.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSubscriptionLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-paypal-subscription', {
+        body: { planId }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.approvalUrl) {
+        // Redirect to PayPal for approval
+        window.location.href = data.approvalUrl;
+      } else {
+        throw new Error('No approval URL received from PayPal');
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast({
+        title: "Subscription Failed",
+        description: error instanceof Error ? error.message : "Failed to create subscription. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -368,8 +408,13 @@ export default function Settings() {
                             <span>Export in various formats</span>
                           </div>
                         </div>
-                        <Button variant="outline" className="w-full">
-                          Subscribe
+                        <Button 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => handleSubscribe('freelance')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -427,8 +472,12 @@ export default function Settings() {
                             <span>Team collaboration</span>
                           </div>
                         </div>
-                        <Button className="w-full">
-                          Subscribe
+                        <Button 
+                          className="w-full"
+                          onClick={() => handleSubscribe('agency')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -487,8 +536,13 @@ export default function Settings() {
                             <span>Team collaboration</span>
                           </div>
                         </div>
-                        <Button variant="outline" className="w-full">
-                          Subscribe
+                        <Button 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => handleSubscribe('enterprise')}
+                          disabled={subscriptionLoading}
+                        >
+                          {subscriptionLoading ? 'Processing...' : 'Subscribe'}
                         </Button>
                       </CardContent>
                     </Card>
