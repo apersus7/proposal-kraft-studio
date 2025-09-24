@@ -181,6 +181,39 @@ export type Database = {
           },
         ]
       }
+      proposal_shares: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          permissions: string
+          proposal_id: string
+          shared_with_email: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          permissions?: string
+          proposal_id: string
+          shared_with_email: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          permissions?: string
+          proposal_id?: string
+          shared_with_email?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       proposal_signatures: {
         Row: {
           created_at: string
