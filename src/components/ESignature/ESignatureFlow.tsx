@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import SignatureCanvas from 'react-signature-canvas';
 
 interface Signer {
   id: string;
@@ -45,7 +44,7 @@ export default function ESignatureFlow({
   const [activeSignature, setActiveSignature] = useState<string | null>(null);
   const [signatureMode, setSignatureMode] = useState<'draw' | 'type'>('draw');
   const [typedSignature, setTypedSignature] = useState('');
-  const signatureRef = useRef<SignatureCanvas>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     fetchSigners();
@@ -178,7 +177,7 @@ export default function ESignatureFlow({
     let signatureData = '';
 
     if (signatureMode === 'draw') {
-      if (!signatureRef.current || signatureRef.current.isEmpty()) {
+      if (!canvasRef.current) {
         toast({
           title: "Error",
           description: "Please provide a signature",
@@ -186,7 +185,7 @@ export default function ESignatureFlow({
         });
         return;
       }
-      signatureData = signatureRef.current.toDataURL();
+      signatureData = canvasRef.current.toDataURL();
     } else {
       if (!typedSignature.trim()) {
         toast({
@@ -506,19 +505,26 @@ export default function ESignatureFlow({
                           
                           {signatureMode === 'draw' ? (
                             <div className="border-2 border-dashed border-muted rounded-lg p-4 bg-background">
-                              <SignatureCanvas
-                                ref={signatureRef}
-                                canvasProps={{
-                                  width: 400,
-                                  height: 150,
-                                  className: 'signature-canvas border rounded'
-                                }}
+                              <canvas
+                                ref={canvasRef}
+                                width={400}
+                                height={150}
+                                className="signature-canvas border rounded cursor-crosshair"
+                                style={{ touchAction: 'none' }}
                               />
                               <div className="flex space-x-2 mt-2">
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => signatureRef.current?.clear()}
+                                  onClick={() => {
+                                    const canvas = canvasRef.current;
+                                    if (canvas) {
+                                      const ctx = canvas.getContext('2d');
+                                      if (ctx) {
+                                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                      }
+                                    }
+                                  }}
                                 >
                                   Clear
                                 </Button>
