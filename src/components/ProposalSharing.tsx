@@ -94,10 +94,26 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       if (error) throw error;
 
-      // Send email notification (would require edge function)
+      // Send email notification via edge function
+      const { data: user } = await sb.auth.getUser();
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('display_name')
+        .eq('user_id', user.user?.id)
+        .single();
+      
+      await sb.functions.invoke('send-proposal-email', {
+        body: {
+          proposalId,
+          recipientEmail: emailShare,
+          proposalTitle,
+          senderName: profile?.display_name || 'Someone'
+        }
+      });
+
       toast({
         title: "Proposal Shared",
-        description: `Proposal shared with ${emailShare}`
+        description: `Proposal shared with ${emailShare} via email`
       });
 
       setEmailShare('');
@@ -165,7 +181,10 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+        <Button variant="outline" size="sm" onClick={() => {
+          setIsOpen(true);
+          fetchShareLinks();
+        }}>
           <Share2 className="h-4 w-4 mr-2" />
           Share Proposal
         </Button>

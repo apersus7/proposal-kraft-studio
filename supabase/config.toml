@@ -1,5 +1,8 @@
 project_id = "kmgmjfifunncweqgnbvz"
 
+[functions.send-proposal-email]
+verify_jwt = false
+
 [functions.create-paypal-subscription]
 verify_jwt = false
 
