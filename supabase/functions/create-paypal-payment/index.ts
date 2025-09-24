@@ -162,7 +162,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error creating PayPal payment:', error);
     return new Response(JSON.stringify({ 
-      error: error.message || 'Unknown error occurred'
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -85,7 +85,7 @@ This approach provides significant value and helps achieve your desired outcomes
     console.error('Error in generate-proposal-content function:', error);
     return new Response(JSON.stringify({ 
       error: 'Failed to generate content', 
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

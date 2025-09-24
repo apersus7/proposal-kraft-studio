@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
     const finalShareUrl = shareUrl || `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '')}.lovableproject.com/proposal/${proposalId}`
 
     const emailResponse = await resend.emails.send({
-      from: "Proposals <noreply@yourdomain.com>", // Change this to your verified domain
+      from: "Proposals <ceo@proposalkraft.com>",
       to: [recipientEmail],
       subject: `${senderName} shared a proposal: ${proposalTitle}`,
       html: `
