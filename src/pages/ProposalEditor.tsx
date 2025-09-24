@@ -81,6 +81,13 @@ export default function ProposalEditor() {
     return section ? section[field] : '';
   };
 
+  const getContentArray = (sectionType: string, field: string) => {
+    if (!proposal?.content?.sections) return [];
+    const section = proposal.content.sections.find((s: any) => s.type === sectionType);
+    const value = section ? section[field] : null;
+    return Array.isArray(value) ? value : [];
+  };
+
   const updateContentValue = (sectionType: string, field: string, value: any) => {
     if (!proposal) return;
     
@@ -477,7 +484,7 @@ export default function ProposalEditor() {
                  <div className="space-y-2">
                    <Label>Timeline / Milestones</Label>
                    <div className="space-y-3">
-                     {getContentValue('scope_of_work', 'timeline')?.map((phase: any, index: number) => (
+                      {getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
                        <div key={index} className="grid grid-cols-3 gap-2">
                           <Input
                             value={phase.phase || ''}
@@ -647,7 +654,7 @@ export default function ProposalEditor() {
                          Scope of Work & Deliverables
                        </h2>
                        <ul className="list-disc list-inside text-gray-700 space-y-2 leading-relaxed">
-                         {getContentValue('scope_of_work', 'deliverables')?.map((item: string, index: number) => (
+                         {getContentArray('scope_of_work', 'deliverables').map((item: string, index: number) => (
                            <li key={index}>{item}</li>
                          )) || (
                            <>
@@ -666,7 +673,7 @@ export default function ProposalEditor() {
                          Timeline & Milestones
                        </h2>
                        <div className="text-gray-700 space-y-2">
-                         {getContentValue('scope_of_work', 'timeline')?.map((phase: any, index: number) => (
+                         {getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
                            <p key={index}>
                              <strong>{phase.phase}:</strong> {phase.description} ({phase.duration})
                            </p>
@@ -700,7 +707,7 @@ export default function ProposalEditor() {
                          Why Choose Us
                        </h2>
                        <ul className="list-disc list-inside text-gray-700 space-y-2">
-                         {getContentValue('value_proposition', 'advantages')?.map((advantage: string, index: number) => (
+                         {getContentArray('value_proposition', 'advantages').map((advantage: string, index: number) => (
                            <li key={index}>{advantage}</li>
                          )) || (
                            <>
