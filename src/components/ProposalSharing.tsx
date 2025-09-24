@@ -36,12 +36,15 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
   const generateSecureLink = async () => {
     setLoading(true);
     try {
+      // Set default expiration to 30 days from now if no expiration is set
+      const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      
       const { data, error } = await supabase
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
           created_by: (await sb.auth.getUser()).data.user?.id,
-          expires_at: shareSettings.expiresAt?.toISOString(),
+          expires_at: expirationDate.toISOString(),
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
