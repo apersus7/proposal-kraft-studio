@@ -249,6 +249,10 @@ export default function ProposalEditor() {
     } : null);
   };
 
+  const [searchParams] = useSearchParams();
+  const goTarget = searchParams.get('go');
+  const defaultTab = goTarget === 'signatures' ? 'signatures' : 'editor';
+
   if (!user || !proposal) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center">
@@ -259,10 +263,6 @@ export default function ProposalEditor() {
       </div>
     );
   }
-
-  const [searchParams] = useSearchParams();
-  const goTarget = searchParams.get('go');
-  const defaultTab = goTarget === 'signatures' ? 'signatures' : 'editor';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
