@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, Calendar, DollarSign, Building2, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import PaymentLinks from '@/components/PaymentLinks';
 
 interface ProposalData {
   id: string;
@@ -229,6 +230,28 @@ export default function SharedProposal() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Payment Links */}
+          {proposal.worth > 0 && (
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    Ready to Get Started?
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Secure payment options for your project
+                  </p>
+                </div>
+                <PaymentLinks 
+                  proposalId={proposal.id}
+                  proposalAmount={proposal.worth.toString()}
+                  proposalCurrency="USD"
+                  defaultOpen={false}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Footer */}
           <div className="mt-8 text-center text-muted-foreground">
