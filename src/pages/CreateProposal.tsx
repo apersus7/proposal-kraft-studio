@@ -706,49 +706,31 @@ export default function CreateProposal() {
                   </CardContent>
                 </Card>
 
-                {/* Executive Summary */}
+                {/* Project Objective */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      Executive Summary
+                      Project Objective
                       <Button 
-                        onClick={() => generateAIContent('executive_summary', `${proposalData.client_name} - ${proposalData.project_name}`)}
-                        disabled={generatingAI === 'executive_summary'}
+                        onClick={() => generateAIContent('objective', `${proposalData.client_name} - ${proposalData.project_name}`)}
+                        disabled={generatingAI === 'objective'}
                         variant="outline" 
                         size="sm"
                       >
                         <Sparkles className="h-3 w-3 mr-1" />
-                        {generatingAI === 'executive_summary' ? 'Generating...' : 'AI Generate'}
+                        {generatingAI === 'objective' ? 'Generating...' : 'AI Generate'}
                       </Button>
                     </CardTitle>
                     <CardDescription>
-                      A high-level overview of your proposal
+                      Define the main objectives and goals of this project
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Textarea
-                      value={getContentValue('executive_summary', 'content')}
-                      onChange={(e) => updateSectionValue('executive_summary', 'content', e.target.value)}
-                      placeholder="Provide a high-level overview tailored to the client's main challenge and results you aim to deliver..."
+                      value={getContentValue('objective', 'content')}
+                      onChange={(e) => updateSectionValue('objective', 'content', e.target.value)}
+                      placeholder="Describe the main objectives and goals of this project..."
                       className="min-h-[120px]"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Problem Statement */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Problem Statement</CardTitle>
-                    <CardDescription>
-                      Describe the client's challenges and needs
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Textarea
-                      value={getContentValue('client_problem', 'content')}
-                      onChange={(e) => updateSectionValue('client_problem', 'content', e.target.value)}
-                      placeholder="Identify and describe the specific challenges your client is facing..."
-                      className="min-h-[100px]"
                     />
                   </CardContent>
                 </Card>
@@ -1051,26 +1033,14 @@ export default function CreateProposal() {
                       </p>
                     </div>
                     
-                    {/* Executive Summary */}
-                    {getContentValue('executive_summary', 'content') && (
+                    {/* Project Objective */}
+                    {getContentValue('objective', 'content') && (
                       <section className="mb-4">
                         <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
-                          Executive Summary
+                          Project Objective
                         </h2>
                         <p className="text-xs text-gray-700 leading-relaxed">
-                          {getContentValue('executive_summary', 'content')}
-                        </p>
-                      </section>
-                    )}
-                    
-                    {/* Problem Statement */}
-                    {getContentValue('client_problem', 'content') && (
-                      <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
-                          Problem Statement
-                        </h2>
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                          {getContentValue('client_problem', 'content')}
+                          {getContentValue('objective', 'content')}
                         </p>
                       </section>
                     )}
