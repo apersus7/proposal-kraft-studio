@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import PaymentLinks from '@/components/PaymentLinks';
+import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 
 interface ProposalData {
   id: string;
@@ -32,6 +33,7 @@ export default function SharedProposal() {
   const [shareData, setShareData] = useState<ShareData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [signers, setSigners] = useState<any[]>([]);
 
   useEffect(() => {
     if (token) {
@@ -78,6 +80,17 @@ export default function SharedProposal() {
       }
 
       setProposal(proposalData);
+
+      // Fetch signers for this proposal
+      const { data: signersData } = await supabase
+        .from('proposal_signatures')
+        .select('*')
+        .eq('proposal_id', shareInfo.proposal_id)
+        .order('created_at', { ascending: true });
+      
+      if (signersData) {
+        setSigners(signersData);
+      }
 
       // Track the view (if analytics tracking is enabled)
       const permissions = typeof shareInfo.permissions === 'string' 
@@ -154,6 +167,56 @@ export default function SharedProposal() {
       return <p className="text-muted-foreground">No content available.</p>;
     }
 
+    // Check if content is an array of sections (new format)
+    if (Array.isArray(content)) {
+      return content.map((section: any) => {
+        if (!section || typeof section !== 'object') return null;
+
+        return (
+          <div key={section.id} className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-primary">
+              {section.title}
+            </h3>
+            {section.type === 'payment_link' ? (
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border">
+                <div className="text-center">
+                  <h4 className="font-semibold mb-2">Ready to proceed?</h4>
+                  <p className="text-muted-foreground mb-4">{section.content?.text}</p>
+                  {section.content?.paymentUrl ? (
+                    <Button 
+                      asChild 
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <a 
+                        href={section.content.paymentUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        {section.content?.buttonText || 'Pay Now'} 
+                        {section.content?.amount && ` - $${section.content.amount}`}
+                      </a>
+                    </Button>
+                  ) : (
+                    <div className="text-muted-foreground text-sm">
+                      Payment link will be available soon
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="prose prose-slate max-w-none">
+                <p className="text-muted-foreground whitespace-pre-wrap">
+                  {section.content?.text || 'No content available.'}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      });
+    }
+
+    // Legacy format support
     return Object.entries(content).map(([section, data]: [string, any]) => {
       if (!data || typeof data !== 'object') return null;
 
@@ -248,6 +311,23 @@ export default function SharedProposal() {
                   proposalAmount={proposal.worth.toString()}
                   proposalCurrency="USD"
                   defaultOpen={false}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* E-Signature Section */}
+          {signers.length > 0 && (
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Electronic Signatures Required
+                </h3>
+                <ESignatureFlow
+                  proposalId={proposal.id}
+                  signers={signers}
+                  onSignersUpdate={setSigners}
+                  isOwner={false}
                 />
               </CardContent>
             </Card>

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GripVertical, Plus, Type, FileText, Clock, DollarSign, Trash2, MoveUp, MoveDown } from 'lucide-react';
+import { GripVertical, Plus, Type, FileText, Clock, DollarSign, Trash2, MoveUp, MoveDown, CreditCard, Link2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface Section {
@@ -30,6 +30,7 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
     { value: 'proposed_solution', label: 'Proposed Solution' },
     { value: 'scope_of_work', label: 'Scope of Work' },
     { value: 'pricing', label: 'Pricing' },
+    { value: 'payment_link', label: 'Payment Link' },
     { value: 'terms', label: 'Terms & Conditions' },
     { value: 'about_us', label: 'About Us' },
     { value: 'custom_text', label: 'Custom Text' },
@@ -133,7 +134,10 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
                                 <div {...provided.dragHandleProps}>
                                   <GripVertical className="h-4 w-4 text-muted-foreground hover:text-primary" />
                                 </div>
-                                <FileText className="h-4 w-4" />
+                                 {section.type === 'payment_link' ? 
+                                   <CreditCard className="h-4 w-4" /> : 
+                                   <FileText className="h-4 w-4" />
+                                 }
                                 <span className="font-medium">{section.title}</span>
                               </div>
                               <div className="flex items-center space-x-1">
@@ -276,6 +280,77 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
                           <SelectItem value="GBP">GBP</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedSection.type === 'payment_link' && (
+                <div className="space-y-4 border-t pt-4">
+                  <Label>Payment Link Details</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label>Amount</Label>
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={selectedSection.content?.amount || ''}
+                        onChange={(e) => updateSectionContent(selectedSection.id, { 
+                          content: { ...selectedSection.content, amount: e.target.value } 
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Currency</Label>
+                      <Select 
+                        value={selectedSection.content?.currency || 'USD'} 
+                        onValueChange={(value) => updateSectionContent(selectedSection.id, { 
+                          content: { ...selectedSection.content, currency: value } 
+                        })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="USD">USD</SelectItem>
+                          <SelectItem value="EUR">EUR</SelectItem>
+                          <SelectItem value="GBP">GBP</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Button Text</Label>
+                    <Input
+                      placeholder="Pay Now"
+                      value={selectedSection.content?.buttonText || 'Pay Now'}
+                      onChange={(e) => updateSectionContent(selectedSection.id, { 
+                        content: { ...selectedSection.content, buttonText: e.target.value } 
+                      })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Payment Link URL</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        placeholder="Paste your payment link here..."
+                        value={selectedSection.content?.paymentUrl || ''}
+                        onChange={(e) => updateSectionContent(selectedSection.id, { 
+                          content: { ...selectedSection.content, paymentUrl: e.target.value } 
+                        })}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0"
+                        onClick={() => {
+                          // This would open the payment links dialog
+                          console.log('Open payment links generator');
+                        }}
+                      >
+                        <Link2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
