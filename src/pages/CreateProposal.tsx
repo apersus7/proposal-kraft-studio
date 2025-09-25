@@ -227,6 +227,33 @@ export default function CreateProposal() {
       return;
     }
 
+    if (!proposalData.client_email?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter client email",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!proposalData.project_name?.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter service to be delivered",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!proposalData.pricing || proposalData.pricing <= 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid project value",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const proposalToInsert = {
@@ -236,8 +263,8 @@ export default function CreateProposal() {
         client_email: proposalData.client_email?.trim() || null,
         content: {
           sections: proposalData.content?.sections || [],
-          project_name: proposalData.project_name || '',
-          pricing: proposalData.pricing || 0,
+          project_name: proposalData.project_name.trim(),
+          pricing: proposalData.pricing,
           currency: proposalData.currency || 'USD',
           primaryColor: primaryColor,
           secondaryColor: secondaryColor
