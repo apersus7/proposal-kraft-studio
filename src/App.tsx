@@ -16,6 +16,7 @@ import Solutions from "./pages/Solutions";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import SharedProposal from "./pages/SharedProposal";
+import ProposalPreview from "./pages/ProposalPreview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create-proposal" element={<CreateProposal />} />
             <Route path="/proposal/:id" element={<ProposalEditor />} />
+            <Route path="/preview/:id" element={<ProposalPreview />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Settings />} />
             <Route path="/features" element={<Features />} />

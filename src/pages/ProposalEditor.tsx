@@ -320,7 +320,7 @@ export default function ProposalEditor() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => window.open(`/proposal/${proposal.id}`, '_blank')}
+                  onClick={() => window.open(`/preview/${proposal.id}`, '_blank')}
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
