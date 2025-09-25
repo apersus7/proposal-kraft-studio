@@ -58,8 +58,11 @@ const Index = () => {
         .select('*')
         .order('updated_at', { ascending: false });
 
-      if (error) throw error;
-      setProposals(data || []);
+      const normalized = (data || []).map((p: any) => ({
+        ...p,
+        worth: (p?.worth ?? Number(p?.content?.pricing)) || 0,
+      }));
+      setProposals(normalized);
     } catch (error) {
       console.error('Error fetching proposals:', error);
     } finally {
@@ -195,7 +198,7 @@ const Index = () => {
                     <div className="flex items-center space-x-2 text-lg font-semibold">
                       <DollarSign className="h-5 w-5 text-green-600" />
                       <span className="text-green-600">
-                        {proposal.worth?.toLocaleString() || '0'}
+                        {(proposal.worth ?? 0).toLocaleString()}
                       </span>
                     </div>
                     

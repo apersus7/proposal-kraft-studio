@@ -268,6 +268,7 @@ export default function CreateProposal() {
           primaryColor: primaryColor,
           secondaryColor: secondaryColor
         },
+        worth: Number(proposalData.pricing),
         template_id: selectedTemplate?.id === 'blank' ? null : selectedTemplate?.id || null,
         status: 'draft'
       };
