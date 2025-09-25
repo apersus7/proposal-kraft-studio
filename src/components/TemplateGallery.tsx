@@ -238,7 +238,7 @@ export default function TemplateGallery({ onSelectTemplate, selectedTemplate }: 
         <Card 
           className="group relative overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 bg-background hover:border-primary/50 transition-all duration-300 cursor-pointer"
           onClick={() => onSelectTemplate({
-            id: 'blank',
+            id: null,
             name: 'Blank document',
             description: 'Start with a blank proposal',
             category: 'blank',

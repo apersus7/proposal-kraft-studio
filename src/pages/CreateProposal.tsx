@@ -269,7 +269,7 @@ export default function CreateProposal() {
           primaryColor: primaryColor,
           secondaryColor: secondaryColor
         },
-        template_id: selectedTemplate?.id || null,
+        template_id: selectedTemplate?.id === 'blank' ? null : selectedTemplate?.id || null,
         status: 'draft'
       };
 
