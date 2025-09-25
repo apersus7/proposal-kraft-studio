@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3 } from 'lucide-react';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -337,11 +337,15 @@ export default function ProposalEditor() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="editor">Proposal Editor</TabsTrigger>
             <TabsTrigger value="research">
               <Building className="h-4 w-4 mr-2" />
               Company Research
+            </TabsTrigger>
+            <TabsTrigger value="payment">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Payment Links
             </TabsTrigger>
             <TabsTrigger value="signatures">
               <Edit3 className="h-4 w-4 mr-2" />
@@ -757,28 +761,52 @@ export default function ProposalEditor() {
             )}
         </TabsContent>
        
-        <TabsContent value="research" className="space-y-6">
-          <CompanyResearch 
-            onResearchComplete={(data) => {
-              console.log('Research completed:', data);
-              toast({
-                title: "Research Complete",
-                description: `Analysis completed for ${data.companyName}`,
-              });
-            }}
-          />
-        </TabsContent>
+         <TabsContent value="research" className="space-y-6">
+           <CompanyResearch 
+             onResearchComplete={(data) => {
+               console.log('Research completed:', data);
+               toast({
+                 title: "Research Complete",
+                 description: `Analysis completed for ${data.companyName}`,
+               });
+             }}
+           />
+         </TabsContent>
+         
+         <TabsContent value="payment" className="space-y-6">
+           <div className="max-w-4xl mx-auto">
+             <Card>
+               <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                   <CreditCard className="h-5 w-5" />
+                   Payment Links Management
+                 </CardTitle>
+                 <CardDescription>
+                   Create and manage payment links for this proposal. Configure your payment providers in Settings if needed.
+                 </CardDescription>
+               </CardHeader>
+               <CardContent>
+                 <PaymentLinks 
+                   proposalId={proposal.id}
+                   proposalAmount={proposal.content?.pricing}
+                   proposalCurrency={proposal.content?.currency}
+                   defaultOpen={false}
+                 />
+               </CardContent>
+             </Card>
+           </div>
+         </TabsContent>
 
-        <TabsContent value="signatures" className="space-y-6">
-          <ESignatureFlow 
-            proposalId={proposal.id}
-            signers={[]}
-            onSignersUpdate={(signers) => {
-              console.log('Signers updated:', signers);
-            }}
-            isOwner={true}
-          />
-        </TabsContent>
+         <TabsContent value="signatures" className="space-y-6">
+           <ESignatureFlow 
+             proposalId={proposal.id}
+             signers={[]}
+             onSignersUpdate={(signers) => {
+               console.log('Signers updated:', signers);
+             }}
+             isOwner={true}
+           />
+         </TabsContent>
       </Tabs>
    </div>
  </div>
