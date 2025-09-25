@@ -15,6 +15,7 @@ import Pricing from "./pages/Pricing";
 import Solutions from "./pages/Solutions";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
+import SharedProposal from "./pages/SharedProposal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/shared/:token" element={<SharedProposal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

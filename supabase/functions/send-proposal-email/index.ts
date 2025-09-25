@@ -36,7 +36,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.log('Sending proposal email to:', recipientEmail)
 
     // Generate a basic share URL if not provided
-    const finalShareUrl = shareUrl || `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '')}.lovableproject.com/proposal/${proposalId}`
+    // For secure shares, shareUrl should be provided with the token
+    const finalShareUrl = shareUrl || `https://proposalkraft.com/proposal/${proposalId}`
 
     const emailResponse = await resend.emails.send({
       from: "Proposals <ceo@proposalkraft.com>",

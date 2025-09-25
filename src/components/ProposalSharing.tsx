@@ -105,12 +105,16 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .eq('user_id', user.user?.id)
         .single();
       
+      // Create a basic share URL for email shares (these go to the regular proposal view)
+      const shareUrl = `${window.location.origin}/proposal/${proposalId}`;
+      
       await sb.functions.invoke('send-proposal-email', {
         body: {
           proposalId,
           recipientEmail: emailShare,
           proposalTitle,
-          senderName: profile?.display_name || 'Someone'
+          senderName: profile?.display_name || 'Someone',
+          shareUrl
         }
       });
 
