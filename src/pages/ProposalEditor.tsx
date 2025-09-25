@@ -173,8 +173,7 @@ export default function ProposalEditor() {
       const { error } = await supabase
         .from('proposals')
         .update({
-          status: 'sent',
-          sent_at: new Date().toISOString(),
+          status: 'sent'
         })
         .eq('id', proposal.id);
 
