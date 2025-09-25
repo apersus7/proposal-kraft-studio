@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard } from 'lucide-react';
@@ -40,6 +41,9 @@ export default function ProposalEditor() {
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [editMode, setEditMode] = useState<'form' | 'drag'>('form');
+  const [sendEmailDialog, setSendEmailDialog] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -167,22 +171,44 @@ export default function ProposalEditor() {
 
   const handleSend = async () => {
     if (!proposal || !user) return;
+    setRecipientEmail(proposal.client_email || '');
+    setSendEmailDialog(true);
+  };
 
-    setLoading(true);
+  const sendProposalEmail = async () => {
+    if (!proposal || !user || !recipientEmail) return;
+
+    setSendingEmail(true);
     try {
-      const { error } = await supabase
+      // First update the proposal status to 'sent'
+      const { error: updateError } = await supabase
         .from('proposals')
         .update({
           status: 'sent'
         })
         .eq('id', proposal.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Then send the email
+      const { error: emailError } = await supabase.functions.invoke('send-proposal-email', {
+        body: {
+          proposalId: proposal.id,
+          recipientEmail: recipientEmail,
+          proposalTitle: proposal.title,
+          senderName: user.user_metadata?.full_name || user.email,
+          shareUrl: `${window.location.origin}/proposal/${proposal.id}`
+        }
+      });
+
+      if (emailError) throw emailError;
 
       setProposal(prev => prev ? { ...prev, status: 'sent' } : null);
+      setSendEmailDialog(false);
+      setRecipientEmail('');
       toast({
         title: "Success",
-        description: "Proposal sent to client!"
+        description: `Proposal sent to ${recipientEmail}!`
       });
     } catch (error) {
       console.error('Error sending proposal:', error);
@@ -192,7 +218,7 @@ export default function ProposalEditor() {
         variant: "destructive"
       });
     } finally {
-      setLoading(false);
+      setSendingEmail(false);
     }
   };
 
@@ -323,7 +349,7 @@ export default function ProposalEditor() {
                   Save
                 </Button>
                 {proposal.status !== 'sent' && (
-                  <Button onClick={handleSend} disabled={loading}>
+                  <Button onClick={handleSend} disabled={!proposal || sendingEmail}>
                     <Send className="h-4 w-4 mr-2" />
                     Send to Client
                   </Button>
@@ -786,7 +812,46 @@ export default function ProposalEditor() {
            />
          </TabsContent>
       </Tabs>
-   </div>
- </div>
+      </div>
+
+      {/* Send Email Dialog */}
+      <Dialog open={sendEmailDialog} onOpenChange={setSendEmailDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Send Proposal to Client</DialogTitle>
+            <DialogDescription>
+              Enter the client's email address to send the proposal.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="recipient-email">Client Email</Label>
+              <Input
+                id="recipient-email"
+                type="email"
+                placeholder="client@example.com"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setSendEmailDialog(false)}
+              disabled={sendingEmail}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={sendProposalEmail} 
+              disabled={!recipientEmail || sendingEmail}
+            >
+              {sendingEmail ? 'Sending...' : 'Send Proposal'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
 );
 }
