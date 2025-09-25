@@ -44,6 +44,7 @@ export default function ProposalEditor() {
   const [sendEmailDialog, setSendEmailDialog] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState('');
+  const [signers, setSigners] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -599,9 +600,64 @@ export default function ProposalEditor() {
                      placeholder="Confidentiality, revisions, cancellation, ownership of work, etc..."
                      className="min-h-[80px]"
                    />
-                 </div>
+                   </div>
 
-                 <div className="space-y-2">
+                   <div className="space-y-2">
+                     <Label>Payment Links</Label>
+                     <Card className="p-4 bg-gradient-to-r from-green-50 to-blue-50 border-dashed">
+                       <div className="text-center space-y-3">
+                         <CreditCard className="h-8 w-8 mx-auto text-green-600" />
+                         <div>
+                           <h4 className="font-medium">Add Payment Links to Proposal</h4>
+                           <p className="text-sm text-muted-foreground">
+                             Create payment buttons that appear in your proposal
+                           </p>
+                         </div>
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={() => setEditMode('drag')}
+                           className="border-green-600 text-green-600 hover:bg-green-50"
+                         >
+                           <CreditCard className="h-4 w-4 mr-2" />
+                           Use Advanced Editor to Add Payment Links
+                         </Button>
+                         <p className="text-xs text-muted-foreground">
+                           Or use the Payment Links tab to create standalone payment links
+                         </p>
+                       </div>
+                     </Card>
+                   </div>
+
+                   <div className="space-y-2">
+                     <Label>E-Signatures</Label>
+                     <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-dashed">
+                       <div className="text-center space-y-3">
+                         <Edit3 className="h-8 w-8 mx-auto text-purple-600" />
+                         <div>
+                           <h4 className="font-medium">Electronic Signatures</h4>
+                           <p className="text-sm text-muted-foreground">
+                             {signers.length > 0 ? `${signers.length} signer(s) configured` : 'No signers configured yet'}
+                           </p>
+                         </div>
+                         <Button 
+                           variant="outline" 
+                           size="sm"
+                           onClick={() => {
+                             const tabs = document.querySelector('[role="tablist"]');
+                             const signaturesTab = tabs?.querySelector('[value="signatures"]') as HTMLElement;
+                             signaturesTab?.click();
+                           }}
+                           className="border-purple-600 text-purple-600 hover:bg-purple-50"
+                         >
+                           <Edit3 className="h-4 w-4 mr-2" />
+                           Manage E-Signatures
+                         </Button>
+                       </div>
+                     </Card>
+                   </div>
+
+                  <div className="space-y-2">
                    <Label htmlFor="call_to_action">Call to Action & Next Steps</Label>
                    <Textarea
                      id="call_to_action"
@@ -807,16 +863,14 @@ export default function ProposalEditor() {
            </div>
          </TabsContent>
 
-         <TabsContent value="signatures" className="space-y-6">
-           <ESignatureFlow 
-             proposalId={proposal.id}
-             signers={[]}
-             onSignersUpdate={(signers) => {
-               console.log('Signers updated:', signers);
-             }}
-             isOwner={true}
-           />
-         </TabsContent>
+          <TabsContent value="signatures" className="space-y-6">
+            <ESignatureFlow 
+              proposalId={proposal.id}
+              signers={signers}
+              onSignersUpdate={setSigners}
+              isOwner={true}
+            />
+          </TabsContent>
       </Tabs>
       </div>
 
