@@ -195,7 +195,7 @@ const Index = () => {
                     <div className="flex items-center space-x-2 text-lg font-semibold">
                       <DollarSign className="h-5 w-5 text-green-600" />
                       <span className="text-green-600">
-                        ${proposal.worth?.toLocaleString() || '0'}
+                        {proposal.worth?.toLocaleString() || '0'}
                       </span>
                     </div>
                     
