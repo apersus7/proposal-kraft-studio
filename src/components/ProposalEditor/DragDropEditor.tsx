@@ -26,8 +26,7 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
   const [newSectionType, setNewSectionType] = useState('custom_text');
 
   const sectionTypes = [
-    { value: 'executive_summary', label: 'Executive Summary' },
-    { value: 'client_problem', label: 'Client Problem' },
+    { value: 'objective', label: 'Project Objective' },
     { value: 'proposed_solution', label: 'Proposed Solution' },
     { value: 'scope_of_work', label: 'Scope of Work' },
     { value: 'pricing', label: 'Pricing' },

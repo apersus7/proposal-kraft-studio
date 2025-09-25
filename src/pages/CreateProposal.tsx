@@ -659,7 +659,7 @@ export default function CreateProposal() {
                   <CompanyResearch 
                     onResearchComplete={(data) => {
                       const bullets = data.painPoints.map((p: string) => `• ${p}`).join('\n');
-                      updateSectionValue('client_problem', 'content', `Key pain points for ${data.companyName}:\n${bullets}`);
+                      updateSectionValue('objective', 'content', `Project objective for ${data.companyName}:\n${bullets}`);
                       toast({ 
                         title: 'Analysis added', 
                         description: 'Pain points inserted into client needs section' 

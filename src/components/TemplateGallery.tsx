@@ -59,7 +59,7 @@ const starterTemplates = [
     template_data: {
       sections: [
         { type: 'cover_page', title: 'Project Proposal', tagline: 'Innovative Solutions for Modern Challenges' },
-        { type: 'executive_summary', content: 'Executive overview with key value propositions' },
+        { type: 'objective', content: 'Project objective and goals overview' },
         { type: 'scope_of_work', deliverables: ['Strategy Development', 'Implementation Plan'] },
         { type: 'pricing', packages: [{ name: 'Complete Solution', price: 15000 }] }
       ]

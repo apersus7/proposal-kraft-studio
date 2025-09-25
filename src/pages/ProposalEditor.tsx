@@ -421,36 +421,25 @@ export default function ProposalEditor() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="executive_summary">Executive Summary</Label>
+                      <Label htmlFor="objective">Project Objective</Label>
                       <Button 
-                        onClick={() => generateAIContent('executive_summary')}
-                        disabled={generatingAI === 'executive_summary'}
+                        onClick={() => generateAIContent('objective')}
+                        disabled={generatingAI === 'objective'}
                         variant="outline" 
                         size="sm"
                       >
                         <Sparkles className="h-3 w-3 mr-1" />
-                        {generatingAI === 'executive_summary' ? 'Generating...' : 'AI Generate'}
+                        {generatingAI === 'objective' ? 'Generating...' : 'AI Generate'}
                       </Button>
                     </div>
                     <Textarea
-                      id="executive_summary"
-                      value={getContentValue('executive_summary', 'content')}
-                      onChange={(e) => updateContentValue('executive_summary', 'content', e.target.value)}
-                      placeholder="Provide a high-level overview tailored to the client's main challenge and results you aim to deliver..."
+                      id="objective"
+                      value={getContentValue('objective', 'content')}
+                      onChange={(e) => updateContentValue('objective', 'content', e.target.value)}
+                      placeholder="Describe the main objectives and goals of this project..."
                       className="min-h-[100px]"
                     />
                   </div>
-
-                 <div className="space-y-2">
-                   <Label htmlFor="client_problem">Client's Problem / Needs</Label>
-                   <Textarea
-                     id="client_problem"
-                     value={getContentValue('client_problem', 'content')}
-                     onChange={(e) => updateContentValue('client_problem', 'content', e.target.value)}
-                     placeholder="Restate the client's pain points to show you understand them..."
-                     className="min-h-[100px]"
-                   />
-                 </div>
 
                  <div className="space-y-2">
                    <Label htmlFor="proposed_solution">Proposed Solution</Label>
@@ -622,24 +611,14 @@ export default function ProposalEditor() {
                     </p>
                   </div>
                   
-                  <div className="space-y-6">
+                   <div className="space-y-6">
                      <section>
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Executive Summary
+                         Project Objective
                        </h2>
                        <p className="text-gray-700 leading-relaxed">
-                         {getContentValue('executive_summary', 'content') || 
-                          'This proposal outlines our comprehensive approach to delivering exceptional results for your project, tailored to your specific needs and challenges.'}
-                       </p>
-                     </section>
-                     
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Understanding Your Needs
-                       </h2>
-                       <p className="text-gray-700 leading-relaxed">
-                         {getContentValue('client_problem', 'content') || 
-                          'We understand the challenges you\'re facing and are committed to addressing your specific pain points with tailored solutions.'}
+                         {getContentValue('objective', 'content') || 
+                          'This project aims to deliver measurable value by addressing your core business needs with strategic solutions and proven methodologies.'}
                        </p>
                      </section>
                      

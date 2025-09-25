@@ -21,8 +21,7 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
   const [exportFormat, setExportFormat] = useState<'pdf' | 'image'>('pdf');
   const [includeSections, setIncludeSections] = useState({
     cover: true,
-    executive_summary: true,
-    client_problem: true,
+    objective: true,
     proposed_solution: true,
     scope_of_work: true,
     pricing: true,
