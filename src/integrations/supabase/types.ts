@@ -109,32 +109,50 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
+          city: string | null
           company_name: string | null
+          country: string | null
           created_at: string
           display_name: string | null
           email: string | null
           id: string
+          phone: string | null
+          postal_code: string | null
+          state: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
+          city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
+          phone?: string | null
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
+          city?: string | null
           company_name?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
+          phone?: string | null
+          postal_code?: string | null
+          state?: string | null
           updated_at?: string
           user_id?: string
         }

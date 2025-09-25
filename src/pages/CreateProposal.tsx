@@ -51,14 +51,13 @@ export default function CreateProposal() {
     content: {
       sections: [
         { type: 'cover_page', title: '', tagline: '', company_name: '', company_logo: '' },
-        { type: 'executive_summary', content: '' },
-        { type: 'client_problem', content: '' },
+        { type: 'objective', content: '' },
         { type: 'proposed_solution', content: '', approach: '', tools: [], why_fits: '' },
         { type: 'scope_of_work', deliverables: [], timeline: [], included: [], excluded: [] },
         { type: 'pricing', packages: [], payment_terms: '', total: '' },
         { type: 'value_proposition', advantages: [], case_studies: [], testimonials: [], team: [] },
         { type: 'terms_conditions', content: '' },
-        { type: 'call_to_action', next_steps: '', contact_details: '' }
+        { type: 'call_to_action', next_steps: '' }
       ]
     },
   });

@@ -50,8 +50,14 @@ export default function Auth() {
     const email = formData.get('signup-email') as string;
     const password = formData.get('signup-password') as string;
     const companyName = formData.get('company-name') as string;
+    const phone = formData.get('phone') as string;
+    const address = formData.get('address') as string;
+    const city = formData.get('city') as string;
+    const state = formData.get('state') as string;
+    const postalCode = formData.get('postal-code') as string;
+    const country = formData.get('country') as string;
 
-    await signUp(email, password, companyName);
+    await signUp(email, password, companyName, phone, address, city, state, postalCode, country);
     setIsLoading(false);
   };
 
@@ -202,6 +208,70 @@ export default function Auth() {
                       placeholder="your@email.com"
                       required
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      type="text"
+                      placeholder="123 Main Street"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input
+                        id="city"
+                        name="city"
+                        type="text"
+                        placeholder="New York"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state">State/Province</Label>
+                      <Input
+                        id="state"
+                        name="state"
+                        type="text"
+                        placeholder="NY"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="postal-code">Postal Code</Label>
+                      <Input
+                        id="postal-code"
+                        name="postal-code"
+                        type="text"
+                        placeholder="10001"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <Input
+                        id="country"
+                        name="country"
+                        type="text"
+                        placeholder="United States"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>

@@ -7,15 +7,15 @@ const corsHeaders = {
 
 // Simple content templates for different sections
 const contentTemplates = {
-  'executive_summary': (context: string) => `Based on your requirements for ${context}, we provide a comprehensive solution that addresses your key business objectives:
+  'objective': (context: string) => `Our objective for ${context} is to deliver measurable value through:
 
-• Strategic alignment with your business goals
-• Proven methodologies and frameworks  
-• Experienced team with relevant expertise
-• Clear timeline and deliverables
-• Competitive pricing with exceptional value
+• Clear understanding of your business challenges and requirements
+• Strategic approach aligned with your organizational goals
+• Implementation of proven solutions and industry best practices
+• Delivery of specific, quantifiable outcomes and benefits
+• Long-term partnership focused on sustainable success
 
-Expected outcomes include improved efficiency, cost savings, and measurable business performance improvements.`,
+This project will address your core needs while positioning your organization for continued growth and competitive advantage.`,
   
   'scope_of_work': (context: string) => `This project focuses on ${context} and includes:
 
