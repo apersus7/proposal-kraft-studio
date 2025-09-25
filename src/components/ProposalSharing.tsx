@@ -188,10 +188,15 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" onClick={() => {
-          setIsOpen(true);
-          fetchShareLinks();
-        }}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+          onClick={() => {
+            setIsOpen(true);
+            fetchShareLinks();
+          }}
+        >
           <Share2 className="h-4 w-4 mr-2" />
           Share Proposal
         </Button>

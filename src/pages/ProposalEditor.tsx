@@ -312,12 +312,16 @@ export default function ProposalEditor() {
                 <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <Badge variant={proposal.status === 'sent' ? 'default' : 'secondary'}>
                 {proposal.status}
               </Badge>
               <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(`/proposal/${proposal.id}`, '_blank')}
+                >
                   <Eye className="h-4 w-4 mr-2" />
                   Preview
                 </Button>
@@ -344,12 +348,14 @@ export default function ProposalEditor() {
                   <Edit3 className="h-4 w-4 mr-2" />
                   {editMode === 'form' ? 'Advanced Editor' : 'Form Editor'}
                 </Button>
-                <Button onClick={handleSave} disabled={loading} size="sm">
+              </div>
+              <div className="flex items-center space-x-2 border-l pl-3 ml-3">
+                <Button onClick={handleSave} disabled={loading} size="sm" variant="outline">
                   <Save className="h-4 w-4 mr-2" />
                   Save
                 </Button>
                 {proposal.status !== 'sent' && (
-                  <Button onClick={handleSend} disabled={!proposal || sendingEmail}>
+                  <Button onClick={handleSend} disabled={!proposal || sendingEmail} size="sm">
                     <Send className="h-4 w-4 mr-2" />
                     Send to Client
                   </Button>
