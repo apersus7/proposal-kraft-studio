@@ -445,6 +445,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_payment_settings: {
+        Row: {
+          created_at: string
+          id: string
+          paypal_client_id: string | null
+          paypal_client_secret: string | null
+          paypal_environment: string | null
+          stripe_publishable_key: string | null
+          stripe_secret_key: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paypal_client_id?: string | null
+          paypal_client_secret?: string | null
+          paypal_environment?: string | null
+          stripe_publishable_key?: string | null
+          stripe_secret_key?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paypal_client_id?: string | null
+          paypal_client_secret?: string | null
+          paypal_environment?: string | null
+          stripe_publishable_key?: string | null
+          stripe_secret_key?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

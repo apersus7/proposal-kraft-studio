@@ -19,13 +19,17 @@ import {
   Settings as SettingsIcon,
   Globe,
   Shield,
-  Bell
+  Bell,
+  Palette,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import CRMIntegration from '@/components/CRMIntegration';
 import PaymentIntegration from '@/components/PaymentIntegration';
+import BrandKitManager from '@/components/BrandKitManager';
+import PaymentSettings from '@/components/PaymentSettings';
 import { useSubscription } from '@/hooks/useSubscription';
 
 
@@ -278,7 +282,7 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -286,6 +290,10 @@ export default function Settings() {
             <TabsTrigger value="company" className="flex items-center gap-2">
               <Building className="h-4 w-4" />
               Company
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Payments
             </TabsTrigger>
             <TabsTrigger value="billing" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
@@ -402,6 +410,10 @@ export default function Settings() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <PaymentSettings />
           </TabsContent>
 
           <TabsContent value="billing" className="space-y-6">

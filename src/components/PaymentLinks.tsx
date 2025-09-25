@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CreditCard, Copy, ExternalLink, DollarSign, Euro, PoundSterling } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 
 interface PaymentLinksProps {
@@ -18,9 +20,12 @@ interface PaymentLinksProps {
 }
 
 export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD', defaultOpen = false }: PaymentLinksProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(!!defaultOpen);
   const [loading, setLoading] = useState(false);
   const [paymentLinks, setPaymentLinks] = useState<any[]>([]);
+  const [hasPaymentSettings, setHasPaymentSettings] = useState(false);
+  const [checkingSettings, setCheckingSettings] = useState(true);
   const [paymentData, setPaymentData] = useState({
     amount: proposalAmount || '',
     currency: proposalCurrency,
@@ -30,10 +35,39 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
   });
 
   useEffect(() => {
-    if (isOpen) {
-      fetchPaymentLinks();
+    if (user && proposalId) {
+      checkPaymentSettings();
+      if (isOpen) {
+        fetchPaymentLinks();
+      }
     }
-  }, [isOpen]);
+  }, [user, proposalId, isOpen]);
+
+  const checkPaymentSettings = async () => {
+    if (!user) return;
+
+    setCheckingSettings(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_payment_settings')
+        .select('stripe_publishable_key, paypal_client_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      const hasStripe = data?.stripe_publishable_key?.trim();
+      const hasPayPal = data?.paypal_client_id?.trim();
+      setHasPaymentSettings(Boolean(hasStripe || hasPayPal));
+    } catch (error) {
+      console.error('Error checking payment settings:', error);
+      setHasPaymentSettings(false);
+    } finally {
+      setCheckingSettings(false);
+    }
+  };
 
   const getCurrencySymbol = (currency: string) => {
     switch (currency) {
@@ -57,7 +91,7 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
     setLoading(true);
     try {
       // Create payment intent via edge function
-      const { data, error } = await supabase.functions.invoke('create-payment-link', {
+      const { data, error } = await supabase.functions.invoke('create-user-payment-link', {
         body: {
           amount: parseFloat(paymentData.amount),
           currency: paymentData.currency,
@@ -149,7 +183,41 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
       });
     } finally {
       setLoading(false);
-    }
+  }
+
+  if (!user) return null;
+
+  if (checkingSettings) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Checking payment settings...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!hasPaymentSettings) {
+    return (
+      <Card className="border-amber-200 bg-amber-50">
+        <CardContent className="p-6 text-center">
+          <CreditCard className="h-12 w-12 text-amber-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-amber-800 mb-2">
+            Payment Methods Not Configured
+          </h3>
+          <p className="text-amber-700 mb-4">
+            To create payment links, you need to configure your Stripe or PayPal account settings first.
+          </p>
+          <Link to="/settings">
+            <Button className="bg-amber-600 hover:bg-amber-700">
+              Configure Payment Settings
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
   };
 
   const fetchPaymentLinks = async () => {
