@@ -83,6 +83,27 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
     
     setLoading(true);
     try {
+      // Create a secure share token first (like the generate secure link does)
+      const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      
+      const { data: secureShare, error: secureError } = await supabase
+        .from('secure_proposal_shares')
+        .insert({
+          proposal_id: proposalId,
+          created_by: (await sb.auth.getUser()).data.user?.id,
+          expires_at: expirationDate.toISOString(),
+          permissions: JSON.stringify({
+            allowComments: shareSettings.allowComments,
+            trackViews: shareSettings.trackViews,
+            requireSignature: shareSettings.requireSignature
+          })
+        })
+        .select()
+        .single();
+
+      if (secureError) throw secureError;
+
+      // Also create an email share record for tracking
       const { data, error } = await sb
         .from('proposal_shares')
         .insert({
@@ -105,8 +126,8 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .eq('user_id', user.user?.id)
         .single();
       
-      // Create a basic share URL for email shares (these go to the regular proposal view)
-      const shareUrl = `${window.location.origin}/proposal/${proposalId}`;
+      // Use the secure share URL that doesn't require authentication
+      const shareUrl = `${window.location.origin}/shared/${secureShare.share_token}`;
       
       await sb.functions.invoke('send-proposal-email', {
         body: {
