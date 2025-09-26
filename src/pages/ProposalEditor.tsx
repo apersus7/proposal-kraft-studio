@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard } from 'lucide-react';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard, MoreHorizontal, BarChart3, Share, DollarSign } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -316,15 +317,45 @@ export default function ProposalEditor() {
               <Badge variant={proposal.status === 'sent' ? 'default' : 'secondary'}>
                 {proposal.status}
               </Badge>
+              
+              {/* Primary Actions */}
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => window.open(`/preview/${proposal.id}`, '_blank')}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview
+                <Button onClick={handleSave} disabled={loading} size="sm" variant="outline">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
                 </Button>
+                {proposal.status !== 'sent' && (
+                  <Button onClick={handleSend} disabled={!proposal || sendingEmail} size="sm">
+                    <Send className="h-4 w-4 mr-2" />
+                    Send to Client
+                  </Button>
+                )}
+              </div>
+
+              {/* Secondary Actions Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MoreHorizontal className="h-4 w-4 mr-2" />
+                    More
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>View & Export</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => window.open(`/preview/${proposal.id}`, '_blank')}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setEditMode(editMode === 'form' ? 'drag' : 'form')}>
+                    <Edit3 className="mr-2 h-4 w-4" />
+                    {editMode === 'form' ? 'Advanced Editor' : 'Form Editor'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Tool Buttons - Compact */}
+              <div className="flex items-center">
                 <ExportDialog proposal={proposal} defaultOpen={goTarget === 'export'} />
                 <ProposalSharing 
                   proposalId={proposal.id} 
@@ -340,26 +371,6 @@ export default function ProposalEditor() {
                   proposalId={proposal.id}
                   proposalTitle={proposal.title}
                 />
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setEditMode(editMode === 'form' ? 'drag' : 'form')}
-                >
-                  <Edit3 className="h-4 w-4 mr-2" />
-                  {editMode === 'form' ? 'Advanced Editor' : 'Form Editor'}
-                </Button>
-              </div>
-              <div className="flex items-center space-x-2 border-l pl-3 ml-3">
-                <Button onClick={handleSave} disabled={loading} size="sm" variant="outline">
-                  <Save className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-                {proposal.status !== 'sent' && (
-                  <Button onClick={handleSend} disabled={!proposal || sendingEmail} size="sm">
-                    <Send className="h-4 w-4 mr-2" />
-                    Send to Client
-                  </Button>
-                )}
               </div>
             </div>
           </div>
