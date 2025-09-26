@@ -1,10 +1,58 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { FileText, Mail, MapPin, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { z } from 'zod';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
+const emailSchema = z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters");
+
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const validatedEmail = emailSchema.parse(email);
+      setIsSubscribing(true);
+
+      const { error } = await supabase.functions.invoke('send-newsletter-email', {
+        body: { email: validatedEmail }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Successfully subscribed!",
+        description: "Thank you for subscribing to our newsletter."
+      });
+
+      setEmail('');
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Invalid email",
+          description: error.errors[0].message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Subscription failed",
+          description: "Please try again later.",
+          variant: "destructive"
+        });
+      }
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
   return (
     <footer className="bg-card/50 border-t">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -56,24 +104,24 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
                   Contact
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -84,16 +132,19 @@ const Footer = () => {
             <p className="text-muted-foreground mb-4">
               Get the latest tips for creating winning proposals.
             </p>
-            <div className="space-y-2">
-              <input
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <Input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full px-3 py-2 bg-background border border-input rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                maxLength={255}
               />
-              <Button size="sm" className="w-full">
-                Subscribe
+              <Button type="submit" size="sm" className="w-full" disabled={isSubscribing}>
+                {isSubscribing ? 'Subscribing...' : 'Subscribe'}
               </Button>
-            </div>
+            </form>
           </div>
         </div>
 

@@ -18,6 +18,10 @@ import Payment from "./pages/Payment";
 import SharedProposal from "./pages/SharedProposal";
 import ProposalPreview from "./pages/ProposalPreview";
 import NotFound from "./pages/NotFound";
+import Contact from "./pages/Contact";
+import AboutUs from "./pages/AboutUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +47,10 @@ const App = () => (
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

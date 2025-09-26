@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.get-shared-proposal]
 verify_jwt = false
+
+[functions.send-contact-email]
+verify_jwt = false
+
+[functions.send-newsletter-email]
+verify_jwt = false
