@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, FileText, Settings, LogOut } from 'lucide-react';
+import { Plus, FileText, Settings, LogOut, Eye, DollarSign, TrendingUp, Users, User, Crown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -151,24 +152,45 @@ export default function Dashboard() {
               <img src={logo} alt="ProposalKraft" className="h-8" />
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
-             <div className="flex items-center space-x-4">
-               <span className="text-sm text-muted-foreground">
-                 {profile?.company_name || user.email}
-               </span>
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 onClick={() => navigate('/payment')}
-                 className="bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700"
-               >
-                 Upgrade Plan
+             <div className="flex items-center space-x-3">
+               <Button onClick={() => navigate('/create-proposal')} size="sm">
+                 <Plus className="h-4 w-4 mr-2" />
+                 New Proposal
                </Button>
-               <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
-                 <Settings className="h-4 w-4" />
-               </Button>
-               <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                 <LogOut className="h-4 w-4" />
-               </Button>
+               <DropdownMenu>
+                 <DropdownMenuTrigger asChild>
+                   <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                     <User className="h-4 w-4" />
+                     <span className="text-sm max-w-32 truncate">
+                       {profile?.company_name || user.email}
+                     </span>
+                   </Button>
+                 </DropdownMenuTrigger>
+                 <DropdownMenuContent align="end" className="w-56">
+                   <DropdownMenuLabel>
+                     <div className="flex flex-col">
+                       <span>My Account</span>
+                       <span className="text-xs font-normal text-muted-foreground truncate">
+                         {user.email}
+                       </span>
+                     </div>
+                   </DropdownMenuLabel>
+                   <DropdownMenuSeparator />
+                   <DropdownMenuItem onClick={() => navigate('/settings')}>
+                     <Settings className="mr-2 h-4 w-4" />
+                     Settings
+                   </DropdownMenuItem>
+                   <DropdownMenuItem onClick={() => navigate('/payment')}>
+                     <Crown className="mr-2 h-4 w-4" />
+                     Upgrade Plan
+                   </DropdownMenuItem>
+                   <DropdownMenuSeparator />
+                   <DropdownMenuItem onClick={handleSignOut}>
+                     <LogOut className="mr-2 h-4 w-4" />
+                     Sign Out
+                   </DropdownMenuItem>
+                 </DropdownMenuContent>
+               </DropdownMenu>
              </div>
           </div>
         </div>

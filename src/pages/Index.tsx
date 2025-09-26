@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
 
@@ -25,7 +26,7 @@ interface Proposal {
 }
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
@@ -111,14 +112,35 @@ const Index = () => {
                 <img src={logo} alt="ProposalKraft" className="h-8" />
                 <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
               </div>
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" onClick={() => navigate('/settings')}>
-                  Settings
-                </Button>
-                <Button onClick={() => navigate('/create-proposal')}>
+              <div className="flex items-center space-x-3">
+                <Button onClick={() => navigate('/create-proposal')} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   New Proposal
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/settings')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/pricing')}>
+                      <Crown className="mr-2 h-4 w-4" />
+                      Upgrade Plan
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
