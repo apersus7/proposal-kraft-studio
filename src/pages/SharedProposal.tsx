@@ -43,91 +43,47 @@ export default function SharedProposal() {
 
   const fetchSharedProposal = async () => {
     if (!token) return;
-    
     try {
       setLoading(true);
-      
-      // Decode the token in case it's URL encoded
-      const decodedToken = decodeURIComponent(token);
-      
-      console.log('Fetching proposal with token:', decodedToken);
-      
-      // First, verify the share token and check if it's valid
-      const { data: shareInfo, error: shareError } = await supabase
-        .from('secure_proposal_shares')
-        .select('*')
-        .eq('share_token', decodedToken)
-        .single();
+      const { data, error } = await supabase.functions.invoke('get-shared-proposal', {
+        body: { token },
+      });
 
-      if (shareError) {
-        console.error('Share error:', shareError);
-        setError('Invalid or expired share link.');
+      if (error) {
+        console.error('get-shared-proposal error:', error);
+        setError(typeof error.message === 'string' ? error.message : 'Unable to load shared proposal.');
         return;
       }
 
-      if (!shareInfo) {
-        console.error('No share info found');
-        setError('Invalid or expired share link.');
+      if (!data) {
+        setError('Unable to load shared proposal.');
         return;
       }
 
-      // Check if the share has expired
-      if (shareInfo.expires_at && new Date(shareInfo.expires_at) < new Date()) {
-        setError('This share link has expired.');
-        return;
-      }
+      setShareData({
+        id: data.share.id,
+        proposal_id: data.share.proposal_id,
+        expires_at: data.share.expires_at,
+        permissions: data.share.permissions,
+      });
+      setProposal(data.proposal);
+      setSigners(data.signers || []);
 
-      setShareData(shareInfo);
-
-      // Fetch the proposal data
-      const { data: proposalData, error: proposalError } = await supabase
-        .from('proposals')
-        .select('id, title, client_name, client_email, content, worth, created_at, status')
-        .eq('id', shareInfo.proposal_id)
-        .single();
-
-      if (proposalError) {
-        console.error('Proposal error:', proposalError);
-        setError('Proposal not found.');
-        return;
-      }
-
-      if (!proposalData) {
-        console.error('No proposal data found');
-        setError('Proposal not found.');
-        return;
-      }
-
-      setProposal(proposalData);
-
-      // Fetch signers for this proposal
-      const { data: signersData } = await supabase
-        .from('proposal_signatures')
-        .select('*')
-        .eq('proposal_id', shareInfo.proposal_id)
-        .order('created_at', { ascending: true });
-      
-      if (signersData) {
-        setSigners(signersData);
-      }
-
-      // Track the view (if analytics tracking is enabled)
-      const permissions = typeof shareInfo.permissions === 'string' 
-        ? JSON.parse(shareInfo.permissions) 
-        : shareInfo.permissions;
-
-      if (permissions?.trackViews) {
-        await supabase
-          .from('proposal_analytics')
-          .insert({
-            proposal_id: shareInfo.proposal_id,
+      // Attempt to track a view (best-effort)
+      try {
+        const permissions = typeof data.share.permissions === 'string' ? JSON.parse(data.share.permissions) : data.share.permissions;
+        if (permissions?.trackViews) {
+          await supabase.from('proposal_analytics').insert({
+            proposal_id: data.share.proposal_id,
             viewer_ip: 'shared-link',
-            section_viewed: 'full-proposal'
+            section_viewed: 'full-proposal',
           });
+        }
+      } catch (e) {
+        console.warn('analytics insert skipped:', e);
       }
-
-    } catch (error: any) {
-      console.error('Error fetching shared proposal:', error);
+    } catch (err) {
+      console.error('Unexpected error loading shared proposal:', err);
       setError('Failed to load proposal. Please check the link and try again.');
     } finally {
       setLoading(false);

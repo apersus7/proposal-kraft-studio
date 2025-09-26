@@ -47,8 +47,9 @@ export default function ESignatureFlow({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    fetchSigners();
-  }, [proposalId]);
+    // Only owners fetch signers from DB. Public shared view receives them via props.
+    if (isOwner) fetchSigners();
+  }, [proposalId, isOwner]);
 
   const fetchSigners = async () => {
     // For non-owners (shared proposals), signers are passed as props
