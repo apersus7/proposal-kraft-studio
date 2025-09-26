@@ -47,14 +47,26 @@ export default function SharedProposal() {
     try {
       setLoading(true);
       
+      // Decode the token in case it's URL encoded
+      const decodedToken = decodeURIComponent(token);
+      
+      console.log('Fetching proposal with token:', decodedToken);
+      
       // First, verify the share token and check if it's valid
       const { data: shareInfo, error: shareError } = await supabase
         .from('secure_proposal_shares')
         .select('*')
-        .eq('share_token', token)
+        .eq('share_token', decodedToken)
         .single();
 
-      if (shareError || !shareInfo) {
+      if (shareError) {
+        console.error('Share error:', shareError);
+        setError('Invalid or expired share link.');
+        return;
+      }
+
+      if (!shareInfo) {
+        console.error('No share info found');
         setError('Invalid or expired share link.');
         return;
       }
@@ -74,7 +86,14 @@ export default function SharedProposal() {
         .eq('id', shareInfo.proposal_id)
         .single();
 
-      if (proposalError || !proposalData) {
+      if (proposalError) {
+        console.error('Proposal error:', proposalError);
+        setError('Proposal not found.');
+        return;
+      }
+
+      if (!proposalData) {
+        console.error('No proposal data found');
         setError('Proposal not found.');
         return;
       }

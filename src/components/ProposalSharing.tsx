@@ -56,7 +56,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       if (error) throw error;
 
-      const shareUrl = `${window.location.origin}/shared/${data.share_token}`;
+      const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(data.share_token)}`;
       
       await navigator.clipboard.writeText(shareUrl);
       
@@ -127,7 +127,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .single();
       
       // Use the secure share URL that doesn't require authentication
-      const shareUrl = `${window.location.origin}/shared/${secureShare.share_token}`;
+      const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(secureShare.share_token)}`;
       
       await sb.functions.invoke('send-proposal-email', {
         body: {
@@ -359,7 +359,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            const url = `${window.location.origin}/shared/${share.share_token}`;
+                            const url = `${window.location.origin}/shared/${encodeURIComponent(share.share_token)}`;
                             navigator.clipboard.writeText(url);
                             toast({ title: "Copied", description: "Link copied to clipboard" });
                           }}
