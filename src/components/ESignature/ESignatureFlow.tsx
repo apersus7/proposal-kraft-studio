@@ -51,6 +51,12 @@ export default function ESignatureFlow({
   }, [proposalId]);
 
   const fetchSigners = async () => {
+    // For non-owners (shared proposals), signers are passed as props
+    // No need to fetch from database
+    if (!isOwner) {
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('proposal_signatures')
@@ -209,7 +215,10 @@ export default function ESignatureFlow({
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      // Use anon access for shared proposal signing (no auth required)
+      const supabaseClient = isOwner ? supabase : supabase;
+      
+      const { error } = await supabaseClient
         .from('proposal_signatures')
         .update({
           signature_data: signatureData,
