@@ -313,35 +313,35 @@ export default function ProposalEditor() {
                 <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <Badge variant={proposal.status === 'sent' ? 'default' : 'secondary'}>
                 {proposal.status}
               </Badge>
               
-              {/* Primary Actions */}
-              <div className="flex items-center space-x-2">
-                <Button onClick={handleSave} disabled={loading} size="sm" variant="outline">
-                  <Save className="h-4 w-4 mr-2" />
-                  Save
-                </Button>
-                {proposal.status !== 'sent' && (
-                  <Button onClick={handleSend} disabled={!proposal || sendingEmail} size="sm">
-                    <Send className="h-4 w-4 mr-2" />
-                    Send to Client
-                  </Button>
-                )}
-              </div>
+              {/* Primary Save Action */}
+              <Button onClick={handleSave} disabled={loading} size="sm" variant="outline">
+                <Save className="h-4 w-4 mr-2" />
+                Save
+              </Button>
 
-              {/* Secondary Actions Dropdown */}
+              {/* Send Button (if not sent) */}
+              {proposal.status !== 'sent' && (
+                <Button onClick={handleSend} disabled={!proposal || sendingEmail} size="sm">
+                  <Send className="h-4 w-4 mr-2" />
+                  Send to Client
+                </Button>
+              )}
+
+              {/* All Other Actions in Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <MoreHorizontal className="h-4 w-4 mr-2" />
-                    More
+                    Actions
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>View & Export</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 bg-background border shadow-lg">
+                  <DropdownMenuLabel>View & Edit</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => window.open(`/preview/${proposal.id}`, '_blank')}>
                     <Eye className="mr-2 h-4 w-4" />
@@ -351,27 +351,38 @@ export default function ProposalEditor() {
                     <Edit3 className="mr-2 h-4 w-4" />
                     {editMode === 'form' ? 'Advanced Editor' : 'Form Editor'}
                   </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Tools</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  <div className="p-1 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <ExportDialog proposal={proposal} defaultOpen={goTarget === 'export'} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <ProposalSharing 
+                        proposalId={proposal.id} 
+                        proposalTitle={proposal.title} 
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <PaymentLinks 
+                        proposalId={proposal.id}
+                        proposalAmount={proposal.content?.pricing}
+                        proposalCurrency={proposal.content?.currency}
+                        defaultOpen={goTarget === 'payment'}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <ProposalAnalytics 
+                        proposalId={proposal.id}
+                        proposalTitle={proposal.title}
+                      />
+                    </div>
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Tool Buttons - Compact */}
-              <div className="flex items-center">
-                <ExportDialog proposal={proposal} defaultOpen={goTarget === 'export'} />
-                <ProposalSharing 
-                  proposalId={proposal.id} 
-                  proposalTitle={proposal.title} 
-                />
-                <PaymentLinks 
-                  proposalId={proposal.id}
-                  proposalAmount={proposal.content?.pricing}
-                  proposalCurrency={proposal.content?.currency}
-                  defaultOpen={goTarget === 'payment'}
-                />
-                <ProposalAnalytics 
-                  proposalId={proposal.id}
-                  proposalTitle={proposal.title}
-                />
-              </div>
             </div>
           </div>
         </div>
