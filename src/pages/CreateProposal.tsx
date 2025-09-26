@@ -13,7 +13,6 @@ import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
-import { CompanyResearch } from '@/components/CompanyResearch';
 import TemplateGallery from '@/components/TemplateGallery';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -646,29 +645,6 @@ export default function CreateProposal() {
               <Button variant="outline" onClick={() => setStep('details')}>
                 Edit Basic Information
               </Button>
-            </div>
-
-            <div className="mb-8">
-              <Card className="max-w-3xl">
-                <CardHeader>
-                  <CardTitle>Company Research & Analysis</CardTitle>
-                  <CardDescription>
-                    Analyze the client's company to extract pain points and opportunities
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <CompanyResearch 
-                    onResearchComplete={(data) => {
-                      const bullets = data.painPoints.map((p: string) => `• ${p}`).join('\n');
-                      updateSectionValue('objective', 'content', `Project objective for ${data.companyName}:\n${bullets}`);
-                      toast({ 
-                        title: 'Analysis added', 
-                        description: 'Pain points inserted into client needs section' 
-                      });
-                    }}
-                  />
-                </CardContent>
-              </Card>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">

@@ -12,7 +12,6 @@ import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, Credit
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { CompanyResearch } from '@/components/CompanyResearch';
 import DragDropEditor from '@/components/ProposalEditor/DragDropEditor';
 import ExportDialog from '@/components/ProposalEditor/ExportDialog';
 import ProposalSharing from '@/components/ProposalSharing';
@@ -369,12 +368,8 @@ export default function ProposalEditor() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="editor">Proposal Editor</TabsTrigger>
-            <TabsTrigger value="research">
-              <Building className="h-4 w-4 mr-2" />
-              Company Research
-            </TabsTrigger>
             <TabsTrigger value="payment">
               <CreditCard className="h-4 w-4 mr-2" />
               Payment Links
@@ -826,20 +821,8 @@ export default function ProposalEditor() {
           </div>
             )}
         </TabsContent>
-       
-         <TabsContent value="research" className="space-y-6">
-           <CompanyResearch 
-             onResearchComplete={(data) => {
-               console.log('Research completed:', data);
-               toast({
-                 title: "Research Complete",
-                 description: `Analysis completed for ${data.companyName}`,
-               });
-             }}
-           />
-         </TabsContent>
-         
-         <TabsContent value="payment" className="space-y-6">
+
+        <TabsContent value="payment" className="space-y-6">
            <div className="max-w-4xl mx-auto">
              <Card>
                <CardHeader>
