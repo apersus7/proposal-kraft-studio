@@ -119,6 +119,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Clear state immediately to prevent race conditions
+      setUser(null);
+      setSession(null);
+      
       await supabase.auth.signOut();
       toast({
         title: "Signed out",

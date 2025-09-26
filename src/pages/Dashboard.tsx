@@ -127,7 +127,7 @@ export default function Dashboard() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/');
+    // Don't navigate immediately - let the auth state change handle the redirect
   };
 
   if (loading || !user) {
