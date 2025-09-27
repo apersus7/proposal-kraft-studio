@@ -83,7 +83,7 @@ export default function ProposalEditor() {
   const getContentValue = (sectionType: string, field: string) => {
     if (!proposal?.content?.sections) return '';
     const section = proposal.content.sections.find((s: any) => s.type === sectionType);
-    return section ? section[field] : '';
+    return section ? (section[field] || '') : '';
   };
 
   const getContentArray = (sectionType: string, field: string) => {
@@ -728,15 +728,15 @@ export default function ProposalEditor() {
                   }}
                 >
                   {/* Logo in top-left corner */}
-                  {proposal.content?.logoUrl && (
+                  {(proposal.content?.logoUrl || getContentValue('cover_page', 'company_logo')) && (
                     <div className="absolute top-4 left-4 z-10">
                       <img 
-                        src={proposal.content.logoUrl} 
+                        src={proposal.content?.logoUrl || getContentValue('cover_page', 'company_logo')} 
                         alt="Company Logo" 
                         className="h-10 w-auto object-contain"
                         loading="lazy"
                         onError={(e) => {
-                          console.log('Logo failed to load:', proposal.content.logoUrl);
+                          console.log('Logo failed to load:', proposal.content?.logoUrl || getContentValue('cover_page', 'company_logo'));
                           e.currentTarget.style.display = 'none';
                         }}
                       />
@@ -744,20 +744,25 @@ export default function ProposalEditor() {
                   )}
                   
                   {/* Cover Page */}
-                  <div className="text-center mb-8 border-b pb-6 pt-16">
-                    <h1 className="text-3xl font-bold mb-2">{proposal.title}</h1>
-                    <p className="text-lg opacity-80 mb-2">Prepared for {proposal.client_name}</p>
-                    <p className="opacity-60 mb-3">
-                      {new Date().toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}
-                    </p>
-                    <p className="text-sm italic opacity-80">
-                      {getContentValue('cover_page', 'tagline') || `Helping ${proposal.client_name} achieve success with innovative solutions`}
-                    </p>
-                  </div>
+                   <div className="text-center mb-8 border-b pb-6 pt-16">
+                     <h1 className="text-3xl font-bold mb-2">{proposal.title}</h1>
+                     <p className="text-lg opacity-80 mb-2">Prepared for {proposal.client_name}</p>
+                     <p className="opacity-60 mb-3">
+                       {new Date().toLocaleDateString('en-US', { 
+                         year: 'numeric', 
+                         month: 'long', 
+                         day: 'numeric' 
+                       })}
+                     </p>
+                     <p className="text-sm italic opacity-80">
+                       {getContentValue('cover_page', 'tagline') || `Helping ${proposal.client_name} achieve success with innovative solutions`}
+                     </p>
+                     {getContentValue('cover_page', 'company_name') && (
+                       <p className="text-sm font-medium mt-2 opacity-90">
+                         {getContentValue('cover_page', 'company_name')}
+                       </p>
+                     )}
+                   </div>
                   
                    <div className="space-y-6">
                      <section>
@@ -829,19 +834,22 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Timeline & Milestones
                        </h2>
-                       <div className="space-y-2">
-                         {getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
-                           <p key={index}>
-                             <strong>{phase.phase}:</strong> {phase.description} ({phase.duration})
-                           </p>
-                         )) || (
-                           <>
-                             <p><strong>Phase 1:</strong> Discovery & Planning (2 weeks)</p>
-                             <p><strong>Phase 2:</strong> Design & Development (6-8 weeks)</p>
-                             <p><strong>Phase 3:</strong> Testing & Launch (2 weeks)</p>
-                           </>
-                         )}
-                       </div>
+                        <div className="space-y-2">
+                          {getContentArray('scope_of_work', 'timeline').length > 0 ? 
+                            getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
+                              <p key={index}>
+                                <span className="font-medium">{phase.phase || `Phase ${index + 1}`}:</span> {phase.duration || 'TBD'}
+                                {phase.description && ` - ${phase.description}`}
+                              </p>
+                            )) : (
+                              <>
+                                <p><strong>Phase 1:</strong> Discovery & Planning (2 weeks)</p>
+                                <p><strong>Phase 2:</strong> Design & Development (6-8 weeks)</p>
+                                <p><strong>Phase 3:</strong> Testing & Launch (2 weeks)</p>
+                              </>
+                            )
+                          }
+                        </div>
                      </section>
                      
                      <section>
@@ -850,7 +858,7 @@ export default function ProposalEditor() {
                        </h2>
                         <div>
                           <p className="text-lg font-medium mb-2">
-                            Total Project Investment: {getContentValue('pricing', 'total') || '$XX,XXX'}
+                            Total Project Investment: {proposal.content?.pricing ? `$${proposal.content.pricing} ${proposal.content?.currency || 'USD'}` : '$XX,XXX'}
                           </p>
                           <p className="text-sm">
                             {getContentValue('pricing', 'payment_terms') || 
@@ -859,29 +867,41 @@ export default function ProposalEditor() {
                         </div>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Why Choose Us
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                          Why Choose Us
+                        </h2>
                         <ul className="list-disc list-inside space-y-2">
-                          {getContentArray('value_proposition', 'advantages').map((advantage: string, index: number) => (
-                            <li key={index}>{advantage}</li>
-                          )) || (
-                            <>
-                              <li>Proven track record with similar projects</li>
-                              <li>Expert team with specialized skills</li>
-                             <li>Transparent communication and regular updates</li>
-                             <li>Commitment to delivering exceptional results</li>
-                           </>
-                         )}
-                       </ul>
-                     </section>
+                          {getContentArray('value_proposition', 'testimonials').length > 0 ? 
+                            getContentArray('value_proposition', 'testimonials').map((testimonial: any, index: number) => (
+                              <li key={index}>
+                                <strong>{testimonial.name}</strong>
+                                {testimonial.link && (
+                                  <span> - <a href={testimonial.link} className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">{testimonial.link}</a></span>
+                                )}
+                                {testimonial.content && <div className="mt-1 italic">"{testimonial.content}"</div>}
+                              </li>
+                            )) : 
+                            getContentArray('value_proposition', 'advantages').length > 0 ?
+                              getContentArray('value_proposition', 'advantages').map((advantage: string, index: number) => (
+                                <li key={index}>{advantage}</li>
+                              )) : (
+                                <>
+                                  <li>Proven track record with similar projects</li>
+                                  <li>Expert team with specialized skills</li>
+                                  <li>Competitive pricing and flexible payment terms</li>
+                                  <li>Comprehensive post-launch support</li>
+                                </>
+                              )
+                          }
+                        </ul>
+                      </section>
                      
                      <section>
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Terms & Conditions
                        </h2>
-                        <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                        <div className="text-sm leading-relaxed whitespace-pre-line">
                           {getContentValue('terms_conditions', 'content')
                             ? getContentValue('terms_conditions', 'content')
                                 .split('\n')
