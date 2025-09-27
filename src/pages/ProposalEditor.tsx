@@ -181,7 +181,28 @@ export default function ProposalEditor() {
 
     setSendingEmail(true);
     try {
-      // First update the proposal status to 'sent'
+      // First create a secure share token
+      const { data: shareData, error: shareError } = await supabase
+        .from('secure_proposal_shares')
+        .insert({
+          proposal_id: proposal.id,
+          created_by: user.id,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+          permissions: JSON.stringify({
+            allowComments: false,
+            trackViews: true,
+            requireSignature: false
+          })
+        })
+        .select()
+        .single();
+
+      if (shareError) throw shareError;
+
+      // Generate the secure share URL
+      const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(shareData.share_token)}`;
+
+      // Update the proposal status to 'sent'
       const { error: updateError } = await supabase
         .from('proposals')
         .update({
@@ -191,14 +212,14 @@ export default function ProposalEditor() {
 
       if (updateError) throw updateError;
 
-      // Then send the email
+      // Send the email with the secure share URL
       const { error: emailError } = await supabase.functions.invoke('send-proposal-email', {
         body: {
           proposalId: proposal.id,
           recipientEmail: recipientEmail,
           proposalTitle: proposal.title,
           senderName: user.user_metadata?.full_name || user.email,
-          shareUrl: `${window.location.origin}/proposal/${proposal.id}`
+          shareUrl
         }
       });
 
