@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,6 +23,7 @@ interface ProposalData {
 export default function ProposalPreview() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [proposal, setProposal] = useState<ProposalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,26 +95,225 @@ export default function ProposalPreview() {
       return <p className="text-muted-foreground">No content available.</p>;
     }
 
+    const primaryColor = content.primaryColor || '#3b82f6';
+    const secondaryColor = content.secondaryColor || '#1e40af';
+    const backgroundColor = content.backgroundColor || '#ffffff';
+    const textColor = content.textColor || '#000000';
+    const headingColor = content.headingColor || '#000000';
+    const selectedFont = content.selectedFont || 'Inter';
+
     // Check if content has sections array (new format)
     if (content.sections && Array.isArray(content.sections)) {
-      return content.sections.map((section: any, index: number) => {
-        if (!section || typeof section !== 'object') return null;
+      return (
+        <div style={{ fontFamily: selectedFont, backgroundColor: backgroundColor, color: textColor }} className="p-6 rounded-lg">
+          {content.sections.map((section: any, index: number) => {
+            if (!section || typeof section !== 'object') return null;
 
-        // Handle different section types
-        switch (section.type) {
-          case 'cover_page':
-            return (
-              <div key={index} className="text-center mb-12 p-8 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
-                <h1 className="text-4xl font-bold mb-4" style={{ color: section.style?.titleColor || 'inherit' }}>
-                  {section.title}
-                </h1>
-                {section.tagline && (
-                  <p className="text-xl text-muted-foreground" style={{ color: section.style?.taglineColor || 'inherit' }}>
-                    {section.tagline}
-                  </p>
-                )}
-              </div>
-            );
+            // Handle different section types
+            switch (section.type) {
+              case 'cover_page':
+                return (
+                  <div key={index} className="text-center mb-12 p-8 rounded-lg border-2" style={{ borderColor: `${primaryColor}20` }}>
+                    {content.logoUrl && (
+                      <div className="mb-6">
+                        <img src={content.logoUrl} alt="Company Logo" className="h-16 w-auto mx-auto" />
+                      </div>
+                    )}
+                    <div className="text-sm mb-2" style={{ color: secondaryColor }}>
+                      {section.company_name || 'Your Company'}
+                    </div>
+                    <h1 className="text-4xl font-bold mb-4" style={{ color: headingColor }}>
+                      {proposal?.title}
+                    </h1>
+                    <p className="text-xl mb-2">Project: {content.project_name}</p>
+                    <p className="text-lg mb-4">Prepared for {proposal?.client_name}</p>
+                    {section.tagline && (
+                      <p className="text-lg italic" style={{ color: secondaryColor }}>
+                        {section.tagline}
+                      </p>
+                    )}
+                  </div>
+                );
+
+              case 'objective':
+                return section.content ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Project Objective
+                    </h2>
+                    <div className="prose max-w-none">
+                      <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
+                    </div>
+                  </div>
+                ) : null;
+
+              case 'proposed_solution':
+                return (section.content || section.why_fits || section.tools?.length > 0) ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Proposed Solution
+                    </h2>
+                    {section.content && (
+                      <div className="mb-4">
+                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
+                      </div>
+                    )}
+                    {section.why_fits && (
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium mb-2">Why This Solution Fits:</h3>
+                        <p className="whitespace-pre-line leading-relaxed">{section.why_fits}</p>
+                      </div>
+                    )}
+                    {section.tools?.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-medium mb-2">Tools & Technologies:</h3>
+                        <p>{section.tools.join(', ')}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : null;
+
+              case 'scope_of_work':
+                return (section.content || section.deliverables?.length > 0 || section.timeline?.length > 0) ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Scope of Work
+                    </h2>
+                    {section.content && (
+                      <div className="mb-4">
+                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
+                      </div>
+                    )}
+                    {section.deliverables?.length > 0 && (
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium mb-2">Key Deliverables:</h3>
+                        <ul className="list-disc list-inside space-y-1">
+                          {section.deliverables.map((item: string, idx: number) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {section.timeline?.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-medium mb-2">Timeline:</h3>
+                        <div className="space-y-2">
+                          {section.timeline.map((phase: any, idx: number) => (
+                            <div key={idx} className="p-3 bg-gray-50 rounded">
+                              <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null;
+
+              case 'pricing':
+                return (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Investment
+                    </h2>
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <p className="text-xl font-bold mb-2" style={{ color: primaryColor }}>
+                        Total Project Investment: {content.currency === 'EUR' ? '€' : content.currency === 'GBP' ? '£' : '$'}{content.pricing || proposal?.worth || 'XX,XXX'}
+                      </p>
+                      {section.payment_terms && (
+                        <p><strong>Payment Terms:</strong> {section.payment_terms}</p>
+                      )}
+                      {section.breakdown && (
+                        <div className="mt-4">
+                          <h4 className="font-medium mb-2">Value Breakdown:</h4>
+                          <p className="whitespace-pre-line">{section.breakdown}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+
+              case 'value_proposition':
+                return section.testimonials?.length > 0 ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Client Testimonials
+                    </h2>
+                    <div className="space-y-4">
+                      {section.testimonials.map((testimonial: any, idx: number) => (
+                        <div key={idx} className="bg-gray-50 p-4 rounded-lg">
+                          {testimonial.content && (
+                            <p className="italic mb-2">"{testimonial.content}"</p>
+                          )}
+                          <div className="flex items-center justify-between">
+                            {testimonial.name && (
+                              <p className="font-medium">- {testimonial.name}</p>
+                            )}
+                            {testimonial.link && (
+                              <a 
+                                href={testimonial.link} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline"
+                              >
+                                View Profile
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+
+              case 'why_us':
+                return (section.content || section.advantages?.length > 0 || section.differentiators?.length > 0) ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Why Choose Us
+                    </h2>
+                    {section.content && (
+                      <div className="mb-4">
+                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
+                      </div>
+                    )}
+                    {section.advantages?.length > 0 && (
+                      <div className="mb-4">
+                        <h3 className="text-lg font-medium mb-2">Key Advantages:</h3>
+                        <ul className="list-disc list-inside space-y-1">
+                          {section.advantages.map((item: string, idx: number) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {section.differentiators?.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-medium mb-2">What Sets Us Apart:</h3>
+                        <ul className="list-disc list-inside space-y-1">
+                          {section.differentiators.map((item: string, idx: number) => (
+                            <li key={idx}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : null;
+
+              case 'call_to_action':
+                return section.next_steps ? (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      Next Steps
+                    </h2>
+                    <p className="whitespace-pre-line leading-relaxed mb-4">{section.next_steps}</p>
+                    {section.contact_details && (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <h4 className="font-medium mb-2">Contact Information:</h4>
+                        <div className="whitespace-pre-line">{section.contact_details}</div>
+                      </div>
+                    )}
+                  </div>
+                ) : null;
 
           case 'executive_summary':
             return (
@@ -195,19 +395,23 @@ export default function ProposalPreview() {
               </div>
             );
 
-          default:
-            return (
-              <div key={index} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-primary">{section.title}</h2>
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-muted-foreground whitespace-pre-wrap">
-                    {section.content?.text || section.content || 'No content available.'}
-                  </p>
-                </div>
-              </div>
-            );
-        }
-      });
+              default:
+                return (
+                  <div key={index} className="mb-8">
+                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                      {section.title || section.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </h2>
+                    <div className="prose max-w-none">
+                      <p className="whitespace-pre-wrap">
+                        {section.content?.text || section.content || 'No content available.'}
+                      </p>
+                    </div>
+                  </div>
+                );
+            }
+          })}
+        </div>
+      );
     }
 
     // Legacy content format support
@@ -283,6 +487,21 @@ export default function ProposalPreview() {
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
+                  <div className="flex items-center gap-4 mb-4">
+                    <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Back to Dashboard
+                    </Button>
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      onClick={() => navigate(`/create-proposal?edit=${id}`)}
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Proposal
+                    </Button>
+                  </div>
                   <h1 className="text-3xl font-bold text-foreground mb-2">
                     {proposal.title}
                   </h1>
@@ -305,7 +524,7 @@ export default function ProposalPreview() {
                 </div>
                 <Badge variant="secondary" className="ml-4">
                   <Eye className="h-3 w-3 mr-1" />
-                  Preview
+                  Proposal View
                 </Badge>
               </div>
             </CardContent>

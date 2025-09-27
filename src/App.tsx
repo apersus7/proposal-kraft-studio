@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import CreateProposal from "./pages/CreateProposal";
-import ProposalEditor from "./pages/ProposalEditor";
+// Removed ProposalEditor - using content editor for editing
 import Settings from "./pages/Settings";
 import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
@@ -37,7 +37,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/create-proposal" element={<CreateProposal />} />
-            <Route path="/proposal/:id" element={<ProposalEditor />} />
+            <Route path="/proposal/:id" element={<ProposalPreview />} />
             <Route path="/preview/:id" element={<ProposalPreview />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Settings />} />

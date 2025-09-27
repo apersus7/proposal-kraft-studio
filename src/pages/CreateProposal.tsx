@@ -21,6 +21,8 @@ export default function CreateProposal() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'details' | 'theme' | 'content'>('details');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
   const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
@@ -58,7 +60,71 @@ export default function CreateProposal() {
       navigate('/auth');
       return;
     }
+
+    // Check if we're editing an existing proposal
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('edit');
+    if (editId) {
+      setIsEditing(true);
+      setEditingProposalId(editId);
+      loadProposalForEditing(editId);
+    }
   }, [user, navigate]);
+
+  const loadProposalForEditing = async (proposalId: string) => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await sb
+        .from('proposals')
+        .select('*')
+        .eq('id', proposalId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading proposal:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load proposal for editing",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data) {
+        // Populate the form with existing data
+        setProposalData({
+          title: data.title,
+          client_name: data.client_name,
+          client_email: data.client_email,
+          project_name: data.content?.project_name || '',
+          pricing: data.worth || '',
+          currency: data.content?.currency || 'USD',
+          content: data.content
+        });
+
+        // Load theme data
+        if (data.content?.primaryColor) setPrimaryColor(data.content.primaryColor);
+        if (data.content?.secondaryColor) setSecondaryColor(data.content.secondaryColor);
+        if (data.content?.backgroundColor) setBackgroundColor(data.content.backgroundColor);
+        if (data.content?.textColor) setTextColor(data.content.textColor);
+        if (data.content?.headingColor) setHeadingColor(data.content.headingColor);
+        if (data.content?.selectedFont) setSelectedFont(data.content.selectedFont);
+        if (data.content?.logoUrl) setLogoUrl(data.content.logoUrl);
+
+        // Skip to content step for editing
+        setStep('content');
+      }
+    } catch (error) {
+      console.error('Error loading proposal:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load proposal for editing",
+        variant: "destructive"
+      });
+    }
+  };
 
   // Helpers to update content sections in local state
   const getContentValue = (sectionType: string, field?: string) => {
@@ -242,55 +308,80 @@ export default function CreateProposal() {
 
     setLoading(true);
     try {
-      const proposalToInsert = {
+      const proposalData_to_save = {
         user_id: user.id,
         title: proposalData.title.trim(),
         client_name: proposalData.client_name.trim(),
         client_email: proposalData.client_email?.trim() || null,
-          content: {
-            sections: proposalData.content?.sections || [],
-            project_name: proposalData.project_name.trim(),
-            pricing: proposalData.pricing,
-            currency: proposalData.currency || 'USD',
-            primaryColor: primaryColor,
-            secondaryColor: secondaryColor,
-            backgroundColor: backgroundColor,
-            textColor: textColor,
-            headingColor: headingColor,
-            selectedFont: selectedFont,
-            logoUrl: logoUrl
-          },
+        content: {
+          sections: proposalData.content?.sections || [],
+          project_name: proposalData.project_name.trim(),
+          pricing: proposalData.pricing,
+          currency: proposalData.currency || 'USD',
+          primaryColor: primaryColor,
+          secondaryColor: secondaryColor,
+          backgroundColor: backgroundColor,
+          textColor: textColor,
+          headingColor: headingColor,
+          selectedFont: selectedFont,
+          logoUrl: logoUrl
+        },
         worth: Number(proposalData.pricing),
         template_id: null,
         status: 'draft'
       };
 
-      console.log('Creating proposal with data:', proposalToInsert);
+      console.log('Saving proposal with data:', proposalData_to_save);
 
-      const { data, error } = await sb
-        .from('proposals')
-        .insert(proposalToInsert)
-        .select()
-        .single();
+      let result;
+      if (isEditing && editingProposalId) {
+        // Update existing proposal
+        const { data, error } = await sb
+          .from('proposals')
+          .update(proposalData_to_save)
+          .eq('id', editingProposalId)
+          .eq('user_id', user.id)
+          .select()
+          .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+
+        result = data;
+        toast({
+          title: "Success",
+          description: "Proposal updated successfully!"
+        });
+      } else {
+        // Create new proposal
+        const { data, error } = await sb
+          .from('proposals')
+          .insert(proposalData_to_save)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+
+        result = data;
+        toast({
+          title: "Success",
+          description: "Proposal created successfully!"
+        });
       }
 
-      toast({
-        title: "Success",
-        description: "Proposal created successfully!"
-      });
-
       const suffix = go ? `?go=${go}` : '';
-      navigate(`/proposal/${data.id}${suffix}`);
-      return data.id;
+      navigate(`/proposal/${result.id}${suffix}`);
+      return result.id;
     } catch (error) {
-      console.error('Error creating proposal:', error);
+      console.error('Error saving proposal:', error);
       toast({
         title: "Error",
-        description: "Failed to create proposal",
+        description: isEditing ? "Failed to update proposal" : "Failed to create proposal",
         variant: "destructive"
       });
     } finally {
