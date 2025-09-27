@@ -1192,12 +1192,24 @@ export default function CreateProposal() {
                            </div>
                          )}
                         {getContentValue('proposed_solution', 'why_fits') && (
-                          <div className="mb-2">
-                            <p className="text-xs font-medium text-gray-800 mb-1">Why This Solution Fits:</p>
-                            <p className="text-xs text-gray-700 leading-relaxed">
-                              {getContentValue('proposed_solution', 'why_fits')}
-                            </p>
-                          </div>
+                          <>
+                            <div className="text-xs font-medium text-gray-800 mb-1">Why This Solution Fits:</div>
+                            <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+                              {getContentValue('proposed_solution', 'why_fits')
+                                .split('\n')
+                                .map((line: string, lineIndex: number) => {
+                                  if (line.trim().startsWith('•')) {
+                                    return (
+                                      <div key={lineIndex} className="flex items-start mb-1">
+                                        <span className="mr-2 mt-0.5">•</span>
+                                        <span>{line.trim().substring(1).trim()}</span>
+                                      </div>
+                                    );
+                                  }
+                                  return line.trim() ? <div key={lineIndex} className="mb-1">{line}</div> : null;
+                                })}
+                            </div>
+                          </>
                         )}
                         {getContentValue('proposed_solution', 'tools')?.length > 0 && (
                           <div>
@@ -1217,9 +1229,21 @@ export default function CreateProposal() {
                           Scope of Work
                         </h2>
                         {getContentValue('scope_of_work', 'content') && (
-                          <p className="text-xs text-gray-700 leading-relaxed mb-2">
-                            {getContentValue('scope_of_work', 'content')}
-                          </p>
+                          <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line mb-2">
+                            {getContentValue('scope_of_work', 'content')
+                              .split('\n')
+                              .map((line: string, lineIndex: number) => {
+                                if (line.trim().startsWith('•')) {
+                                  return (
+                                    <div key={lineIndex} className="flex items-start mb-1">
+                                      <span className="mr-2 mt-0.5">•</span>
+                                      <span>{line.trim().substring(1).trim()}</span>
+                                    </div>
+                                  );
+                                }
+                                return line.trim() ? <div key={lineIndex} className="mb-1">{line}</div> : null;
+                              })}
+                          </div>
                         )}
                         {getContentValue('scope_of_work', 'deliverables')?.length > 0 && (
                           <div className="mb-2">

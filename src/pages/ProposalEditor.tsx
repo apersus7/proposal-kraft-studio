@@ -880,10 +880,23 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Terms & Conditions
                        </h2>
-                       <p className="text-gray-700 text-sm leading-relaxed">
-                         {getContentValue('terms_conditions', 'content') || 
-                          'This proposal is valid for 30 days. All work is subject to our standard terms and conditions, including confidentiality agreements and revision policies.'}
-                       </p>
+                        <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                          {getContentValue('terms_conditions', 'content')
+                            ? getContentValue('terms_conditions', 'content')
+                                .split('\n')
+                                .map((line: string, lineIndex: number) => {
+                                  if (line.trim().startsWith('•')) {
+                                    return (
+                                      <div key={lineIndex} className="flex items-start mb-2">
+                                        <span className="mr-3 mt-1">•</span>
+                                        <span>{line.trim().substring(1).trim()}</span>
+                                      </div>
+                                    );
+                                  }
+                                  return line.trim() ? <div key={lineIndex} className="mb-2">{line}</div> : null;
+                                })
+                            : 'This proposal is valid for 30 days. All work is subject to our standard terms and conditions, including confidentiality agreements and revision policies.'}
+                        </div>
                      </section>
                      
                      <section>
