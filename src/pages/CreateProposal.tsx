@@ -996,13 +996,13 @@ export default function CreateProposal() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="aspect-[8.5/11] bg-white border rounded-lg p-4 text-xs text-black overflow-auto max-h-[600px]">
-                    {/* Cover Page */}
-                    <div className="text-center mb-6 border-b pb-4">
-                      <div className="text-xs text-gray-500 mb-1">
+                  <div className="aspect-[8.5/11] bg-white border rounded-lg p-4 text-xs text-black overflow-auto max-h-[600px]" style={{ '--selected-primary': primaryColor, '--selected-secondary': secondaryColor } as React.CSSProperties}>
+                    {/* Cover Page - With applied colors */}
+                    <div className="text-center mb-6 pb-4" style={{ borderBottom: `2px solid ${primaryColor}` }}>
+                      <div className="text-xs mb-1" style={{ color: secondaryColor }}>
                         {getContentValue('cover_page', 'company_name') || 'Your Company'}
                       </div>
-                      <h1 className="text-lg font-bold mb-2">{proposalData.title}</h1>
+                      <h1 className="text-lg font-bold mb-2" style={{ color: primaryColor }}>{proposalData.title}</h1>
                       <p className="text-sm text-gray-600 mb-1">Project: {proposalData.project_name}</p>
                       <p className="text-gray-600 text-sm">Prepared for {proposalData.client_name}</p>
                       <p className="text-gray-500 text-xs mt-2">
@@ -1010,10 +1010,10 @@ export default function CreateProposal() {
                       </p>
                     </div>
                     
-                    {/* Project Objective */}
+                    {/* Project Objective - With applied colors */}
                     {getContentValue('objective', 'content') && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                           Project Objective
                         </h2>
                         <p className="text-xs text-gray-700 leading-relaxed">
@@ -1022,10 +1022,10 @@ export default function CreateProposal() {
                       </section>
                     )}
                     
-                    {/* Proposed Solution */}
+                    {/* Proposed Solution - With applied colors */}
                     {(getContentValue('proposed_solution', 'content') || getContentValue('proposed_solution', 'why_fits')) && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                           Proposed Solution
                         </h2>
                         {getContentValue('proposed_solution', 'content') && (
@@ -1052,10 +1052,10 @@ export default function CreateProposal() {
                       </section>
                     )}
                     
-                    {/* Scope of Work */}
+                    {/* Scope of Work - With applied colors */}
                     {(getContentValue('scope_of_work', 'content') || getContentValue('scope_of_work', 'deliverables')?.length > 0) && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                           Scope of Work
                         </h2>
                         {getContentValue('scope_of_work', 'content') && (
@@ -1088,9 +1088,9 @@ export default function CreateProposal() {
                       </section>
                     )}
                     
-                    {/* Investment */}
+                    {/* Investment - With applied colors */}
                     <section className="mb-4">
-                      <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                      <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                         Investment
                       </h2>
                       <p className="text-sm font-medium text-gray-800 mb-1">

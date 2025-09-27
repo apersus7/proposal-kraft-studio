@@ -47,48 +47,289 @@ const industryIcons = {
   branding: <Palette className="h-4 w-4" />
 };
 
-// Beautiful Canva-inspired templates
+// Beautiful Canva-inspired templates with comprehensive content
 const starterTemplates = [
   {
-    name: 'Modern Minimalist',
-    description: 'Clean, minimal design perfect for tech and consulting',
+    name: 'Modern Tech Solutions',
+    description: 'Clean, professional design perfect for software & tech consulting',
     category: 'business',
     industry: 'technology',
-    tags: ['minimal', 'clean', 'modern'],
-    preview_color: 'from-slate-50 via-white to-blue-50',
+    tags: ['minimal', 'tech', 'modern', 'professional'],
+    preview_color: 'from-blue-50 via-indigo-50 to-purple-50',
     template_data: {
       sections: [
-        { type: 'cover_page', title: 'Project Proposal', tagline: 'Innovative Solutions for Modern Challenges' },
-        { type: 'objective', content: 'Project objective and goals overview' },
-        { type: 'scope_of_work', deliverables: ['Strategy Development', 'Implementation Plan'] },
-        { type: 'pricing', packages: [{ name: 'Complete Solution', price: 15000 }] }
+        { 
+          type: 'cover_page', 
+          title: 'Digital Transformation Proposal',
+          tagline: 'Empowering your business with cutting-edge technology solutions',
+          company_name: 'TechForward Solutions'
+        },
+        { 
+          type: 'objective', 
+          content: 'Transform your business operations through strategic digital solutions that drive growth, improve efficiency, and create competitive advantages in today\'s digital marketplace.'
+        },
+        { 
+          type: 'proposed_solution', 
+          content: 'We propose a comprehensive digital transformation strategy that includes cloud migration, process automation, and data analytics implementation.',
+          why_fits: 'Our solution aligns perfectly with your growth objectives and technical requirements, ensuring scalable and sustainable results.',
+          tools: ['React', 'Node.js', 'AWS Cloud', 'MongoDB', 'Docker']
+        },
+        { 
+          type: 'scope_of_work', 
+          content: 'Complete end-to-end digital transformation including system analysis, architecture design, development, testing, and deployment.',
+          deliverables: [
+            'Technical Architecture Document',
+            'Custom Web Application',
+            'Cloud Infrastructure Setup',
+            'Data Migration & Integration',
+            'Staff Training & Documentation',
+            '6 Months Technical Support'
+          ],
+          timeline: [
+            { phase: 'Discovery & Planning', duration: '2 weeks', description: 'Requirements gathering and technical planning' },
+            { phase: 'Development Phase 1', duration: '6 weeks', description: 'Core system development and integration' },
+            { phase: 'Testing & Deployment', duration: '2 weeks', description: 'Quality assurance and production deployment' },
+            { phase: 'Training & Support', duration: 'Ongoing', description: 'User training and technical support' }
+          ]
+        },
+        {
+          type: 'value_proposition',
+          advantages: [
+            '40% improvement in operational efficiency',
+            'Scalable cloud-based infrastructure',
+            'Real-time analytics and reporting',
+            'Enhanced security and compliance',
+            'Future-ready technology stack'
+          ]
+        }
       ]
     }
   },
   {
-    name: 'Creative Studio',
-    description: 'Bold, creative design for agencies and designers',
+    name: 'Creative Agency Premium',
+    description: 'Bold, vibrant design for creative agencies and design studios',
     category: 'creative',
     industry: 'creative',
-    tags: ['creative', 'bold', 'colorful'],
-    preview_color: 'from-purple-400 via-pink-500 to-red-500',
+    tags: ['creative', 'bold', 'premium', 'artistic'],
+    preview_color: 'from-pink-100 via-purple-100 to-indigo-100',
     template_data: {
       sections: [
-        { type: 'cover_page', title: 'Creative Proposal', tagline: 'Where Ideas Come to Life' },
-        { type: 'value_proposition', advantages: ['Unique Creative Vision', 'Award-Winning Team'] }
+        { 
+          type: 'cover_page', 
+          title: 'Brand Identity & Design Proposal',
+          tagline: 'Crafting exceptional brand experiences that captivate and convert',
+          company_name: 'Visionary Creative Studio'
+        },
+        { 
+          type: 'objective', 
+          content: 'Create a compelling brand identity that resonates with your target audience, differentiates you from competitors, and drives meaningful engagement across all touchpoints.'
+        },
+        { 
+          type: 'proposed_solution', 
+          content: 'A comprehensive brand identity system including logo design, visual guidelines, marketing materials, and digital assets.',
+          why_fits: 'Our creative approach combines strategic thinking with artistic excellence, perfectly suited for brands seeking to make a bold statement.',
+          tools: ['Adobe Creative Suite', 'Figma', 'After Effects', 'Webflow', 'Principle']
+        },
+        { 
+          type: 'scope_of_work', 
+          content: 'Complete brand identity development from concept to implementation across all brand touchpoints.',
+          deliverables: [
+            'Brand Strategy & Positioning',
+            'Logo Design (3 concepts + revisions)',
+            'Brand Guidelines Document',
+            'Business Card & Stationery Design',
+            'Website Design Mockups',
+            'Social Media Templates',
+            'Brand Asset Library'
+          ],
+          timeline: [
+            { phase: 'Brand Discovery', duration: '1 week', description: 'Brand audit and strategic positioning' },
+            { phase: 'Concept Development', duration: '2 weeks', description: 'Logo concepts and initial designs' },
+            { phase: 'Design Refinement', duration: '2 weeks', description: 'Refinements and brand system development' },
+            { phase: 'Final Delivery', duration: '1 week', description: 'Asset creation and handover' }
+          ]
+        },
+        {
+          type: 'value_proposition',
+          advantages: [
+            'Award-winning creative team',
+            'Proven track record with 200+ brands',
+            'Strategic approach to design',
+            'Unlimited revisions included',
+            'Complete brand ecosystem development'
+          ]
+        }
       ]
     }
   },
   {
-    name: 'Corporate Elite',
-    description: 'Professional corporate design for enterprise clients',
+    name: 'Executive Business Proposal',
+    description: 'Premium corporate design for C-suite and enterprise clients',
     category: 'corporate',
     industry: 'business',
-    tags: ['corporate', 'professional', 'enterprise'],
-    preview_color: 'from-gray-900 via-gray-700 to-blue-900',
+    tags: ['corporate', 'executive', 'premium', 'enterprise'],
+    preview_color: 'from-slate-100 via-gray-100 to-zinc-100',
     template_data: {
       sections: [
-        { type: 'cover_page', title: 'Strategic Proposal', tagline: 'Excellence in Every Detail' }
+        { 
+          type: 'cover_page', 
+          title: 'Strategic Business Consulting Proposal',
+          tagline: 'Driving sustainable growth through strategic excellence',
+          company_name: 'Executive Partners Consulting'
+        },
+        { 
+          type: 'objective', 
+          content: 'Accelerate your organization\'s growth and operational excellence through strategic consulting that delivers measurable results and sustainable competitive advantages.'
+        },
+        { 
+          type: 'proposed_solution', 
+          content: 'Comprehensive business strategy development including market analysis, operational optimization, and growth planning.',
+          why_fits: 'Our executive-level consulting approach provides the strategic insight and operational expertise needed to achieve your ambitious business goals.',
+          tools: ['McKinsey Framework', 'BCG Matrix', 'SWOT Analysis', 'Financial Modeling', 'Market Research']
+        },
+        { 
+          type: 'scope_of_work', 
+          content: 'End-to-end strategic consulting engagement covering all aspects of business strategy and operational excellence.',
+          deliverables: [
+            'Comprehensive Business Assessment',
+            'Strategic Roadmap & Implementation Plan',
+            'Market Analysis & Competitive Intelligence',
+            'Financial Projections & ROI Analysis',
+            'Operational Excellence Framework',
+            'Change Management Strategy',
+            'Executive Presentation Materials'
+          ],
+          timeline: [
+            { phase: 'Strategic Assessment', duration: '3 weeks', description: 'Business analysis and opportunity identification' },
+            { phase: 'Strategy Development', duration: '4 weeks', description: 'Strategic planning and roadmap creation' },
+            { phase: 'Implementation Planning', duration: '2 weeks', description: 'Detailed implementation and change management plans' },
+            { phase: 'Executive Presentation', duration: '1 week', description: 'Board-ready presentation and handover' }
+          ]
+        },
+        {
+          type: 'value_proposition',
+          advantages: [
+            'C-suite expertise with Fortune 500 experience',
+            'Proven methodology delivering 25%+ growth',
+            'Comprehensive market intelligence',
+            'Board-ready strategic documentation',
+            'Ongoing strategic advisory support'
+          ]
+        }
+      ]
+    }
+  },
+  {
+    name: 'Marketing Campaign Mastery',
+    description: 'Dynamic design for marketing agencies and growth consultants',
+    category: 'marketing',
+    industry: 'marketing',
+    tags: ['marketing', 'growth', 'campaigns', 'results-driven'],
+    preview_color: 'from-orange-50 via-red-50 to-pink-50',
+    template_data: {
+      sections: [
+        { 
+          type: 'cover_page', 
+          title: 'Integrated Marketing Campaign Proposal',
+          tagline: 'Accelerating growth through data-driven marketing excellence',
+          company_name: 'Growth Catalyst Marketing'
+        },
+        { 
+          type: 'objective', 
+          content: 'Launch a comprehensive marketing campaign that increases brand awareness, generates qualified leads, and drives measurable revenue growth across all key channels.'
+        },
+        { 
+          type: 'proposed_solution', 
+          content: 'Multi-channel marketing campaign combining digital advertising, content marketing, social media, and conversion optimization.',
+          why_fits: 'Our data-driven approach ensures maximum ROI while building long-term brand equity and customer relationships.',
+          tools: ['Google Ads', 'Facebook Ads Manager', 'HubSpot', 'Google Analytics', 'Hotjar', 'Mailchimp']
+        },
+        { 
+          type: 'scope_of_work', 
+          content: 'Complete marketing campaign development, execution, and optimization across all digital channels.',
+          deliverables: [
+            'Marketing Strategy & Campaign Plan',
+            'Target Audience Research & Personas',
+            'Creative Assets & Ad Designs',
+            'Landing Page Development',
+            'Email Marketing Sequences',
+            'Social Media Content Calendar',
+            'Performance Analytics Dashboard'
+          ],
+          timeline: [
+            { phase: 'Strategy & Planning', duration: '1 week', description: 'Campaign strategy and audience research' },
+            { phase: 'Creative Development', duration: '2 weeks', description: 'Asset creation and landing page build' },
+            { phase: 'Campaign Launch', duration: '1 week', description: 'Multi-channel campaign deployment' },
+            { phase: 'Optimization Period', duration: '8 weeks', description: 'Ongoing optimization and reporting' }
+          ]
+        },
+        {
+          type: 'value_proposition',
+          advantages: [
+            'Average 300% ROI on marketing spend',
+            '50+ successful campaign launches',
+            'Real-time performance tracking',
+            'Multi-channel expertise',
+            'Guaranteed lead generation results'
+          ]
+        }
+      ]
+    }
+  },
+  {
+    name: 'E-commerce Growth Package',
+    description: 'Results-focused design for online retailers and e-commerce brands',
+    category: 'ecommerce',
+    industry: 'retail',
+    tags: ['ecommerce', 'growth', 'conversion', 'sales'],
+    preview_color: 'from-green-50 via-emerald-50 to-teal-50',
+    template_data: {
+      sections: [
+        { 
+          type: 'cover_page', 
+          title: 'E-commerce Growth & Optimization Proposal',
+          tagline: 'Maximizing revenue through conversion optimization and strategic growth',
+          company_name: 'E-commerce Accelerators'
+        },
+        { 
+          type: 'objective', 
+          content: 'Increase your e-commerce revenue by 40% through conversion rate optimization, user experience improvements, and strategic growth initiatives.'
+        },
+        { 
+          type: 'proposed_solution', 
+          content: 'Comprehensive e-commerce optimization including UX/UI improvements, conversion funnel optimization, and revenue growth strategies.',
+          why_fits: 'Our proven e-commerce methodology has helped 100+ online stores achieve sustainable growth and improved profitability.',
+          tools: ['Shopify Plus', 'Google Analytics 4', 'Hotjar', 'Klaviyo', 'Gorgias', 'ReCharge']
+        },
+        { 
+          type: 'scope_of_work', 
+          content: 'Complete e-commerce store optimization covering design, functionality, marketing, and customer experience.',
+          deliverables: [
+            'E-commerce Audit & Analysis Report',
+            'Conversion Rate Optimization Strategy',
+            'Store Design & UX Improvements',
+            'Product Page Optimization',
+            'Checkout Process Enhancement',
+            'Email Marketing Automation',
+            'Performance Tracking Dashboard'
+          ],
+          timeline: [
+            { phase: 'Store Audit', duration: '1 week', description: 'Comprehensive analysis of current performance' },
+            { phase: 'Optimization Implementation', duration: '4 weeks', description: 'UX improvements and conversion optimization' },
+            { phase: 'Marketing Setup', duration: '2 weeks', description: 'Email automation and retention strategies' },
+            { phase: 'Testing & Refinement', duration: '4 weeks', description: 'A/B testing and performance optimization' }
+          ]
+        },
+        {
+          type: 'value_proposition',
+          advantages: [
+            'Average 40% increase in conversion rates',
+            '25% improvement in average order value',
+            'Specialized e-commerce expertise',
+            'Data-driven optimization approach',
+            '90-day revenue growth guarantee'
+          ]
+        }
       ]
     }
   }
