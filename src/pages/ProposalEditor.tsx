@@ -719,9 +719,31 @@ export default function ProposalEditor() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="aspect-[8.5/11] bg-white border rounded-lg p-8 text-sm text-black overflow-auto">
+                <div 
+                  className="aspect-[8.5/11] border rounded-lg p-8 text-sm overflow-auto relative" 
+                  style={{ 
+                    backgroundColor: proposal.content?.backgroundColor || '#ffffff',
+                    color: proposal.content?.backgroundColor === '#000000' ? '#ffffff' : '#000000',
+                    fontFamily: proposal.content?.selectedFont || 'Inter'
+                  }}
+                >
+                  {/* Logo in top-left corner */}
+                  {proposal.content?.logoUrl && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <img 
+                        src={proposal.content.logoUrl} 
+                        alt="Company Logo" 
+                        className="h-10 w-auto object-contain"
+                        onError={(e) => {
+                          console.log('Logo failed to load:', proposal.content.logoUrl);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
+                  
                   {/* Cover Page */}
-                  <div className="text-center mb-8 border-b pb-6">
+                  <div className="text-center mb-8 border-b pb-6 pt-16">
                     <h1 className="text-3xl font-bold mb-2">{proposal.title}</h1>
                     <p className="text-lg text-gray-600 mb-2">Prepared for {proposal.client_name}</p>
                     <p className="text-gray-500 mb-3">

@@ -1106,9 +1106,33 @@ export default function CreateProposal() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="aspect-[8.5/11] bg-white border rounded-lg p-4 text-xs text-black overflow-auto max-h-[600px]" style={{ '--selected-primary': primaryColor, '--selected-secondary': secondaryColor } as React.CSSProperties}>
+                  <div 
+                    className="aspect-[8.5/11] border rounded-lg p-4 text-xs overflow-auto max-h-[600px] relative" 
+                    style={{ 
+                      backgroundColor: backgroundColor || '#ffffff',
+                      color: backgroundColor === '#000000' || backgroundColor === '#ffffff' ? '#000000' : '#ffffff',
+                      fontFamily: selectedFont || 'Inter',
+                      '--selected-primary': primaryColor, 
+                      '--selected-secondary': secondaryColor 
+                    } as React.CSSProperties}
+                  >
+                    {/* Logo in top-left corner */}
+                    {logoUrl && (
+                      <div className="absolute top-4 left-4 z-10">
+                        <img 
+                          src={logoUrl} 
+                          alt="Company Logo" 
+                          className="h-8 w-auto object-contain"
+                          onError={(e) => {
+                            console.log('Logo failed to load:', logoUrl);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     {/* Cover Page - With applied colors */}
-                    <div className="text-center mb-6 pb-4" style={{ borderBottom: `2px solid ${primaryColor}` }}>
+                    <div className="text-center mb-6 pb-4 pt-16" style={{ borderBottom: `2px solid ${primaryColor}` }}>
                       <div className="text-xs mb-1" style={{ color: secondaryColor }}>
                         {getContentValue('cover_page', 'company_name') || 'Your Company'}
                       </div>
