@@ -1150,9 +1150,21 @@ export default function CreateProposal() {
                         <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                           Project Objective
                         </h2>
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                          {getContentValue('objective', 'content')}
-                        </p>
+                        <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+                          {getContentValue('objective', 'content')
+                            .split('\n')
+                            .map((line: string, lineIndex: number) => {
+                              if (line.trim().startsWith('•')) {
+                                return (
+                                  <div key={lineIndex} className="flex items-start mb-1">
+                                    <span className="mr-2 mt-0.5">•</span>
+                                    <span>{line.trim().substring(1).trim()}</span>
+                                  </div>
+                                );
+                              }
+                              return line.trim() ? <div key={lineIndex} className="mb-1">{line}</div> : null;
+                            })}
+                        </div>
                       </section>
                     )}
                     
@@ -1162,11 +1174,23 @@ export default function CreateProposal() {
                         <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
                           Proposed Solution
                         </h2>
-                        {getContentValue('proposed_solution', 'content') && (
-                          <p className="text-xs text-gray-700 leading-relaxed mb-2">
-                            {getContentValue('proposed_solution', 'content')}
-                          </p>
-                        )}
+                         {getContentValue('proposed_solution', 'content') && (
+                           <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line mb-2">
+                             {getContentValue('proposed_solution', 'content')
+                               .split('\n')
+                               .map((line: string, lineIndex: number) => {
+                                 if (line.trim().startsWith('•')) {
+                                   return (
+                                     <div key={lineIndex} className="flex items-start mb-1">
+                                       <span className="mr-2 mt-0.5">•</span>
+                                       <span>{line.trim().substring(1).trim()}</span>
+                                     </div>
+                                   );
+                                 }
+                                 return line.trim() ? <div key={lineIndex} className="mb-1">{line}</div> : null;
+                               })}
+                           </div>
+                         )}
                         {getContentValue('proposed_solution', 'why_fits') && (
                           <div className="mb-2">
                             <p className="text-xs font-medium text-gray-800 mb-1">Why This Solution Fits:</p>

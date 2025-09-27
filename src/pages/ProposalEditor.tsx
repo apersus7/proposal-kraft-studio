@@ -763,20 +763,46 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Project Objective
                        </h2>
-                       <p className="text-gray-700 leading-relaxed">
-                         {getContentValue('objective', 'content') || 
-                          'This project aims to deliver measurable value by addressing your core business needs with strategic solutions and proven methodologies.'}
-                       </p>
+                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                          {getContentValue('objective', 'content')
+                            ? getContentValue('objective', 'content')
+                                .split('\n')
+                                .map((line: string, lineIndex: number) => {
+                                  if (line.trim().startsWith('•')) {
+                                    return (
+                                      <div key={lineIndex} className="flex items-start mb-2">
+                                        <span className="mr-3 mt-1">•</span>
+                                        <span>{line.trim().substring(1).trim()}</span>
+                                      </div>
+                                    );
+                                  }
+                                  return line.trim() ? <div key={lineIndex} className="mb-2">{line}</div> : null;
+                                })
+                            : 'This project aims to deliver measurable value by addressing your core business needs with strategic solutions and proven methodologies.'}
+                        </div>
                      </section>
                      
                      <section>
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Our Proposed Solution
                        </h2>
-                       <p className="text-gray-700 leading-relaxed">
-                         {getContentValue('proposed_solution', 'content') || 
-                          'Our proven methodology and strategic approach will deliver measurable results through careful planning, expert execution, and continuous optimization.'}
-                       </p>
+                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                          {getContentValue('proposed_solution', 'content')
+                            ? getContentValue('proposed_solution', 'content')
+                                .split('\n')
+                                .map((line: string, lineIndex: number) => {
+                                  if (line.trim().startsWith('•')) {
+                                    return (
+                                      <div key={lineIndex} className="flex items-start mb-2">
+                                        <span className="mr-3 mt-1">•</span>
+                                        <span>{line.trim().substring(1).trim()}</span>
+                                      </div>
+                                    );
+                                  }
+                                  return line.trim() ? <div key={lineIndex} className="mb-2">{line}</div> : null;
+                                })
+                            : 'Our proven methodology and strategic approach will deliver measurable results through careful planning, expert execution, and continuous optimization.'}
+                        </div>
                      </section>
                      
                      <section>

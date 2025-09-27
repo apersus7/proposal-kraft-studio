@@ -7,44 +7,43 @@ const corsHeaders = {
 
 // Simple content templates for different sections
 const contentTemplates = {
-  'objective': (context: string) => `Our objective for ${context} is to deliver measurable value through:
+  'objective': (context: string) => `Transform ${context} to achieve:
 
-• Clear understanding of your business challenges and requirements
-• Strategic approach aligned with your organizational goals
-• Implementation of proven solutions and industry best practices
-• Delivery of specific, quantifiable outcomes and benefits
-• Long-term partnership focused on sustainable success
+• Enhanced performance and user experience
+• Streamlined operations and improved efficiency
+• Modern technology implementation
+• Measurable business outcomes
 
-This project will address your core needs while positioning your organization for continued growth and competitive advantage.`,
+Focused on delivering immediate value and long-term success.`,
   
-  'scope_of_work': (context: string) => `This project focuses on ${context} and includes:
+  'scope_of_work': (context: string) => `${context} project includes:
 
-• Current state assessment and requirements gathering
-• Solution development with testing and quality assurance  
-• Training and knowledge transfer
-• Post-implementation support and optimization
-• Performance monitoring and improvement recommendations
+• Requirements analysis and planning
+• Design and development implementation
+• Testing and quality assurance
+• Training and deployment
+• Post-launch support
 
-The project is structured in phases to ensure systematic progress and regular milestone reviews.`,
+Structured approach with clear milestones and deliverables.`,
 
-  'pricing': (context: string) => `Professional services breakdown:
+  'pricing': (context: string) => `Investment breakdown:
 
-• Discovery & Planning: Assessment, strategic planning, documentation
-• Implementation: Core development, testing, training
-• Support & Optimization: 3-month support, performance optimization
+• Planning & Strategy: Research, planning, documentation
+• Implementation: Development, testing, deployment
+• Support: Training, optimization, ongoing support
 
-Payment terms typically include milestone-based payments with project management, reporting, and standard revisions included.`,
+Milestone-based payments with transparent pricing and no hidden costs.`,
 
-  'about_us': (context: string) => `We deliver exceptional results that drive business growth and success. With extensive experience in ${context}, we understand your industry challenges and opportunities:
+  'about_us': (context: string) => `Expert team specializing in ${context} with proven results:
 
-• Proven track record with 100+ completed projects
-• Deep industry knowledge and expertise
-• Certified professionals with relevant skills
-• Rigorous quality assurance processes
-• Results-driven approach with transparent communication
-• Flexible solutions adaptable to specific needs
+• 5+ years industry experience
+• 50+ successful projects delivered
+• Certified professionals and specialists
+• Quality-first approach
+• Transparent communication
+• Results-driven methodology
 
-Our clients typically achieve 30% efficiency improvements and 25% cost reductions through our solutions.`
+Helping businesses achieve 40% efficiency gains and measurable ROI.`
 };
 
 serve(async (req) => {
@@ -66,14 +65,14 @@ serve(async (req) => {
       generatedContent = templateFunction(context || 'your business needs');
     } else {
       // Default content for unknown sections
-      generatedContent = `Based on your requirements for ${context || 'this project'}, this ${section.replace('_', ' ')} section covers:
+      generatedContent = `${section.replace('_', ' ').toUpperCase()} for ${context || 'this project'}:
 
-• Tailored approach to your specific requirements
-• Industry best practices implementation  
+• Customized solution approach
+• Industry-standard practices
 • Clear deliverables and timelines
-• Ongoing support and optimization
+• Comprehensive support
 
-This approach provides significant value and helps achieve your desired outcomes.`;
+Designed to maximize value and achieve your goals.`;
     }
 
     console.log('Generated content successfully');
