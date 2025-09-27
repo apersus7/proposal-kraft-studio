@@ -233,6 +233,7 @@ export default function CreateProposal() {
             secondaryColor: secondaryColor,
             backgroundColor: backgroundColor,
             textColor: textColor,
+            headingColor: headingColor,
             selectedFont: selectedFont,
             logoUrl: logoUrl
           },
