@@ -52,6 +52,7 @@ export default function ProposalEditor() {
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const [textColor, setTextColor] = useState<string>('#000000');
+  const [headingColor, setHeadingColor] = useState<string>('#000000');
   const [selectedFont, setSelectedFont] = useState<string>('Inter');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
@@ -73,6 +74,7 @@ export default function ProposalEditor() {
       setSecondaryColor(proposal.content.secondaryColor || '#1e40af');
       setBackgroundColor(proposal.content.backgroundColor || '#ffffff');
       setTextColor(proposal.content.textColor || '#000000');
+      setHeadingColor(proposal.content.headingColor || '#000000');
       setSelectedFont(proposal.content.selectedFont || 'Inter');
       setLogoUrl(proposal.content.logoUrl || '');
     }
@@ -227,6 +229,7 @@ export default function ProposalEditor() {
         secondaryColor,
         backgroundColor,
         textColor,
+        headingColor,
         selectedFont,
         logoUrl
       }
@@ -236,7 +239,7 @@ export default function ProposalEditor() {
   // Update theme content when theme values change
   useEffect(() => {
     updateThemeContent();
-  }, [primaryColor, secondaryColor, backgroundColor, textColor, selectedFont, logoUrl]);
+  }, [primaryColor, secondaryColor, backgroundColor, textColor, headingColor, selectedFont, logoUrl]);
 
   const addScopeTimelinePhase = () => {
     const currentPhases = getContentValue('scope_of_work', 'timeline') || [];
@@ -670,6 +673,25 @@ export default function ProposalEditor() {
                         />
                       </div>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="heading-color">Heading Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="heading-color"
+                          type="color"
+                          value={headingColor}
+                          onChange={(e) => setHeadingColor(e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={headingColor}
+                          onChange={(e) => setHeadingColor(e.target.value)}
+                          placeholder="#000000"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -777,7 +799,18 @@ export default function ProposalEditor() {
                     />
                   </div>
 
-                 <div className="space-y-2">
+                   <div className="space-y-2">
+                     <Label>Why Choose Us / Value Proposition</Label>
+                     <Textarea
+                       placeholder="What makes you the best choice? Highlight your unique advantages, expertise, and value..."
+                       value={getContentValue('value_proposition', 'content')}
+                       onChange={(e) => updateContentValue('value_proposition', 'content', e.target.value)}
+                       className="min-h-[120px]"
+                       style={{ color: textColor }}
+                     />
+                   </div>
+
+                   <div className="space-y-2">
                    <Label htmlFor="proposed_solution">Proposed Solution</Label>
                    <Textarea
                      id="proposed_solution"
@@ -1062,12 +1095,12 @@ export default function ProposalEditor() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div 
+                 <div 
                   className="aspect-[8.5/11] border rounded-lg p-8 text-sm overflow-auto relative" 
                   style={{ 
-                    backgroundColor: proposal.content?.backgroundColor || '#ffffff',
-                    color: proposal.content?.textColor || (proposal.content?.backgroundColor === '#000000' ? '#ffffff' : '#000000'),
-                    fontFamily: proposal.content?.selectedFont || 'Inter'
+                    backgroundColor: proposal.content?.backgroundColor || backgroundColor || '#ffffff',
+                    color: proposal.content?.textColor || textColor || '#000000',
+                    fontFamily: proposal.content?.selectedFont || selectedFont || 'Inter'
                   }}
                 >
                   {/* Logo in top-left corner */}
@@ -1108,10 +1141,10 @@ export default function ProposalEditor() {
                    </div>
                   
                    <div className="space-y-6">
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Project Objective
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Project Objective
+                        </h2>
                         <div className="leading-relaxed whitespace-pre-line">
                           {getContentValue('objective', 'content')
                             ? getContentValue('objective', 'content')
@@ -1131,10 +1164,10 @@ export default function ProposalEditor() {
                         </div>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Our Proposed Solution
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Our Proposed Solution
+                        </h2>
                         <div className="leading-relaxed whitespace-pre-line">
                           {getContentValue('proposed_solution', 'content')
                             ? getContentValue('proposed_solution', 'content')
@@ -1154,10 +1187,10 @@ export default function ProposalEditor() {
                         </div>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Scope of Work & Deliverables
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Scope of Work & Deliverables
+                        </h2>
                        <ul className="list-disc list-inside space-y-2 leading-relaxed">
                          {getContentArray('scope_of_work', 'deliverables').map((item: string, index: number) => (
                            <li key={index}>{item}</li>
@@ -1173,10 +1206,10 @@ export default function ProposalEditor() {
                        </ul>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Timeline & Milestones
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Timeline & Milestones
+                        </h2>
                         <div className="space-y-2">
                           {getContentArray('scope_of_work', 'timeline').length > 0 ? 
                             getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
@@ -1195,10 +1228,10 @@ export default function ProposalEditor() {
                         </div>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Pricing & Investment
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Pricing & Investment
+                        </h2>
                         <div>
                           <p className="text-lg font-medium mb-2">
                             Total Project Investment: {proposal.content?.pricing ? `$${proposal.content.pricing} ${proposal.content?.currency || 'USD'}` : '$XX,XXX'}
@@ -1211,7 +1244,7 @@ export default function ProposalEditor() {
                      </section>
                      
                       <section>
-                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
                           Why Choose Us
                         </h2>
                         <ul className="list-disc list-inside space-y-2">
@@ -1240,10 +1273,10 @@ export default function ProposalEditor() {
                         </ul>
                       </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Terms & Conditions
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Terms & Conditions
+                        </h2>
                         <div className="text-sm leading-relaxed whitespace-pre-line">
                           {getContentValue('terms_conditions', 'content')
                             ? getContentValue('terms_conditions', 'content')
@@ -1263,10 +1296,10 @@ export default function ProposalEditor() {
                         </div>
                      </section>
                      
-                     <section>
-                       <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
-                         Next Steps
-                       </h2>
+                      <section>
+                        <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2" style={{ color: proposal.content?.headingColor || headingColor || '#000000' }}>
+                          Next Steps
+                        </h2>
                         <p className="leading-relaxed">
                           {getContentValue('call_to_action', 'next_steps') || 
                            'Ready to get started? Please review this proposal and let us know if you have any questions. To proceed, simply sign below and return this document. We\'ll then schedule a kickoff call to begin transforming your vision into reality.'}

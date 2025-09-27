@@ -26,6 +26,7 @@ export default function CreateProposal() {
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const [textColor, setTextColor] = useState<string>('#000000');
+  const [headingColor, setHeadingColor] = useState<string>('#000000');
   const [selectedFont, setSelectedFont] = useState<string>('Inter');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
@@ -522,6 +523,25 @@ export default function CreateProposal() {
                           <Input
                             value={textColor}
                             onChange={(e) => setTextColor(e.target.value)}
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="heading-color">Heading Color</Label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            id="heading-color"
+                            type="color"
+                            value={headingColor}
+                            onChange={(e) => setHeadingColor(e.target.value)}
+                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                          />
+                          <Input
+                            value={headingColor}
+                            onChange={(e) => setHeadingColor(e.target.value)}
                             placeholder="#000000"
                             className="flex-1"
                           />
