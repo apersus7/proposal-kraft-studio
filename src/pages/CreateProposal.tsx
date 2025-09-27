@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool, Download } from 'lucide-react';
+import { ArrowLeft, FileText, Upload, Eye, Save, Star, Zap, Shield, Briefcase, Palette, Sparkles, CreditCard, PenTool, Download, Globe, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
@@ -46,6 +46,7 @@ export default function CreateProposal() {
         { type: 'scope_of_work', deliverables: [], timeline: [], included: [], excluded: [] },
         { type: 'pricing', packages: [], payment_terms: '', total: '' },
         { type: 'value_proposition', advantages: [], case_studies: [], testimonials: [], team: [] },
+        { type: 'why_us', content: '', advantages: [], differentiators: [] },
         { type: 'terms_conditions', content: '' },
         { type: 'call_to_action', next_steps: '' }
       ]
@@ -159,6 +160,28 @@ export default function CreateProposal() {
     } catch (err) {
       console.error('Error generating AI content:', err);
       toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    } finally {
+      setGeneratingAI(null);
+    }
+  };
+
+  const importFromWebsite = async (url: string, section: string) => {
+    setGeneratingAI(section);
+    try {
+      // Simple fetch to get website content - you can enhance this to use Firecrawl
+      const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      const content = await response.text();
+      
+      // Extract basic text content (simplified)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+      const textContent = doc.body?.textContent?.slice(0, 500) || '';
+      
+      updateSectionValue(section, 'content', textContent);
+      toast({ title: 'Content Imported', description: 'Website content imported successfully' });
+    } catch (err) {
+      console.error('Error importing website content:', err);
+      toast({ title: 'Error', description: 'Failed to import website content', variant: 'destructive' });
     } finally {
       setGeneratingAI(null);
     }
@@ -833,7 +856,7 @@ export default function CreateProposal() {
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Content Editor */}
-              <div className="space-y-6">
+              <div className="space-y-6 max-h-[80vh] overflow-y-auto pr-4">
                 {/* Cover Page Section */}
                 <Card>
                   <CardHeader>
@@ -1157,6 +1180,73 @@ export default function CreateProposal() {
                   </CardContent>
                 </Card>
 
+                {/* Why Us Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      Why Us
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => generateAIContent('why_us', `${proposalData.client_name} - ${proposalData.project_name}`)}
+                          disabled={generatingAI === 'why_us'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'why_us' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            const url = prompt('Enter website URL to import content from:');
+                            if (url) importFromWebsite(url, 'why_us');
+                          }}
+                          disabled={generatingAI === 'why_us'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Globe className="h-3 w-3 mr-1" />
+                          Import from Website
+                        </Button>
+                      </div>
+                    </CardTitle>
+                    <CardDescription>
+                      Highlight what makes you the best choice
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Why Choose Us</Label>
+                      <Textarea
+                        value={getContentValue('why_us', 'content')}
+                        onChange={(e) => updateSectionValue('why_us', 'content', e.target.value)}
+                        placeholder="Explain what makes you unique, your expertise, track record, and why clients should choose you..."
+                        className="min-h-[120px]"
+                        style={{ color: textColor }}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Key Advantages</Label>
+                      <Textarea
+                        value={getContentValue('why_us', 'advantages')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('why_us', 'advantages', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="10+ years of experience&#10;100% client satisfaction rate&#10;Proven track record&#10;Expert team"
+                        className="min-h-[80px]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>What Sets Us Apart</Label>
+                      <Textarea
+                        value={getContentValue('why_us', 'differentiators')?.join('\n') || ''}
+                        onChange={(e) => updateSectionValue('why_us', 'differentiators', e.target.value.split('\n').filter(Boolean))}
+                        placeholder="Unique methodology&#10;Award-winning design&#10;24/7 support&#10;Money-back guarantee"
+                        className="min-h-[80px]"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Terms & Conditions */}
                 <Card>
                   <CardHeader>
@@ -1179,7 +1269,32 @@ export default function CreateProposal() {
                 {/* Call to Action */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Next Steps</CardTitle>
+                    <CardTitle className="flex items-center justify-between">
+                      Next Steps
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => generateAIContent('call_to_action', proposalData.project_name)}
+                          disabled={generatingAI === 'call_to_action'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'call_to_action' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            const url = prompt('Enter website URL to import content from:');
+                            if (url) importFromWebsite(url, 'call_to_action');
+                          }}
+                          disabled={generatingAI === 'call_to_action'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Globe className="h-3 w-3 mr-1" />
+                          Import from Website
+                        </Button>
+                      </div>
+                    </CardTitle>
                     <CardDescription>
                       Clear call to action for the client
                     </CardDescription>
@@ -1427,6 +1542,52 @@ export default function CreateProposal() {
                             </div>
                           ))}
                         </div>
+                      </section>
+                    )}
+                    
+                    {/* Why Us - With applied colors */}
+                    {(getContentValue('why_us', 'content') || getContentValue('why_us', 'advantages')?.length > 0) && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                          Why Choose Us
+                        </h2>
+                        {getContentValue('why_us', 'content') && (
+                          <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line mb-2">
+                            {getContentValue('why_us', 'content')
+                              .split('\n')
+                              .map((line: string, lineIndex: number) => {
+                                if (line.trim().startsWith('•')) {
+                                  return (
+                                    <div key={lineIndex} className="flex items-start mb-1">
+                                      <span className="mr-2 mt-0.5">•</span>
+                                      <span>{line.trim().substring(1).trim()}</span>
+                                    </div>
+                                  );
+                                }
+                                return line.trim() ? <div key={lineIndex} className="mb-1">{line}</div> : null;
+                              })}
+                          </div>
+                        )}
+                        {getContentValue('why_us', 'advantages')?.length > 0 && (
+                          <div className="mb-2">
+                            <p className="text-xs font-medium text-gray-800 mb-1">Key Advantages:</p>
+                            <ul className="list-disc list-inside text-xs text-gray-700 space-y-0.5">
+                              {getContentValue('why_us', 'advantages').map((item: string, idx: number) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {getContentValue('why_us', 'differentiators')?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-800 mb-1">What Sets Us Apart:</p>
+                            <ul className="list-disc list-inside text-xs text-gray-700 space-y-0.5">
+                              {getContentValue('why_us', 'differentiators').map((item: string, idx: number) => (
+                                <li key={idx}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </section>
                     )}
                     
