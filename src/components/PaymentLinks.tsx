@@ -260,15 +260,14 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
   const handleSharedPayment = async (paymentOption: any) => {
     try {
       setLoading(true);
-      
-      // Create payment via edge function for shared proposals
-      const { data, error } = await supabase.functions.invoke('create-paypal-payment', {
+
+      // Create payment via public edge function for shared proposals (no auth required)
+      const { data, error } = await supabase.functions.invoke('create-payment-link', {
         body: {
           amount: parseFloat(paymentOption.amount),
           currency: paymentOption.currency,
-          description: `Payment for Proposal`,
-          proposalId,
-          isSharedPayment: true
+          description: 'Payment for Proposal',
+          paymentType: 'one-time'
         }
       });
 
@@ -278,16 +277,16 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
         // Redirect to PayPal for payment
         window.open(data.approvalUrl, '_blank');
         toast({
-          title: "Redirecting to PayPal",
-          description: "Please complete your payment in the new window."
+          title: 'Redirecting to PayPal',
+          description: 'Please complete your payment in the new window.'
         });
       }
     } catch (error) {
       console.error('Error creating shared payment:', error);
       toast({
-        title: "Payment Error",
-        description: "Unable to process payment. Please try again.",
-        variant: "destructive"
+        title: 'Payment Error',
+        description: 'Unable to process payment. Please try again.',
+        variant: 'destructive'
       });
     } finally {
       setLoading(false);
