@@ -24,6 +24,8 @@ export default function CreateProposal() {
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
   const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
+  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
+  const [selectedFont, setSelectedFont] = useState<string>('Inter');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   
@@ -202,6 +204,8 @@ export default function CreateProposal() {
             currency: proposalData.currency || 'USD',
             primaryColor: primaryColor,
             secondaryColor: secondaryColor,
+            backgroundColor: backgroundColor,
+            selectedFont: selectedFont,
             logoUrl: logoUrl
           },
         worth: Number(proposalData.pricing),
@@ -396,102 +400,118 @@ export default function CreateProposal() {
         )}
 
         {step === 'theme' && (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Theme & Branding</h1>
-              <p className="text-muted-foreground">
-                Customize your proposal colors and upload your logo
-              </p>
-            </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Theme Customization Panel */}
+            <div>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold tracking-tight">Theme & Branding</h1>
+                <p className="text-muted-foreground">
+                  Customize colors, fonts, and branding for your proposal
+                </p>
+              </div>
 
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Palette className="h-5 w-5" />
-                  Color Theme & Branding
-                </CardTitle>
-                <CardDescription>
-                  Choose colors that reflect your brand and add your logo
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="primary-color">Primary Color</Label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        id="primary-color"
-                        type="color"
-                        value={primaryColor}
-                        onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="w-16 h-16 border-2 border-border rounded-lg cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <Input
-                          value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
-                          placeholder="#3b82f6"
-                        />
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Used for headings and key elements
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <Label htmlFor="secondary-color">Secondary Color</Label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        id="secondary-color"
-                        type="color"
-                        value={secondaryColor}
-                        onChange={(e) => setSecondaryColor(e.target.value)}
-                        className="w-16 h-16 border-2 border-border rounded-lg cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <Input
-                          value={secondaryColor}
-                          onChange={(e) => setSecondaryColor(e.target.value)}
-                          placeholder="#1e40af"
-                        />
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Used for accents and highlights
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Color Preview */}
-                <div className="border rounded-lg p-6 bg-muted/20">
-                  <h3 className="text-lg font-medium mb-4">Color Preview</h3>
-                  <div className="space-y-3">
-                    <div 
-                      className="h-4 rounded"
-                      style={{ backgroundColor: primaryColor, width: '70%' }}
-                    />
-                    <div 
-                      className="h-3 rounded"
-                      style={{ backgroundColor: secondaryColor, width: '85%' }}
-                    />
-                    <div className="flex gap-2">
-                      <div 
-                        className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: primaryColor }}
-                      />
-                      <div 
-                        className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: secondaryColor }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Logo Upload Section */}
-                <div className="border-t pt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Palette className="h-5 w-5" />
+                    Brand Customization
+                  </CardTitle>
+                  <CardDescription>
+                    Personalize your proposal's appearance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Colors Section */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-medium">Colors</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="primary-color">Primary Color</Label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            id="primary-color"
+                            type="color"
+                            value={primaryColor}
+                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                          />
+                          <Input
+                            value={primaryColor}
+                            onChange={(e) => setPrimaryColor(e.target.value)}
+                            placeholder="#3b82f6"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="secondary-color">Secondary Color</Label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            id="secondary-color"
+                            type="color"
+                            value={secondaryColor}
+                            onChange={(e) => setSecondaryColor(e.target.value)}
+                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                          />
+                          <Input
+                            value={secondaryColor}
+                            onChange={(e) => setSecondaryColor(e.target.value)}
+                            placeholder="#1e40af"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="background-color">Background Color</Label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            id="background-color"
+                            type="color"
+                            value={backgroundColor}
+                            onChange={(e) => setBackgroundColor(e.target.value)}
+                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                          />
+                          <Input
+                            value={backgroundColor}
+                            onChange={(e) => setBackgroundColor(e.target.value)}
+                            placeholder="#ffffff"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Font Selection */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Typography</h3>
+                    <div className="space-y-2">
+                      <Label htmlFor="font-select">Primary Font</Label>
+                      <Select value={selectedFont} onValueChange={setSelectedFont}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a font" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Inter">Inter (Modern & Clean)</SelectItem>
+                          <SelectItem value="Roboto">Roboto (Professional)</SelectItem>
+                          <SelectItem value="Open Sans">Open Sans (Friendly)</SelectItem>
+                          <SelectItem value="Lato">Lato (Approachable)</SelectItem>
+                          <SelectItem value="Montserrat">Montserrat (Bold & Strong)</SelectItem>
+                          <SelectItem value="Poppins">Poppins (Contemporary)</SelectItem>
+                          <SelectItem value="Nunito">Nunito (Rounded & Soft)</SelectItem>
+                          <SelectItem value="Source Sans Pro">Source Sans Pro (Technical)</SelectItem>
+                          <SelectItem value="Playfair Display">Playfair Display (Elegant & Serif)</SelectItem>
+                          <SelectItem value="Merriweather">Merriweather (Readable Serif)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Logo Upload */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
                       <Upload className="h-5 w-5" />
                       <h3 className="text-lg font-medium">Company Logo</h3>
                     </div>
@@ -502,7 +522,7 @@ export default function CreateProposal() {
                           <img 
                             src={logoUrl} 
                             alt="Company Logo" 
-                            className="mx-auto h-20 object-contain"
+                            className="mx-auto h-16 object-contain"
                           />
                           <div className="flex gap-2 justify-center">
                             <Button 
@@ -582,22 +602,144 @@ export default function CreateProposal() {
                       />
                     </div>
                   </div>
-                </div>
-                
-                <div className="flex gap-4 pt-6">
-                  <Button variant="outline" onClick={() => setStep('details')}>
-                    Back
-                  </Button>
-                  <Button 
-                    onClick={() => setStep('content')}
-                    className="flex-1"
+                  
+                  <div className="flex gap-4 pt-6">
+                    <Button variant="outline" onClick={() => setStep('details')}>
+                      Back
+                    </Button>
+                    <Button 
+                      onClick={() => setStep('content')}
+                      className="flex-1"
+                    >
+                      Continue to Content
+                      <FileText className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Live Preview Panel */}
+            <div>
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold tracking-tight">Live Preview</h2>
+                <p className="text-muted-foreground">
+                  See how your proposal will look
+                </p>
+              </div>
+
+              <Card className="sticky top-8">
+                <CardContent className="p-0">
+                  <div 
+                    className="relative min-h-[600px] p-6 rounded-lg"
+                    style={{ 
+                      backgroundColor: backgroundColor,
+                      fontFamily: `'${selectedFont}', sans-serif`
+                    }}
                   >
-                    Continue to Content
-                    <FileText className="h-4 w-4 ml-2" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    {/* Logo in top-left corner */}
+                    {logoUrl && (
+                      <div className="absolute top-4 left-4">
+                        <img 
+                          src={logoUrl} 
+                          alt="Company Logo" 
+                          className="h-12 object-contain"
+                        />
+                      </div>
+                    )}
+
+                    {/* Sample Proposal Content */}
+                    <div className="space-y-6 mt-16">
+                      {/* Title */}
+                      <div className="text-center">
+                        <h1 
+                          className="text-4xl font-bold mb-2"
+                          style={{ color: primaryColor }}
+                        >
+                          {proposalData.title || 'Your Proposal Title'}
+                        </h1>
+                        <p 
+                          className="text-xl"
+                          style={{ color: secondaryColor }}
+                        >
+                          Prepared for: {proposalData.client_name || 'Client Name'}
+                        </p>
+                      </div>
+
+                      {/* Sample Content Sections */}
+                      <div className="space-y-4">
+                        <div className="border-l-4 pl-4" style={{ borderColor: primaryColor }}>
+                          <h2 
+                            className="text-2xl font-semibold mb-2"
+                            style={{ color: primaryColor }}
+                          >
+                            Executive Summary
+                          </h2>
+                          <p className="text-gray-700 dark:text-gray-300">
+                            This is a sample of how your proposal content will appear with the selected theme. 
+                            The colors, fonts, and branding elements will be consistently applied throughout your proposal.
+                          </p>
+                        </div>
+
+                        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                          <h3 
+                            className="text-lg font-medium mb-2"
+                            style={{ color: secondaryColor }}
+                          >
+                            Project Details
+                          </h3>
+                          <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                            <li>• Service: {proposalData.project_name || 'Your service description'}</li>
+                            <li>• Value: {proposalData.currency} {proposalData.pricing || '0'}</li>
+                            <li>• Client: {proposalData.client_name || 'Client name'}</li>
+                          </ul>
+                        </div>
+
+                        <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: `${primaryColor}20` }}>
+                          <div 
+                            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
+                            style={{ backgroundColor: primaryColor }}
+                          >
+                            $
+                          </div>
+                          <div>
+                            <h4 className="font-medium" style={{ color: primaryColor }}>Investment</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Total project value: {proposalData.currency} {proposalData.pricing || '0'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Color Swatches */}
+                      <div className="flex gap-4 mt-8">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border-2 border-white shadow-sm"
+                            style={{ backgroundColor: primaryColor }}
+                          />
+                          <span className="text-xs text-gray-500">Primary</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border-2 border-white shadow-sm"
+                            style={{ backgroundColor: secondaryColor }}
+                          />
+                          <span className="text-xs text-gray-500">Secondary</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-6 h-6 rounded border-2 border-gray-300"
+                            style={{ backgroundColor: backgroundColor }}
+                          />
+                          <span className="text-xs text-gray-500">Background</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         )}
 
