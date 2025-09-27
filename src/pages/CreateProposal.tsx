@@ -1018,36 +1018,6 @@ export default function CreateProposal() {
                   </CardContent>
                 </Card>
 
-                {/* About Us / Team */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>About Us</CardTitle>
-                    <CardDescription>
-                      Your company background and team
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Company Overview</Label>
-                      <Textarea
-                        value={getContentValue('about_us', 'content')}
-                        onChange={(e) => updateSectionValue('about_us', 'content', e.target.value)}
-                        placeholder="Brief overview of your company, mission, and expertise..."
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Why Choose Us</Label>
-                      <Textarea
-                        value={getContentValue('value_proposition', 'advantages')?.join('\n') || ''}
-                        onChange={(e) => updateSectionValue('value_proposition', 'advantages', e.target.value.split('\n').filter(Boolean))}
-                        placeholder="5+ years experience&#10;100+ successful projects&#10;Dedicated support team"
-                        className="min-h-[80px]"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* Terms & Conditions */}
                 <Card>
                   <CardHeader>
@@ -1325,7 +1295,7 @@ export default function CreateProposal() {
                 <Button 
                   onClick={handleCreateProposal} 
                   disabled={loading}
-                  variant="secondary"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <FileText className="h-4 w-4 mr-2" />
                   {loading ? 'Creating...' : 'Create Proposal'}
@@ -1333,8 +1303,7 @@ export default function CreateProposal() {
                 <Button 
                   onClick={() => createProposalAndNavigate('export')} 
                   disabled={loading}
-                  variant="outline"
-                  className="bg-blue-50 hover:bg-blue-100 border-blue-200"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <Download className="h-4 w-4 mr-2" />
                   {loading ? 'Creating...' : 'Create & Export'}
@@ -1342,8 +1311,7 @@ export default function CreateProposal() {
                 <Button 
                   onClick={() => createProposalAndNavigate('payment')} 
                   disabled={loading}
-                  variant="outline"
-                  className="bg-green-50 hover:bg-green-100 border-green-200"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
                   {loading ? 'Creating...' : 'Create & Payment Link'}
@@ -1351,8 +1319,7 @@ export default function CreateProposal() {
                 <Button 
                   onClick={() => createProposalAndNavigate('signatures')} 
                   disabled={loading}
-                  variant="outline"
-                  className="bg-purple-50 hover:bg-purple-100 border-purple-200"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <PenTool className="h-4 w-4 mr-2" />
                   {loading ? 'Creating...' : 'Create & E‑Sign'}
