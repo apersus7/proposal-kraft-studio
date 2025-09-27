@@ -286,6 +286,7 @@ export default function SharedProposal() {
                   proposalAmount={proposal.worth.toString()}
                   proposalCurrency="USD"
                   defaultOpen={false}
+                  isSharedView={true}
                 />
               </CardContent>
             </Card>

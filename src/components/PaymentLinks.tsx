@@ -17,9 +17,10 @@ interface PaymentLinksProps {
   proposalAmount?: string;
   proposalCurrency?: string;
   defaultOpen?: boolean;
+  isSharedView?: boolean; // For shared proposals viewed by clients
 }
 
-export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD', defaultOpen = false }: PaymentLinksProps) {
+export default function PaymentLinks({ proposalId, proposalAmount, proposalCurrency = 'USD', defaultOpen = false, isSharedView = false }: PaymentLinksProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(!!defaultOpen);
   const [loading, setLoading] = useState(false);
@@ -35,16 +36,22 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
   });
 
   useEffect(() => {
-    if (user && proposalId) {
-      checkPaymentSettings();
-      if (isOpen) {
+    if (proposalId) {
+      if (user) {
+        checkPaymentSettings();
+      }
+      if (isOpen || isSharedView) {
         fetchPaymentLinks();
       }
     }
-  }, [user, proposalId, isOpen]);
+  }, [user, proposalId, isOpen, isSharedView]);
 
   const checkPaymentSettings = async () => {
-    if (!user) return;
+    if (!user) {
+      setHasPaymentSettings(false);
+      setCheckingSettings(false);
+      return;
+    }
 
     setCheckingSettings(true);
     try {
@@ -185,7 +192,8 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
       setLoading(false);
   }
 
-  if (!user) return null;
+  // For shared views, show payment options even without authentication
+  if (!user && !isSharedView) return null;
 
   if (checkingSettings) {
     return (
@@ -198,7 +206,8 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
     );
   }
 
-  if (!hasPaymentSettings) {
+  // For shared views, show payment options regardless of payment settings
+  if (!hasPaymentSettings && !isSharedView) {
     return (
       <Card className="border-amber-200 bg-amber-50">
         <CardContent className="p-6 text-center">
@@ -222,11 +231,66 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
 
   const fetchPaymentLinks = async () => {
     try {
-      // This would fetch from a payment_links table
-      // For now, we'll simulate the data structure
-      setPaymentLinks([]);
+      // For shared views, we'll create direct payment buttons with the proposal amount
+      if (isSharedView && proposalAmount) {
+        // Create payment buttons for shared view
+        const links = [];
+        
+        // Add PayPal payment option
+        links.push({
+          id: 'paypal-shared',
+          provider: 'PayPal',
+          amount: proposalAmount,
+          currency: proposalCurrency,
+          description: 'Proposal Payment',
+          paymentType: 'one-time',
+          isSharedPayment: true
+        });
+
+        setPaymentLinks(links);
+      } else {
+        // For authenticated users, this would fetch from a payment_links table
+        setPaymentLinks([]);
+      }
     } catch (error) {
       console.error('Error fetching payment links:', error);
+    }
+  };
+
+  const handleSharedPayment = async (paymentOption: any) => {
+    try {
+      setLoading(true);
+      
+      // Create payment via edge function for shared proposals
+      const { data, error } = await supabase.functions.invoke('create-paypal-payment', {
+        body: {
+          amount: parseFloat(paymentOption.amount),
+          currency: paymentOption.currency,
+          description: `Payment for Proposal`,
+          proposalId,
+          isSharedPayment: true
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.approvalUrl) {
+        // Redirect to PayPal for payment
+        window.open(data.approvalUrl, '_blank');
+        toast({
+          title: "Redirecting to PayPal",
+          description: "Please complete your payment in the new window."
+        });
+      }
+    } catch (error) {
+      console.error('Error creating shared payment:', error);
+      toast({
+        title: "Payment Error",
+        description: "Unable to process payment. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,6 +309,45 @@ export default function PaymentLinks({ proposalId, proposalAmount, proposalCurre
       });
     }
   };
+
+  // For shared views, show payment options directly without dialog
+  if (isSharedView) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center">
+          <h4 className="font-semibold text-lg mb-2">Payment Options</h4>
+          <p className="text-muted-foreground mb-4">
+            Choose your preferred payment method
+          </p>
+        </div>
+        
+        {paymentLinks.map((link) => (
+          <Card key={link.id} className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-sm text-white font-bold">P</span>
+                </div>
+                <div>
+                  <p className="font-medium">Pay with PayPal</p>
+                  <p className="text-sm text-muted-foreground">
+                    {getCurrencySymbol(link.currency)}{link.amount} {link.currency}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => handleSharedPayment(link)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Pay Now
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
