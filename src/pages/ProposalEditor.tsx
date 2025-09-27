@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard, MoreHorizontal, BarChart3, Share, DollarSign } from 'lucide-react';
+import { ArrowLeft, Save, Send, Eye, Download, Sparkles, Building, Edit3, CreditCard, MoreHorizontal, BarChart3, Share, DollarSign, Palette, Upload, X } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,6 +47,15 @@ export default function ProposalEditor() {
   const [recipientEmail, setRecipientEmail] = useState('');
   const [signers, setSigners] = useState<any[]>([]);
 
+  // Theme customization states
+  const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
+  const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
+  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
+  const [textColor, setTextColor] = useState<string>('#000000');
+  const [selectedFont, setSelectedFont] = useState<string>('Inter');
+  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     if (!user) {
       navigate('/auth');
@@ -55,6 +65,18 @@ export default function ProposalEditor() {
       fetchProposal();
     }
   }, [user, navigate, id]);
+
+  // Load theme data when proposal loads
+  useEffect(() => {
+    if (proposal?.content) {
+      setPrimaryColor(proposal.content.primaryColor || '#3b82f6');
+      setSecondaryColor(proposal.content.secondaryColor || '#1e40af');
+      setBackgroundColor(proposal.content.backgroundColor || '#ffffff');
+      setTextColor(proposal.content.textColor || '#000000');
+      setSelectedFont(proposal.content.selectedFont || 'Inter');
+      setLogoUrl(proposal.content.logoUrl || '');
+    }
+  }, [proposal]);
 
   const fetchProposal = async () => {
     if (!id || !user) return;
@@ -129,6 +151,92 @@ export default function ProposalEditor() {
     
     updateContentValue('scope_of_work', 'timeline', updatedPhases);
   };
+
+  const addTestimonial = () => {
+    const currentTestimonials = getContentArray('value_proposition', 'testimonials');
+    const newTestimonials = [...currentTestimonials, { name: '', link: '', content: '' }];
+    updateContentValue('value_proposition', 'testimonials', newTestimonials);
+  };
+
+  const updateTestimonial = (testimonialIndex: number, field: string, value: string) => {
+    const currentTestimonials = getContentArray('value_proposition', 'testimonials');
+    const updatedTestimonials = [...currentTestimonials];
+    
+    if (updatedTestimonials[testimonialIndex]) {
+      updatedTestimonials[testimonialIndex] = { ...updatedTestimonials[testimonialIndex], [field]: value };
+    } else {
+      updatedTestimonials[testimonialIndex] = { [field]: value };
+    }
+    
+    updateContentValue('value_proposition', 'testimonials', updatedTestimonials);
+  };
+
+  const removeTestimonial = (testimonialIndex: number) => {
+    const currentTestimonials = getContentArray('value_proposition', 'testimonials');
+    const updatedTestimonials = currentTestimonials.filter((_: any, index: number) => index !== testimonialIndex);
+    updateContentValue('value_proposition', 'testimonials', updatedTestimonials);
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo-${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('proposals')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('proposals')
+        .getPublicUrl(filePath);
+
+      setLogoUrl(publicUrl);
+      updateContentValue('cover_page', 'company_logo', publicUrl);
+      
+      toast({
+        title: "Success",
+        description: "Logo uploaded successfully"
+      });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to upload logo",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const updateThemeContent = () => {
+    if (!proposal) return;
+    
+    setProposal(prev => prev ? {
+      ...prev,
+      content: {
+        ...prev.content,
+        primaryColor,
+        secondaryColor,
+        backgroundColor,
+        textColor,
+        selectedFont,
+        logoUrl
+      }
+    } : null);
+  };
+
+  // Update theme content when theme values change
+  useEffect(() => {
+    updateThemeContent();
+  }, [primaryColor, secondaryColor, backgroundColor, textColor, selectedFont, logoUrl]);
 
   const addScopeTimelinePhase = () => {
     const currentPhases = getContentValue('scope_of_work', 'timeline') || [];
@@ -471,6 +579,164 @@ export default function ProposalEditor() {
               </CardContent>
             </Card>
 
+            {/* Theme Customization */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Theme & Branding
+                </CardTitle>
+                <CardDescription>
+                  Customize colors, fonts, and branding for your proposal
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Colors Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Colors</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="primary-color">Primary Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="primary-color"
+                          type="color"
+                          value={primaryColor}
+                          onChange={(e) => setPrimaryColor(e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={primaryColor}
+                          onChange={(e) => setPrimaryColor(e.target.value)}
+                          placeholder="#3b82f6"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="secondary-color">Secondary Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="secondary-color"
+                          type="color"
+                          value={secondaryColor}
+                          onChange={(e) => setSecondaryColor(e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={secondaryColor}
+                          onChange={(e) => setSecondaryColor(e.target.value)}
+                          placeholder="#1e40af"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="background-color">Background Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="background-color"
+                          type="color"
+                          value={backgroundColor}
+                          onChange={(e) => setBackgroundColor(e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={backgroundColor}
+                          onChange={(e) => setBackgroundColor(e.target.value)}
+                          placeholder="#ffffff"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="text-color">Text Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          id="text-color"
+                          type="color"
+                          value={textColor}
+                          onChange={(e) => setTextColor(e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={textColor}
+                          onChange={(e) => setTextColor(e.target.value)}
+                          placeholder="#000000"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Font Selection */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Typography</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="font-select">Primary Font</Label>
+                    <Select value={selectedFont} onValueChange={setSelectedFont}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a font" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Inter">Inter (Modern & Clean)</SelectItem>
+                        <SelectItem value="Roboto">Roboto (Professional)</SelectItem>
+                        <SelectItem value="Open Sans">Open Sans (Friendly)</SelectItem>
+                        <SelectItem value="Lato">Lato (Approachable)</SelectItem>
+                        <SelectItem value="Montserrat">Montserrat (Bold & Strong)</SelectItem>
+                        <SelectItem value="Poppins">Poppins (Contemporary)</SelectItem>
+                        <SelectItem value="Nunito">Nunito (Rounded & Soft)</SelectItem>
+                        <SelectItem value="Source Sans Pro">Source Sans Pro (Technical)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Logo Upload */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Company Logo</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="logo-upload">Upload Logo</Label>
+                    <div className="flex items-center gap-4">
+                      <input
+                        id="logo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => document.getElementById('logo-upload')?.click()}
+                        disabled={uploading}
+                        className="w-full"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? 'Uploading...' : 'Upload Logo'}
+                      </Button>
+                    </div>
+                    {logoUrl && (
+                      <div className="flex items-center gap-2 p-2 border rounded-lg">
+                        <img src={logoUrl} alt="Logo preview" className="h-8 w-auto object-contain" />
+                        <span className="text-sm flex-1">Logo uploaded</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setLogoUrl('')}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Content Sections</CardTitle>
@@ -517,10 +783,35 @@ export default function ProposalEditor() {
                      id="proposed_solution"
                      value={getContentValue('proposed_solution', 'content')}
                      onChange={(e) => updateContentValue('proposed_solution', 'content', e.target.value)}
-                     placeholder="Describe your approach, process, methodology, and why this solution fits their specific situation..."
-                     className="min-h-[120px]"
-                   />
-                 </div>
+                      placeholder="Describe your approach, process, methodology, and why this solution fits their specific situation..."
+                      className="min-h-[120px]"
+                      style={{ color: textColor }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="proposed_solution_approach">Approach</Label>
+                    <Textarea
+                      id="proposed_solution_approach"
+                      value={getContentValue('proposed_solution', 'approach')}
+                      onChange={(e) => updateContentValue('proposed_solution', 'approach', e.target.value)}
+                      placeholder="Detailed approach and methodology..."
+                      className="min-h-[80px]"
+                      style={{ color: textColor }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="proposed_solution_why_fits">Why This Solution Fits</Label>
+                    <Textarea
+                      id="proposed_solution_why_fits"
+                      value={getContentValue('proposed_solution', 'why_fits')}
+                      onChange={(e) => updateContentValue('proposed_solution', 'why_fits', e.target.value)}
+                      placeholder="Explain why your solution is the perfect fit for their specific needs..."
+                      className="min-h-[80px]"
+                      style={{ color: textColor }}
+                    />
+                  </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
@@ -596,7 +887,17 @@ export default function ProposalEditor() {
                     />
                   </div>
                  
-                 <div className="space-y-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="cover_company_name">Company Name</Label>
+                    <Input
+                      id="cover_company_name"
+                      value={getContentValue('cover_page', 'company_name')}
+                      onChange={(e) => updateContentValue('cover_page', 'company_name', e.target.value)}
+                      placeholder="Your company name"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
                    <Label htmlFor="payment_terms">Payment Terms</Label>
                    <Textarea
                      id="payment_terms"
@@ -695,7 +996,49 @@ export default function ProposalEditor() {
                      </Card>
                    </div>
 
-                  <div className="space-y-2">
+                   <div className="space-y-2">
+                    <Label>Testimonials</Label>
+                    <div className="space-y-4">
+                      {getContentArray('value_proposition', 'testimonials').map((testimonial: any, index: number) => (
+                        <Card key={index} className="p-4 space-y-3">
+                          <div className="flex justify-between items-start">
+                            <span className="text-sm font-medium">Testimonial {index + 1}</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeTestimonial(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
+                            <Input
+                              placeholder="Client/Company Name"
+                              value={testimonial.name || ''}
+                              onChange={(e) => updateTestimonial(index, 'name', e.target.value)}
+                            />
+                            <Input
+                              placeholder="Website/Portfolio Link (optional)"
+                              value={testimonial.link || ''}
+                              onChange={(e) => updateTestimonial(index, 'link', e.target.value)}
+                            />
+                            <Textarea
+                              placeholder="Testimonial content (optional)"
+                              value={testimonial.content || ''}
+                              onChange={(e) => updateTestimonial(index, 'content', e.target.value)}
+                              className="min-h-[60px]"
+                              style={{ color: textColor }}
+                            />
+                          </div>
+                        </Card>
+                      ))}
+                      <Button onClick={addTestimonial} variant="outline" size="sm" className="w-full">
+                        Add Testimonial
+                      </Button>
+                    </div>
+                  </div>
+
+                   <div className="space-y-2">
                    <Label htmlFor="call_to_action">Call to Action & Next Steps</Label>
                    <Textarea
                      id="call_to_action"
