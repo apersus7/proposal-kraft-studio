@@ -119,6 +119,31 @@ export default function CreateProposal() {
     updateSectionValue('scope_of_work', 'timeline', updatedPhases);
   };
 
+  const addTestimonial = () => {
+    const currentTestimonials = getContentValue('value_proposition', 'testimonials') || [];
+    const newTestimonials = [...currentTestimonials, { name: '', link: '', content: '' }];
+    updateSectionValue('value_proposition', 'testimonials', newTestimonials);
+  };
+
+  const updateTestimonial = (testimonialIndex: number, field: string, value: string) => {
+    const currentTestimonials = getContentValue('value_proposition', 'testimonials') || [];
+    const updatedTestimonials = [...currentTestimonials];
+    
+    if (updatedTestimonials[testimonialIndex]) {
+      updatedTestimonials[testimonialIndex] = { ...updatedTestimonials[testimonialIndex], [field]: value };
+    } else {
+      updatedTestimonials[testimonialIndex] = { [field]: value };
+    }
+    
+    updateSectionValue('value_proposition', 'testimonials', updatedTestimonials);
+  };
+
+  const removeTestimonial = (testimonialIndex: number) => {
+    const currentTestimonials = getContentValue('value_proposition', 'testimonials') || [];
+    const updatedTestimonials = currentTestimonials.filter((_: any, index: number) => index !== testimonialIndex);
+    updateSectionValue('value_proposition', 'testimonials', updatedTestimonials);
+  };
+
   const generateAIContent = async (section: string, context?: string) => {
     setGeneratingAI(section);
     try {
@@ -1052,6 +1077,64 @@ export default function CreateProposal() {
                   </CardContent>
                 </Card>
 
+                {/* Testimonials */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Testimonials</CardTitle>
+                    <CardDescription>
+                      Add client testimonials and references
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {Array.isArray(getContentValue('value_proposition', 'testimonials')) ? getContentValue('value_proposition', 'testimonials').map((testimonial: any, index: number) => (
+                      <div key={index} className="p-4 border rounded-lg space-y-3">
+                        <div className="flex justify-between items-center">
+                          <Label className="text-sm font-medium">Testimonial {index + 1}</Label>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeTestimonial(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Client Name</Label>
+                            <Input
+                              value={testimonial.name || ''}
+                              onChange={(e) => updateTestimonial(index, 'name', e.target.value)}
+                              placeholder="John Smith"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Link (Optional)</Label>
+                            <Input
+                              value={testimonial.link || ''}
+                              onChange={(e) => updateTestimonial(index, 'link', e.target.value)}
+                              placeholder="https://linkedin.com/in/johnsmith"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Testimonial Content</Label>
+                          <Textarea
+                            value={testimonial.content || ''}
+                            onChange={(e) => updateTestimonial(index, 'content', e.target.value)}
+                            placeholder="Working with this team was amazing. They delivered exceptional results..."
+                            className="min-h-[80px]"
+                            style={{ color: textColor }}
+                          />
+                        </div>
+                      </div>
+                    )) : []}
+                    <Button onClick={addTestimonial} variant="outline" size="sm">
+                      Add Testimonial
+                    </Button>
+                  </CardContent>
+                </Card>
+
                 {/* Terms & Conditions */}
                 <Card>
                   <CardHeader>
@@ -1291,6 +1374,39 @@ export default function CreateProposal() {
                         </p>
                       )}
                     </section>
+                    
+                    {/* Testimonials - With applied colors */}
+                    {getContentValue('value_proposition', 'testimonials')?.length > 0 && (
+                      <section className="mb-4">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                          Client Testimonials
+                        </h2>
+                        <div className="space-y-2">
+                          {getContentValue('value_proposition', 'testimonials').map((testimonial: any, idx: number) => (
+                            <div key={idx} className="bg-gray-50 p-2 rounded text-xs">
+                              {testimonial.content && (
+                                <p className="text-gray-700 mb-1 italic">"{testimonial.content}"</p>
+                              )}
+                              <div className="flex items-center justify-between">
+                                {testimonial.name && (
+                                  <p className="font-medium text-gray-800">- {testimonial.name}</p>
+                                )}
+                                {testimonial.link && (
+                                  <a 
+                                    href={testimonial.link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 underline"
+                                  >
+                                    View Profile
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    )}
                     
                     {/* Next Steps */}
                     {getContentValue('call_to_action', 'next_steps') && (
