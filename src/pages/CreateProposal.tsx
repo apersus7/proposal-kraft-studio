@@ -13,31 +13,23 @@ import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
-import TemplateGallery from '@/components/TemplateGallery';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
+import { toast } from '@/hooks/use-toast';
+import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
-
-interface Template {
-  id: string;
-  name: string;
-  description: string;
-  preview_image_url: string | null;
-  template_data: any;
-  is_public: boolean;
-  category: string;
-  industry: string;
-  tags: string[];
-}
 
 export default function CreateProposal() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [step, setStep] = useState<'details' | 'theme' | 'template' | 'content'>('details');
+  const [step, setStep] = useState<'details' | 'theme' | 'content'>('details');
   const [selectedColorTheme, setSelectedColorTheme] = useState<string>('modern');
   const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
+  const [logoUrl, setLogoUrl] = useState<string>('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   
   const [proposalData, setProposalData] = useState<any>({
@@ -148,57 +140,6 @@ export default function CreateProposal() {
     }
   };
 
-  const handleTemplateSelect = (template: Template) => {
-    setSelectedTemplate(template);
-    setProposalData(prev => ({ ...prev, content: template.template_data }));
-    setStep('content');
-  };
-
-  const handleTemplateUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !user) return;
-
-    setLoading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      
-      const { error: uploadError } = await sb.storage
-        .from('templates')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data, error } = await sb
-        .from('templates')
-        .insert({
-          name: file.name.replace(/\.[^/.]+$/, ""),
-          description: 'Custom uploaded template',
-          created_by: user.id,
-          is_public: false,
-          template_data: { type: 'custom', file_path: fileName }
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast({
-        title: "Success", 
-        description: "Template uploaded successfully!"
-      });
-    } catch (error) {
-      console.error('Error uploading template:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload template",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleCreateProposal = async () => {
     return createProposalAndNavigate();
   };
@@ -259,16 +200,17 @@ export default function CreateProposal() {
         title: proposalData.title.trim(),
         client_name: proposalData.client_name.trim(),
         client_email: proposalData.client_email?.trim() || null,
-        content: {
-          sections: proposalData.content?.sections || [],
-          project_name: proposalData.project_name.trim(),
-          pricing: proposalData.pricing,
-          currency: proposalData.currency || 'USD',
-          primaryColor: primaryColor,
-          secondaryColor: secondaryColor
-        },
+          content: {
+            sections: proposalData.content?.sections || [],
+            project_name: proposalData.project_name.trim(),
+            pricing: proposalData.pricing,
+            currency: proposalData.currency || 'USD',
+            primaryColor: primaryColor,
+            secondaryColor: secondaryColor,
+            logoUrl: logoUrl
+          },
         worth: Number(proposalData.pricing),
-        template_id: selectedTemplate?.id === 'blank' ? null : selectedTemplate?.id || null,
+        template_id: null,
         status: 'draft'
       };
 
@@ -324,7 +266,7 @@ export default function CreateProposal() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline">Step {step === 'details' ? '1' : step === 'theme' ? '2' : step === 'template' ? '3' : '4'} of 4</Badge>
+              <Badge variant="outline">Step {step === 'details' ? '1' : step === 'theme' ? '2' : '3'} of 3</Badge>
             </div>
           </div>
         </div>
@@ -449,7 +391,7 @@ export default function CreateProposal() {
                     disabled={!proposalData.title || !proposalData.client_name || !proposalData.client_email || !proposalData.project_name || !proposalData.pricing}
                     className="flex-1"
                   >
-                    Continue to Theme Selection
+                    Continue to Theme & Branding
                     <Palette className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
@@ -554,84 +496,22 @@ export default function CreateProposal() {
               </CardContent>
             </Card>
 
-            {/* Template Selection Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Choose Template
-                </CardTitle>
-                <CardDescription>
-                  Select a professional template for your proposal
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TemplateGallery 
-                  onSelectTemplate={(template) => {
-                    setSelectedTemplate(template);
-                    setProposalData(prev => ({ ...prev, content: template.template_data }));
-                  }}
-                  selectedTemplate={selectedTemplate}
-                />
-              </CardContent>
-            </Card>
-
-            <div className="flex gap-4 mt-8">
+            <div className="flex gap-4 pt-6">
               <Button variant="outline" onClick={() => setStep('details')}>
-                Back to Details
+                Back
               </Button>
               <Button 
                 onClick={() => setStep('content')}
-                disabled={!selectedTemplate}
                 className="flex-1"
               >
                 Continue to Content
-                <PenTool className="h-4 w-4 ml-2" />
+                <FileText className="h-4 w-4 ml-2" />
               </Button>
             </div>
-          </div>
-        )}
-
-        {step === 'template' && (
-          <div>
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Choose a Template</h1>
-              <p className="text-muted-foreground">
-                Select a professional template designed for your industry and needs
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="cursor-pointer hover:shadow-lg transition-shadow border-dashed border-2 border-primary/30 bg-primary/5">
-                <CardContent className="p-6 text-center">
-                  <Upload className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <CardTitle className="mb-2">Upload Custom Template</CardTitle>
-                  <CardDescription>
-                    Upload your own template design
-                  </CardDescription>
-                  <input
-                    type="file"
-                    accept=".json,.pdf,.doc,.docx"
-                    className="hidden"
-                    id="template-upload"
-                    onChange={handleTemplateUpload}
-                  />
-                  <Button 
-                    variant="outline" 
-                    className="mt-4"
-                    onClick={() => document.getElementById('template-upload')?.click()}
-                  >
-                    Upload Template
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="mt-8">
-              <TemplateGallery onSelectTemplate={handleTemplateSelect} selectedTemplate={selectedTemplate} />
-            </div>
-          </div>
-        )}
+          </CardContent>
+        </Card>
+      </div>
+    )}
 
         {step === 'content' && (
           <div>
