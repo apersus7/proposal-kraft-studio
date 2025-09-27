@@ -264,7 +264,7 @@ const Index = () => {
           </div>
           <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
             Craft Professional
-            <span className="text-primary block">Business Proposals</span>
+            <span className="text-primary block">Business Proposals using AI</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -303,9 +303,7 @@ const Index = () => {
                 <CardTitle>Quick Creation</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-center">
-                  Create proposals in minutes, not hours. Our streamlined process gets you results fast.
-                </CardDescription>
+                <CardDescription className="text-center">Create proposal In seconds using efficient AI proposal generator</CardDescription>
               </CardContent>
             </Card>
 
