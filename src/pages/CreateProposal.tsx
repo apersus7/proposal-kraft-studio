@@ -13,11 +13,6 @@ import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-const sb = supabase as any;
-import { toast } from '@/hooks/use-toast';
-import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -403,21 +398,20 @@ export default function CreateProposal() {
         {step === 'theme' && (
           <div>
             <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Theme & Template Selection</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Theme & Branding</h1>
               <p className="text-muted-foreground">
-                Customize your proposal colors and choose a professional template
+                Customize your proposal colors and upload your logo
               </p>
             </div>
 
-            {/* Color Selection Section */}
-            <Card className="mb-8">
+            <Card className="max-w-2xl mx-auto">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="h-5 w-5" />
-                  Choose Your Colors
+                  Color Theme & Branding
                 </CardTitle>
                 <CardDescription>
-                  Select your brand colors to personalize your proposal
+                  Choose colors that reflect your brand and add your logo
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -493,25 +487,119 @@ export default function CreateProposal() {
                     </div>
                   </div>
                 </div>
+
+                {/* Logo Upload Section */}
+                <div className="border-t pt-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Upload className="h-5 w-5" />
+                      <h3 className="text-lg font-medium">Company Logo</h3>
+                    </div>
+                    
+                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                      {logoUrl ? (
+                        <div className="space-y-4">
+                          <img 
+                            src={logoUrl} 
+                            alt="Company Logo" 
+                            className="mx-auto h-20 object-contain"
+                          />
+                          <div className="flex gap-2 justify-center">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => document.getElementById('logo-upload')?.click()}
+                            >
+                              Change Logo
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setLogoUrl('')}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <Upload className="h-12 w-12 text-muted-foreground mx-auto" />
+                          <div>
+                            <p className="text-sm font-medium">Upload your company logo</p>
+                            <p className="text-xs text-muted-foreground">PNG, JPG, SVG up to 5MB</p>
+                          </div>
+                          <Button 
+                            variant="outline"
+                            onClick={() => document.getElementById('logo-upload')?.click()}
+                          >
+                            Choose File
+                          </Button>
+                        </div>
+                      )}
+                      
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="logo-upload"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !user) return;
+
+                          try {
+                            setLoading(true);
+                            const fileExt = file.name.split('.').pop();
+                            const fileName = `${user.id}/logo-${Date.now()}.${fileExt}`;
+                            
+                            const { error: uploadError } = await sb.storage
+                              .from('proposals')
+                              .upload(fileName, file);
+
+                            if (uploadError) throw uploadError;
+
+                            const { data } = sb.storage
+                              .from('proposals')
+                              .getPublicUrl(fileName);
+
+                            setLogoUrl(data.publicUrl);
+                            updateSectionValue('cover_page', 'company_logo', data.publicUrl);
+                            
+                            toast({
+                              title: "Success",
+                              description: "Logo uploaded successfully!"
+                            });
+                          } catch (error) {
+                            console.error('Error uploading logo:', error);
+                            toast({
+                              title: "Error",
+                              description: "Failed to upload logo",
+                              variant: "destructive"
+                            });
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 pt-6">
+                  <Button variant="outline" onClick={() => setStep('details')}>
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={() => setStep('content')}
+                    className="flex-1"
+                  >
+                    Continue to Content
+                    <FileText className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
               </CardContent>
             </Card>
-
-            <div className="flex gap-4 pt-6">
-              <Button variant="outline" onClick={() => setStep('details')}>
-                Back
-              </Button>
-              <Button 
-                onClick={() => setStep('content')}
-                className="flex-1"
-              >
-                Continue to Content
-                <FileText className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )}
+          </div>
+        )}
 
         {step === 'content' && (
           <div>
