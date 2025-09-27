@@ -25,6 +25,7 @@ export default function CreateProposal() {
   const [primaryColor, setPrimaryColor] = useState<string>('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState<string>('#1e40af');
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
+  const [textColor, setTextColor] = useState<string>('#000000');
   const [selectedFont, setSelectedFont] = useState<string>('Inter');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
@@ -481,6 +482,25 @@ export default function CreateProposal() {
                           />
                         </div>
                       </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="text-color">Text Color</Label>
+                        <div className="flex items-center gap-2">
+                          <input
+                            id="text-color"
+                            type="color"
+                            value={textColor}
+                            onChange={(e) => setTextColor(e.target.value)}
+                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                          />
+                          <Input
+                            value={textColor}
+                            onChange={(e) => setTextColor(e.target.value)}
+                            placeholder="#000000"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -711,30 +731,37 @@ export default function CreateProposal() {
                         </div>
                       </div>
 
-                      {/* Color Swatches */}
-                      <div className="flex gap-4 mt-8">
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-6 h-6 rounded border-2 border-white shadow-sm"
-                            style={{ backgroundColor: primaryColor }}
-                          />
-                          <span className="text-xs text-gray-500">Primary</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-6 h-6 rounded border-2 border-white shadow-sm"
-                            style={{ backgroundColor: secondaryColor }}
-                          />
-                          <span className="text-xs text-gray-500">Secondary</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-6 h-6 rounded border-2 border-gray-300"
-                            style={{ backgroundColor: backgroundColor }}
-                          />
-                          <span className="text-xs text-gray-500">Background</span>
-                        </div>
-                      </div>
+                       {/* Color Swatches */}
+                       <div className="flex gap-4 mt-8">
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-6 h-6 rounded border-2 border-white shadow-sm"
+                             style={{ backgroundColor: primaryColor }}
+                           />
+                           <span className="text-xs text-gray-500">Primary</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-6 h-6 rounded border-2 border-white shadow-sm"
+                             style={{ backgroundColor: secondaryColor }}
+                           />
+                           <span className="text-xs text-gray-500">Secondary</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-6 h-6 rounded border-2 border-gray-300"
+                             style={{ backgroundColor: backgroundColor }}
+                           />
+                           <span className="text-xs text-gray-500">Background</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-6 h-6 rounded border-2 border-gray-300"
+                             style={{ backgroundColor: textColor }}
+                           />
+                           <span className="text-xs text-gray-500">Text</span>
+                         </div>
+                       </div>
                     </div>
                   </div>
                 </CardContent>
@@ -818,6 +845,7 @@ export default function CreateProposal() {
                       onChange={(e) => updateSectionValue('objective', 'content', e.target.value)}
                       placeholder="Describe the main objectives and goals of this project..."
                       className="min-h-[120px]"
+                      style={{ color: textColor }}
                     />
                   </CardContent>
                 </Card>
@@ -849,6 +877,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('proposed_solution', 'content', e.target.value)}
                         placeholder="Describe your approach, process, methodology, and why this solution fits their specific situation..."
                         className="min-h-[120px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -858,6 +887,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('proposed_solution', 'why_fits', e.target.value)}
                         placeholder="Explain why your solution is the perfect fit for their specific needs..."
                         className="min-h-[80px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -898,6 +928,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('scope_of_work', 'content', e.target.value)}
                         placeholder="Detailed breakdown of deliverables and activities..."
                         className="min-h-[120px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                     
@@ -928,6 +959,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('scope_of_work', 'excluded', e.target.value.split('\n').filter(Boolean))}
                         placeholder="Content creation&#10;Third-party integrations&#10;Ongoing maintenance"
                         className="min-h-[60px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                   </CardContent>
@@ -1003,6 +1035,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('pricing', 'payment_terms', e.target.value)}
                         placeholder="50% upfront, 50% on completion"
                         className="min-h-[60px]"
+                        style={{ color: textColor }}
                       />
                     </div>
 
@@ -1013,6 +1046,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('pricing', 'breakdown', e.target.value)}
                         placeholder="Design: $5,000&#10;Development: $8,000&#10;Testing: $2,000"
                         className="min-h-[80px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                   </CardContent>
@@ -1032,6 +1066,7 @@ export default function CreateProposal() {
                       onChange={(e) => updateSectionValue('terms_conditions', 'content', e.target.value)}
                       placeholder="Project terms, conditions, and legal requirements..."
                       className="min-h-[120px]"
+                      style={{ color: textColor }}
                     />
                   </CardContent>
                 </Card>
@@ -1052,6 +1087,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('call_to_action', 'next_steps', e.target.value)}
                         placeholder="Ready to get started? Let's schedule a kickoff call to begin transforming your vision into reality."
                         className="min-h-[60px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1061,6 +1097,7 @@ export default function CreateProposal() {
                         onChange={(e) => updateSectionValue('call_to_action', 'contact_details', e.target.value)}
                         placeholder="Email: contact@yourcompany.com&#10;Phone: (555) 123-4567&#10;Schedule: calendly.com/yourname"
                         className="min-h-[60px]"
+                        style={{ color: textColor }}
                       />
                     </div>
                   </CardContent>
