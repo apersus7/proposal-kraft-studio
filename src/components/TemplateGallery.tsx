@@ -47,288 +47,501 @@ const industryIcons = {
   branding: <Palette className="h-4 w-4" />
 };
 
-// Beautiful Canva-inspired templates with comprehensive content
+// Professional business proposal templates based on industry-standard designs
 const starterTemplates = [
   {
-    name: 'Modern Tech Solutions',
-    description: 'Clean, professional design perfect for software & tech consulting',
+    name: 'Modern Digital Agency',
+    description: 'Professional digital marketing proposal with comprehensive sections',
     category: 'business',
-    industry: 'technology',
-    tags: ['minimal', 'tech', 'modern', 'professional'],
+    industry: 'marketing',
+    tags: ['digital', 'marketing', 'professional', 'comprehensive'],
     preview_color: 'from-blue-50 via-indigo-50 to-purple-50',
     template_data: {
       sections: [
-        { 
-          type: 'cover_page', 
-          title: 'Digital Transformation Proposal',
-          tagline: 'Empowering your business with cutting-edge technology solutions',
-          company_name: 'TechForward Solutions'
+        {
+          type: 'cover_page',
+          title: 'Digital Marketing Transformation Initiative',
+          subtitle: 'Prepared for: [Client Name]',
+          company: '[Your Agency Name]',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
         },
-        { 
-          type: 'objective', 
-          content: 'Transform your business operations through strategic digital solutions that drive growth, improve efficiency, and create competitive advantages in today\'s digital marketplace.'
+        {
+          type: 'about_us',
+          title: 'About Our Agency',
+          content: 'We are a leading digital marketing agency with over 8 years of experience helping businesses transform their online presence. Our team of certified professionals specializes in SEO, social media marketing, content creation, and performance analytics to deliver exceptional results for our clients.',
+          contact: {
+            address: '123 Anywhere St., Any City, ST 12345',
+            website: 'www.reallygreatsite.com',
+            email: 'hello@reallygreatsite.com'
+          }
         },
-        { 
-          type: 'proposed_solution', 
-          content: 'We propose a comprehensive digital transformation strategy that includes cloud migration, process automation, and data analytics implementation.',
-          why_fits: 'Our solution aligns perfectly with your growth objectives and technical requirements, ensuring scalable and sustainable results.',
-          tools: ['React', 'Node.js', 'AWS Cloud', 'MongoDB', 'Docker']
+        {
+          type: 'executive_summary',
+          title: 'Executive Summary',
+          content: 'The Digital Marketing Transformation Initiative aims to enhance your company\'s online presence, improve customer engagement, and drive higher conversion rates through a comprehensive strategy. This project will utilize data-driven approaches, cutting-edge tools, and targeted campaigns to achieve measurable results that align with your growth objectives.'
         },
-        { 
-          type: 'scope_of_work', 
-          content: 'Complete end-to-end digital transformation including system analysis, architecture design, development, testing, and deployment.',
-          deliverables: [
-            'Technical Architecture Document',
-            'Custom Web Application',
-            'Cloud Infrastructure Setup',
-            'Data Migration & Integration',
-            'Staff Training & Documentation',
-            '6 Months Technical Support'
-          ],
-          timeline: [
-            { phase: 'Discovery & Planning', duration: '2 weeks', description: 'Requirements gathering and technical planning' },
-            { phase: 'Development Phase 1', duration: '6 weeks', description: 'Core system development and integration' },
-            { phase: 'Testing & Deployment', duration: '2 weeks', description: 'Quality assurance and production deployment' },
-            { phase: 'Training & Support', duration: 'Ongoing', description: 'User training and technical support' }
+        {
+          type: 'what_we_do',
+          title: 'What We Do',
+          services: [
+            { name: 'Strategic & Visual Branding', description: 'Comprehensive brand development and visual identity creation' },
+            { name: 'Social Media Management', description: 'Full-service social media strategy and content creation' },
+            { name: 'SEO & Content Marketing', description: 'Search engine optimization and high-quality content development' },
+            { name: 'Digital Campaign & Ads', description: 'Targeted advertising campaigns across multiple platforms' }
           ]
         },
         {
-          type: 'value_proposition',
-          advantages: [
-            '40% improvement in operational efficiency',
-            'Scalable cloud-based infrastructure',
-            'Real-time analytics and reporting',
-            'Enhanced security and compliance',
-            'Future-ready technology stack'
+          type: 'objectives',
+          title: 'Project Objectives',
+          items: [
+            'Increase website traffic by 30% within six months',
+            'Boost social media engagement rates by 25% in the next quarter',
+            'Achieve a 20% improvement in lead conversion rates by the end of Q3',
+            'Enhance brand visibility through SEO and content marketing strategies'
           ]
+        },
+        {
+          type: 'scope_of_work',
+          title: 'Scope of Work',
+          content: 'Development and execution of comprehensive digital marketing strategy',
+          inclusions: [
+            'SEO optimization for company website',
+            'Social media management and advertising',
+            'Email marketing campaigns',
+            'Content creation (blogs, videos, infographics)',
+            'Performance analytics and monthly reporting'
+          ],
+          exclusions: [
+            'Offline marketing activities',
+            'Development of new software platforms',
+            'Print media design and production'
+          ]
+        },
+        {
+          type: 'methodology',
+          title: 'Our Methodology',
+          phases: [
+            { phase: '01 Planning', description: 'Conduct audit of current digital assets and identify opportunities' },
+            { phase: '02 Strategy Development', description: 'Create tailored digital marketing plan based on audit findings' },
+            { phase: '03 Execution', description: 'Implement SEO strategies, launch ad campaigns, and publish content' },
+            { phase: '04 Monitoring', description: 'Track performance metrics and adjust strategies as needed' },
+            { phase: '05 Evaluation', description: 'Assess project outcomes against predefined KPIs' }
+          ]
+        },
+        {
+          type: 'timeline',
+          title: 'Project Timeline',
+          phases: [
+            { phase: 'Planning', duration: '2 weeks', milestones: 'Strategy audit complete' },
+            { phase: 'Strategy Development', duration: '2 weeks', milestones: 'Marketing plan finalized' },
+            { phase: 'Execution', duration: '16 weeks', milestones: 'Monthly performance reviews' },
+            { phase: 'Monitoring & Optimization', duration: '4 weeks', milestones: 'Final report delivered' }
+          ]
+        },
+        {
+          type: 'meet_our_team',
+          title: 'Meet Our Team',
+          content: 'Our experienced team combines strategic thinking with creative execution to deliver exceptional results.',
+          team_members: [
+            { name: 'Sarah Johnson', role: 'Digital Strategy Director', description: 'Strategic planning and campaign optimization expert with 10+ years experience' },
+            { name: 'Michael Chen', role: 'Creative Director', description: 'Award-winning designer specializing in brand identity and digital experiences' },
+            { name: 'Emma Rodriguez', role: 'Analytics Manager', description: 'Data-driven marketer focused on performance optimization and ROI measurement' }
+          ]
+        },
+        {
+          type: 'investment',
+          title: 'Investment',
+          packages: [
+            { name: 'Strategy & Setup', price: '$5,000', description: 'Initial audit and strategy development' },
+            { name: 'Monthly Management', price: '$3,500', description: 'Ongoing campaign management and optimization' },
+            { name: 'Content Creation', price: '$2,000', description: 'Monthly content and creative assets' }
+          ],
+          total: '$10,500/month'
+        }
+      ]
+    }
+  },
+  {
+    name: 'Corporate Consulting',
+    description: 'Sophisticated template for business consulting and strategy projects',
+    category: 'business',
+    industry: 'consulting',
+    tags: ['consulting', 'corporate', 'strategy', 'professional'],
+    preview_color: 'from-slate-50 via-gray-50 to-zinc-50',
+    template_data: {
+      sections: [
+        {
+          type: 'cover_page',
+          title: 'Business Strategy Consulting Proposal',
+          subtitle: 'Strategic Growth Initiative',
+          company: '[Consulting Firm Name]',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        },
+        {
+          type: 'about_us',
+          title: 'About Our Firm',
+          content: 'We are a premier management consulting firm with 15+ years of experience helping Fortune 500 companies and growing businesses achieve breakthrough performance. Our team of senior consultants brings expertise across strategy, operations, and organizational transformation.',
+          contact: {
+            address: '123 Anywhere St., Any City, ST 12345',
+            website: 'www.reallygreatsite.com',
+            email: 'hello@reallygreatsite.com'
+          }
+        },
+        {
+          type: 'executive_summary',
+          title: 'Executive Summary',
+          content: 'Our comprehensive business strategy consulting engagement is designed to identify growth opportunities, optimize operational efficiency, and develop actionable strategies that drive sustainable competitive advantage. We combine deep industry expertise with proven methodologies to deliver transformational results.'
+        },
+        {
+          type: 'what_we_do',
+          title: 'Consulting Services',
+          services: [
+            { name: 'Market Analytics', description: 'Comprehensive market research and competitive intelligence' },
+            { name: 'Business Planning', description: 'Strategic planning and roadmap development' },
+            { name: 'Operations Optimization', description: 'Process improvement and efficiency enhancement' },
+            { name: 'Change Management', description: 'Organizational transformation and change leadership' }
+          ]
+        },
+        {
+          type: 'objectives',
+          title: 'Engagement Objectives',
+          items: [
+            'Develop comprehensive 3-year strategic plan',
+            'Identify and quantify growth opportunities worth $10M+',
+            'Optimize operational processes to reduce costs by 15%',
+            'Build organizational capabilities for sustained growth',
+            'Create implementation roadmap with clear milestones'
+          ]
+        },
+        {
+          type: 'methodology',
+          title: 'Our Approach',
+          phases: [
+            { phase: '01 Discovery', description: 'Comprehensive assessment of current state and market position' },
+            { phase: '02 Analysis', description: 'Deep dive into opportunities, challenges, and competitive landscape' },
+            { phase: '03 Strategy Design', description: 'Develop strategic options and recommend optimal path forward' },
+            { phase: '04 Planning', description: 'Create detailed implementation plan with timelines and resources' },
+            { phase: '05 Implementation Support', description: 'Provide ongoing support during initial execution phase' }
+          ]
+        },
+        {
+          type: 'timeline',
+          title: 'Project Timeline',
+          phases: [
+            { phase: 'Discovery & Assessment', duration: '3 weeks', milestones: 'Current state analysis complete' },
+            { phase: 'Strategic Analysis', duration: '4 weeks', milestones: 'Opportunity assessment delivered' },
+            { phase: 'Strategy Development', duration: '3 weeks', milestones: 'Strategic recommendations finalized' },
+            { phase: 'Implementation Planning', duration: '2 weeks', milestones: 'Detailed roadmap completed' }
+          ]
+        },
+        {
+          type: 'meet_our_team',
+          title: 'Meet Our Team',
+          content: 'Our senior consultants bring decades of experience from leading consulting firms and Fortune 500 companies.',
+          team_members: [
+            { name: 'David Wilson', role: 'Managing Partner', description: 'Former McKinsey partner with 20+ years in strategic consulting' },
+            { name: 'Lisa Park', role: 'Operations Director', description: 'Process optimization expert with extensive Six Sigma experience' },
+            { name: 'Robert Taylor', role: 'Change Management Lead', description: 'Organizational transformation specialist with proven track record' }
+          ]
+        },
+        {
+          type: 'investment',
+          title: 'Investment',
+          packages: [
+            { name: 'Discovery Phase', price: '$45,000', description: 'Comprehensive assessment and analysis' },
+            { name: 'Strategy Development', price: '$65,000', description: 'Strategic planning and recommendations' },
+            { name: 'Implementation Support', price: '$25,000', description: '3-month implementation guidance' }
+          ],
+          total: '$135,000'
         }
       ]
     }
   },
   {
     name: 'Creative Agency Premium',
-    description: 'Bold, vibrant design for creative agencies and design studios',
+    description: 'Vibrant template for creative and design agencies',
     category: 'creative',
-    industry: 'creative',
-    tags: ['creative', 'bold', 'premium', 'artistic'],
-    preview_color: 'from-pink-100 via-purple-100 to-indigo-100',
+    industry: 'design',
+    tags: ['creative', 'design', 'branding', 'premium'],
+    preview_color: 'from-purple-50 via-pink-50 to-rose-50',
     template_data: {
       sections: [
-        { 
-          type: 'cover_page', 
-          title: 'Brand Identity & Design Proposal',
-          tagline: 'Crafting exceptional brand experiences that captivate and convert',
-          company_name: 'Visionary Creative Studio'
+        {
+          type: 'cover_page',
+          title: 'Brand Identity & Creative Services Proposal',
+          subtitle: 'Prepared for: [Client Name]',
+          company: '[Creative Agency Name]',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
         },
-        { 
-          type: 'objective', 
-          content: 'Create a compelling brand identity that resonates with your target audience, differentiates you from competitors, and drives meaningful engagement across all touchpoints.'
+        {
+          type: 'about_us',
+          title: 'About Our Agency',
+          content: 'We are an award-winning creative agency with a passion for exceptional design and strategic brand development. Our diverse team of designers, strategists, and creative directors has helped over 200 brands establish their unique identity and achieve market success.',
+          contact: {
+            address: '123 Anywhere St., Any City, ST 12345',
+            website: 'www.reallygreatsite.com',
+            email: 'hello@reallygreatsite.com'
+          }
         },
-        { 
-          type: 'proposed_solution', 
-          content: 'A comprehensive brand identity system including logo design, visual guidelines, marketing materials, and digital assets.',
-          why_fits: 'Our creative approach combines strategic thinking with artistic excellence, perfectly suited for brands seeking to make a bold statement.',
-          tools: ['Adobe Creative Suite', 'Figma', 'After Effects', 'Webflow', 'Principle']
+        {
+          type: 'executive_summary',
+          title: 'Creative Vision',
+          content: 'We specialize in creating compelling brand identities that resonate with your target audience and drive business growth. Our comprehensive creative services combine strategic thinking with exceptional design to deliver memorable brand experiences across all touchpoints.'
         },
-        { 
-          type: 'scope_of_work', 
-          content: 'Complete brand identity development from concept to implementation across all brand touchpoints.',
-          deliverables: [
-            'Brand Strategy & Positioning',
-            'Logo Design (3 concepts + revisions)',
-            'Brand Guidelines Document',
-            'Business Card & Stationery Design',
-            'Website Design Mockups',
-            'Social Media Templates',
-            'Brand Asset Library'
-          ],
-          timeline: [
-            { phase: 'Brand Discovery', duration: '1 week', description: 'Brand audit and strategic positioning' },
-            { phase: 'Concept Development', duration: '2 weeks', description: 'Logo concepts and initial designs' },
-            { phase: 'Design Refinement', duration: '2 weeks', description: 'Refinements and brand system development' },
-            { phase: 'Final Delivery', duration: '1 week', description: 'Asset creation and handover' }
+        {
+          type: 'what_we_do',
+          title: 'Creative Services',
+          services: [
+            { name: 'Brand Strategy & Identity', description: 'Complete brand development from strategy to visual identity' },
+            { name: 'Logo & Visual Design', description: 'Distinctive logo design and comprehensive visual systems' },
+            { name: 'Digital Design', description: 'Website design, UI/UX, and digital brand applications' },
+            { name: 'Marketing Materials', description: 'Print and digital collateral, packaging, and promotional materials' }
           ]
         },
         {
-          type: 'value_proposition',
-          advantages: [
-            'Award-winning creative team',
-            'Proven track record with 200+ brands',
-            'Strategic approach to design',
-            'Unlimited revisions included',
-            'Complete brand ecosystem development'
+          type: 'objectives',
+          title: 'Project Goals',
+          items: [
+            'Develop distinctive brand identity that stands out in the market',
+            'Create cohesive visual system across all brand touchpoints',
+            'Design responsive website that converts visitors to customers',
+            'Establish brand guidelines for consistent future applications',
+            'Deliver launch-ready marketing materials and digital assets'
           ]
+        },
+        {
+          type: 'methodology',
+          title: 'Creative Process',
+          phases: [
+            { phase: '01 Discovery', description: 'Brand workshop, market research, and competitive analysis' },
+            { phase: '02 Strategy', description: 'Brand positioning, messaging, and creative direction development' },
+            { phase: '03 Design', description: 'Logo concepts, visual identity, and brand system creation' },
+            { phase: '04 Application', description: 'Website design, marketing materials, and brand implementation' },
+            { phase: '05 Launch', description: 'Final delivery, brand guidelines, and launch support' }
+          ]
+        },
+        {
+          type: 'timeline',
+          title: 'Project Timeline',
+          phases: [
+            { phase: 'Discovery & Strategy', duration: '2 weeks', milestones: 'Brand strategy approved' },
+            { phase: 'Logo & Identity Design', duration: '3 weeks', milestones: 'Final logo selected' },
+            { phase: 'Brand System Development', duration: '2 weeks', milestones: 'Visual identity complete' },
+            { phase: 'Website & Applications', duration: '4 weeks', milestones: 'All deliverables finalized' }
+          ]
+        },
+        {
+          type: 'meet_our_team',
+          title: 'Meet Our Team',
+          content: 'Our award-winning creative team combines artistic vision with strategic thinking to deliver exceptional brand experiences.',
+          team_members: [
+            { name: 'Jessica Martinez', role: 'Creative Director', description: 'Award-winning designer with 15+ years in brand identity and creative strategy' },
+            { name: 'Alex Thompson', role: 'Brand Strategist', description: 'Strategic thinker specializing in brand positioning and market analysis' },
+            { name: 'Maya Patel', role: 'Digital Designer', description: 'Expert in digital experiences, UI/UX design, and interactive brand applications' }
+          ]
+        },
+        {
+          type: 'investment',
+          title: 'Creative Investment',
+          packages: [
+            { name: 'Brand Strategy & Logo', price: '$15,000', description: 'Complete brand development and logo design' },
+            { name: 'Visual Identity System', price: '$10,000', description: 'Comprehensive brand guidelines and assets' },
+            { name: 'Website Design', price: '$25,000', description: 'Custom website design and development' },
+            { name: 'Marketing Materials', price: '$8,000', description: 'Business cards, brochures, and digital assets' }
+          ],
+          total: '$58,000'
         }
       ]
     }
   },
   {
-    name: 'Executive Business Proposal',
-    description: 'Premium corporate design for C-suite and enterprise clients',
-    category: 'corporate',
-    industry: 'business',
-    tags: ['corporate', 'executive', 'premium', 'enterprise'],
-    preview_color: 'from-slate-100 via-gray-100 to-zinc-100',
-    template_data: {
-      sections: [
-        { 
-          type: 'cover_page', 
-          title: 'Strategic Business Consulting Proposal',
-          tagline: 'Driving sustainable growth through strategic excellence',
-          company_name: 'Executive Partners Consulting'
-        },
-        { 
-          type: 'objective', 
-          content: 'Accelerate your organization\'s growth and operational excellence through strategic consulting that delivers measurable results and sustainable competitive advantages.'
-        },
-        { 
-          type: 'proposed_solution', 
-          content: 'Comprehensive business strategy development including market analysis, operational optimization, and growth planning.',
-          why_fits: 'Our executive-level consulting approach provides the strategic insight and operational expertise needed to achieve your ambitious business goals.',
-          tools: ['McKinsey Framework', 'BCG Matrix', 'SWOT Analysis', 'Financial Modeling', 'Market Research']
-        },
-        { 
-          type: 'scope_of_work', 
-          content: 'End-to-end strategic consulting engagement covering all aspects of business strategy and operational excellence.',
-          deliverables: [
-            'Comprehensive Business Assessment',
-            'Strategic Roadmap & Implementation Plan',
-            'Market Analysis & Competitive Intelligence',
-            'Financial Projections & ROI Analysis',
-            'Operational Excellence Framework',
-            'Change Management Strategy',
-            'Executive Presentation Materials'
-          ],
-          timeline: [
-            { phase: 'Strategic Assessment', duration: '3 weeks', description: 'Business analysis and opportunity identification' },
-            { phase: 'Strategy Development', duration: '4 weeks', description: 'Strategic planning and roadmap creation' },
-            { phase: 'Implementation Planning', duration: '2 weeks', description: 'Detailed implementation and change management plans' },
-            { phase: 'Executive Presentation', duration: '1 week', description: 'Board-ready presentation and handover' }
-          ]
-        },
-        {
-          type: 'value_proposition',
-          advantages: [
-            'C-suite expertise with Fortune 500 experience',
-            'Proven methodology delivering 25%+ growth',
-            'Comprehensive market intelligence',
-            'Board-ready strategic documentation',
-            'Ongoing strategic advisory support'
-          ]
-        }
-      ]
-    }
-  },
-  {
-    name: 'Marketing Campaign Mastery',
-    description: 'Dynamic design for marketing agencies and growth consultants',
-    category: 'marketing',
-    industry: 'marketing',
-    tags: ['marketing', 'growth', 'campaigns', 'results-driven'],
-    preview_color: 'from-orange-50 via-red-50 to-pink-50',
-    template_data: {
-      sections: [
-        { 
-          type: 'cover_page', 
-          title: 'Integrated Marketing Campaign Proposal',
-          tagline: 'Accelerating growth through data-driven marketing excellence',
-          company_name: 'Growth Catalyst Marketing'
-        },
-        { 
-          type: 'objective', 
-          content: 'Launch a comprehensive marketing campaign that increases brand awareness, generates qualified leads, and drives measurable revenue growth across all key channels.'
-        },
-        { 
-          type: 'proposed_solution', 
-          content: 'Multi-channel marketing campaign combining digital advertising, content marketing, social media, and conversion optimization.',
-          why_fits: 'Our data-driven approach ensures maximum ROI while building long-term brand equity and customer relationships.',
-          tools: ['Google Ads', 'Facebook Ads Manager', 'HubSpot', 'Google Analytics', 'Hotjar', 'Mailchimp']
-        },
-        { 
-          type: 'scope_of_work', 
-          content: 'Complete marketing campaign development, execution, and optimization across all digital channels.',
-          deliverables: [
-            'Marketing Strategy & Campaign Plan',
-            'Target Audience Research & Personas',
-            'Creative Assets & Ad Designs',
-            'Landing Page Development',
-            'Email Marketing Sequences',
-            'Social Media Content Calendar',
-            'Performance Analytics Dashboard'
-          ],
-          timeline: [
-            { phase: 'Strategy & Planning', duration: '1 week', description: 'Campaign strategy and audience research' },
-            { phase: 'Creative Development', duration: '2 weeks', description: 'Asset creation and landing page build' },
-            { phase: 'Campaign Launch', duration: '1 week', description: 'Multi-channel campaign deployment' },
-            { phase: 'Optimization Period', duration: '8 weeks', description: 'Ongoing optimization and reporting' }
-          ]
-        },
-        {
-          type: 'value_proposition',
-          advantages: [
-            'Average 300% ROI on marketing spend',
-            '50+ successful campaign launches',
-            'Real-time performance tracking',
-            'Multi-channel expertise',
-            'Guaranteed lead generation results'
-          ]
-        }
-      ]
-    }
-  },
-  {
-    name: 'E-commerce Growth Package',
-    description: 'Results-focused design for online retailers and e-commerce brands',
-    category: 'ecommerce',
-    industry: 'retail',
-    tags: ['ecommerce', 'growth', 'conversion', 'sales'],
+    name: 'Technology Solutions',
+    description: 'Modern template for software development and IT services',
+    category: 'technology',
+    industry: 'software',
+    tags: ['technology', 'software', 'development', 'IT'],
     preview_color: 'from-green-50 via-emerald-50 to-teal-50',
     template_data: {
       sections: [
-        { 
-          type: 'cover_page', 
-          title: 'E-commerce Growth & Optimization Proposal',
-          tagline: 'Maximizing revenue through conversion optimization and strategic growth',
-          company_name: 'E-commerce Accelerators'
+        {
+          type: 'cover_page',
+          title: 'Custom Software Development Proposal',
+          subtitle: 'Digital Transformation Solution',
+          company: '[Technology Company Name]',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
         },
-        { 
-          type: 'objective', 
-          content: 'Increase your e-commerce revenue by 40% through conversion rate optimization, user experience improvements, and strategic growth initiatives.'
+        {
+          type: 'about_us',
+          title: 'About Our Company',
+          content: 'We are a leading software development company specializing in custom applications, enterprise solutions, and digital transformation. With 12+ years of experience and over 500 successful projects, we help businesses leverage technology to achieve their strategic objectives.',
+          contact: {
+            address: '123 Anywhere St., Any City, ST 12345',
+            website: 'www.reallygreatsite.com',
+            email: 'hello@reallygreatsite.com'
+          }
         },
-        { 
-          type: 'proposed_solution', 
-          content: 'Comprehensive e-commerce optimization including UX/UI improvements, conversion funnel optimization, and revenue growth strategies.',
-          why_fits: 'Our proven e-commerce methodology has helped 100+ online stores achieve sustainable growth and improved profitability.',
-          tools: ['Shopify Plus', 'Google Analytics 4', 'Hotjar', 'Klaviyo', 'Gorgias', 'ReCharge']
+        {
+          type: 'executive_summary',
+          title: 'Technical Overview',
+          content: 'Our custom software development proposal outlines a comprehensive solution designed to streamline your business processes, improve operational efficiency, and provide scalable technology infrastructure. We leverage cutting-edge technologies and agile development methodologies to deliver robust, user-friendly applications.'
         },
-        { 
-          type: 'scope_of_work', 
-          content: 'Complete e-commerce store optimization covering design, functionality, marketing, and customer experience.',
-          deliverables: [
-            'E-commerce Audit & Analysis Report',
-            'Conversion Rate Optimization Strategy',
-            'Store Design & UX Improvements',
-            'Product Page Optimization',
-            'Checkout Process Enhancement',
-            'Email Marketing Automation',
-            'Performance Tracking Dashboard'
-          ],
-          timeline: [
-            { phase: 'Store Audit', duration: '1 week', description: 'Comprehensive analysis of current performance' },
-            { phase: 'Optimization Implementation', duration: '4 weeks', description: 'UX improvements and conversion optimization' },
-            { phase: 'Marketing Setup', duration: '2 weeks', description: 'Email automation and retention strategies' },
-            { phase: 'Testing & Refinement', duration: '4 weeks', description: 'A/B testing and performance optimization' }
+        {
+          type: 'what_we_do',
+          title: 'Technology Services',
+          services: [
+            { name: 'Custom Application Development', description: 'Tailored software solutions built to your specifications' },
+            { name: 'Enterprise Integration', description: 'Seamless integration with existing systems and workflows' },
+            { name: 'Cloud Solutions', description: 'Scalable cloud-based applications and infrastructure' },
+            { name: 'Mobile Development', description: 'Native and cross-platform mobile applications' }
           ]
         },
         {
-          type: 'value_proposition',
-          advantages: [
-            'Average 40% increase in conversion rates',
-            '25% improvement in average order value',
-            'Specialized e-commerce expertise',
-            'Data-driven optimization approach',
-            '90-day revenue growth guarantee'
+          type: 'objectives',
+          title: 'Technical Objectives',
+          items: [
+            'Develop custom CRM system to manage customer relationships',
+            'Integrate with existing ERP and accounting systems',
+            'Implement automated reporting and analytics dashboard',
+            'Create mobile app for field team access and data collection',
+            'Ensure scalable architecture supporting 10,000+ users'
           ]
+        },
+        {
+          type: 'methodology',
+          title: 'Development Methodology',
+          phases: [
+            { phase: '01 Requirements Analysis', description: 'Detailed requirements gathering and technical specification' },
+            { phase: '02 System Design', description: 'Architecture design, database schema, and UI/UX mockups' },
+            { phase: '03 Development', description: 'Agile development with bi-weekly sprints and demos' },
+            { phase: '04 Testing & QA', description: 'Comprehensive testing, bug fixes, and performance optimization' },
+            { phase: '05 Deployment', description: 'Production deployment, training, and ongoing support' }
+          ]
+        },
+        {
+          type: 'timeline',
+          title: 'Development Timeline',
+          phases: [
+            { phase: 'Requirements & Design', duration: '4 weeks', milestones: 'Technical specifications approved' },
+            { phase: 'Core Development', duration: '12 weeks', milestones: 'MVP ready for testing' },
+            { phase: 'Testing & Refinement', duration: '3 weeks', milestones: 'All bugs resolved' },
+            { phase: 'Deployment & Training', duration: '2 weeks', milestones: 'System live and team trained' }
+          ]
+        },
+        {
+          type: 'meet_our_team',
+          title: 'Meet Our Team',
+          content: 'Our technical team combines deep engineering expertise with business acumen to deliver solutions that drive results.',
+          team_members: [
+            { name: 'Thomas Zhang', role: 'Technical Director', description: 'Full-stack architect with expertise in scalable enterprise solutions' },
+            { name: 'Rachel Green', role: 'Project Manager', description: 'Agile project management expert ensuring on-time, on-budget delivery' },
+            { name: 'Kevin Liu', role: 'Lead Developer', description: 'Senior developer specializing in modern web technologies and cloud platforms' }
+          ]
+        },
+        {
+          type: 'investment',
+          title: 'Development Investment',
+          packages: [
+            { name: 'Analysis & Design', price: '$25,000', description: 'Requirements analysis and system design' },
+            { name: 'Core Development', price: '$85,000', description: 'Full application development and testing' },
+            { name: 'Deployment & Support', price: '$15,000', description: 'Launch support and 3-month warranty' }
+          ],
+          total: '$125,000'
+        }
+      ]
+    }
+  },
+  {
+    name: 'Professional Services',
+    description: 'Clean template for legal, accounting, and professional service firms',
+    category: 'professional',
+    industry: 'services',
+    tags: ['legal', 'professional', 'consulting', 'services'],
+    preview_color: 'from-gray-50 via-blue-50 to-slate-50',
+    template_data: {
+      sections: [
+        {
+          type: 'cover_page',
+          title: 'Professional Services Engagement Proposal',
+          subtitle: 'Comprehensive Legal Advisory Services',
+          company: '[Professional Services Firm]',
+          date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+        },
+        {
+          type: 'about_us',
+          title: 'About Our Firm',
+          content: 'Established in 1995, we are a full-service professional services firm with deep expertise in corporate law, compliance, and business advisory services. Our team of partners and associates has successfully guided hundreds of companies through critical legal and business challenges.',
+          contact: {
+            address: '123 Anywhere St., Any City, ST 12345',
+            website: 'www.reallygreatsite.com',
+            email: 'hello@reallygreatsite.com'
+          }
+        },
+        {
+          type: 'executive_summary',
+          title: 'Engagement Overview',
+          content: 'We are pleased to present our proposal for comprehensive legal advisory services to support your business objectives. Our experienced team will provide strategic counsel, regulatory compliance support, and transactional expertise to help navigate complex legal challenges and opportunities.'
+        },
+        {
+          type: 'what_we_do',
+          title: 'Service Areas',
+          services: [
+            { name: 'Corporate Law', description: 'Entity formation, governance, and corporate transactions' },
+            { name: 'Regulatory Compliance', description: 'Industry regulations, licensing, and compliance programs' },
+            { name: 'Contract Management', description: 'Contract drafting, review, and negotiation services' },
+            { name: 'Risk Management', description: 'Legal risk assessment and mitigation strategies' }
+          ]
+        },
+        {
+          type: 'objectives',
+          title: 'Engagement Objectives',
+          items: [
+            'Provide ongoing legal counsel for business operations',
+            'Ensure full compliance with industry regulations',
+            'Support M&A activities and corporate transactions',
+            'Develop comprehensive contract templates and policies',
+            'Establish proactive legal risk management framework'
+          ]
+        },
+        {
+          type: 'methodology',
+          title: 'Service Approach',
+          phases: [
+            { phase: '01 Assessment', description: 'Comprehensive review of current legal and compliance status' },
+            { phase: '02 Strategy', description: 'Develop legal strategy aligned with business objectives' },
+            { phase: '03 Implementation', description: 'Execute legal initiatives and compliance programs' },
+            { phase: '04 Monitoring', description: 'Ongoing monitoring and advisory support' },
+            { phase: '05 Optimization', description: 'Continuous improvement of legal processes and policies' }
+          ]
+        },
+        {
+          type: 'timeline',
+          title: 'Engagement Timeline',
+          phases: [
+            { phase: 'Initial Assessment', duration: '2 weeks', milestones: 'Legal audit complete' },
+            { phase: 'Strategy Development', duration: '1 week', milestones: 'Legal strategy finalized' },
+            { phase: 'Ongoing Services', duration: 'Ongoing', milestones: 'Monthly progress reviews' },
+            { phase: 'Quarterly Reviews', duration: 'Quarterly', milestones: 'Strategy updates and reporting' }
+          ]
+        },
+        {
+          type: 'meet_our_team',
+          title: 'Meet Our Team',
+          content: 'Our experienced legal professionals provide strategic counsel and practical solutions for complex business challenges.',
+          team_members: [
+            { name: 'Patricia Adams', role: 'Managing Partner', description: 'Corporate law expert with 25+ years experience in business transactions' },
+            { name: 'James Foster', role: 'Compliance Director', description: 'Regulatory compliance specialist with deep industry knowledge' },
+            { name: 'Maria Santos', role: 'Senior Associate', description: 'Contract and risk management expert with Fortune 500 experience' }
+          ]
+        },
+        {
+          type: 'investment',
+          title: 'Professional Fees',
+          packages: [
+            { name: 'Initial Assessment', price: '$15,000', description: 'Comprehensive legal and compliance audit' },
+            { name: 'Monthly Retainer', price: '$8,500', description: 'Ongoing legal counsel and support' },
+            { name: 'Transactional Work', price: 'Hourly', description: 'M&A, contracts, and special projects at $450/hour' }
+          ],
+          total: '$8,500/month + project fees'
         }
       ]
     }
