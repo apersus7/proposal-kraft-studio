@@ -723,7 +723,7 @@ export default function ProposalEditor() {
                   className="aspect-[8.5/11] border rounded-lg p-8 text-sm overflow-auto relative" 
                   style={{ 
                     backgroundColor: proposal.content?.backgroundColor || '#ffffff',
-                    color: proposal.content?.backgroundColor === '#000000' ? '#ffffff' : '#000000',
+                    color: proposal.content?.textColor || (proposal.content?.backgroundColor === '#000000' ? '#ffffff' : '#000000'),
                     fontFamily: proposal.content?.selectedFont || 'Inter'
                   }}
                 >
@@ -734,6 +734,7 @@ export default function ProposalEditor() {
                         src={proposal.content.logoUrl} 
                         alt="Company Logo" 
                         className="h-10 w-auto object-contain"
+                        loading="lazy"
                         onError={(e) => {
                           console.log('Logo failed to load:', proposal.content.logoUrl);
                           e.currentTarget.style.display = 'none';
@@ -745,15 +746,15 @@ export default function ProposalEditor() {
                   {/* Cover Page */}
                   <div className="text-center mb-8 border-b pb-6 pt-16">
                     <h1 className="text-3xl font-bold mb-2">{proposal.title}</h1>
-                    <p className="text-lg text-gray-600 mb-2">Prepared for {proposal.client_name}</p>
-                    <p className="text-gray-500 mb-3">
+                    <p className="text-lg opacity-80 mb-2">Prepared for {proposal.client_name}</p>
+                    <p className="opacity-60 mb-3">
                       {new Date().toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
                       })}
                     </p>
-                    <p className="text-sm text-gray-600 italic">
+                    <p className="text-sm italic opacity-80">
                       {getContentValue('cover_page', 'tagline') || `Helping ${proposal.client_name} achieve success with innovative solutions`}
                     </p>
                   </div>
@@ -763,7 +764,7 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Project Objective
                        </h2>
-                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        <div className="leading-relaxed whitespace-pre-line">
                           {getContentValue('objective', 'content')
                             ? getContentValue('objective', 'content')
                                 .split('\n')
@@ -786,7 +787,7 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Our Proposed Solution
                        </h2>
-                        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                        <div className="leading-relaxed whitespace-pre-line">
                           {getContentValue('proposed_solution', 'content')
                             ? getContentValue('proposed_solution', 'content')
                                 .split('\n')
@@ -809,7 +810,7 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Scope of Work & Deliverables
                        </h2>
-                       <ul className="list-disc list-inside text-gray-700 space-y-2 leading-relaxed">
+                       <ul className="list-disc list-inside space-y-2 leading-relaxed">
                          {getContentArray('scope_of_work', 'deliverables').map((item: string, index: number) => (
                            <li key={index}>{item}</li>
                          )) || (
@@ -828,7 +829,7 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Timeline & Milestones
                        </h2>
-                       <div className="text-gray-700 space-y-2">
+                       <div className="space-y-2">
                          {getContentArray('scope_of_work', 'timeline').map((phase: any, index: number) => (
                            <p key={index}>
                              <strong>{phase.phase}:</strong> {phase.description} ({phase.duration})
@@ -847,28 +848,28 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Pricing & Investment
                        </h2>
-                       <div className="text-gray-700">
-                         <p className="text-lg font-medium mb-2">
-                           Total Project Investment: {getContentValue('pricing', 'total') || '$XX,XXX'}
-                         </p>
-                         <p className="text-sm">
-                           {getContentValue('pricing', 'payment_terms') || 
-                            'Payment terms: 50% upon contract signing, 25% at project midpoint, 25% upon completion.'}
-                         </p>
-                       </div>
+                        <div>
+                          <p className="text-lg font-medium mb-2">
+                            Total Project Investment: {getContentValue('pricing', 'total') || '$XX,XXX'}
+                          </p>
+                          <p className="text-sm">
+                            {getContentValue('pricing', 'payment_terms') || 
+                             'Payment terms: 50% upon contract signing, 25% at project midpoint, 25% upon completion.'}
+                          </p>
+                        </div>
                      </section>
                      
                      <section>
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Why Choose Us
                        </h2>
-                       <ul className="list-disc list-inside text-gray-700 space-y-2">
-                         {getContentArray('value_proposition', 'advantages').map((advantage: string, index: number) => (
-                           <li key={index}>{advantage}</li>
-                         )) || (
-                           <>
-                             <li>Proven track record with similar projects</li>
-                             <li>Expert team with specialized skills</li>
+                        <ul className="list-disc list-inside space-y-2">
+                          {getContentArray('value_proposition', 'advantages').map((advantage: string, index: number) => (
+                            <li key={index}>{advantage}</li>
+                          )) || (
+                            <>
+                              <li>Proven track record with similar projects</li>
+                              <li>Expert team with specialized skills</li>
                              <li>Transparent communication and regular updates</li>
                              <li>Commitment to delivering exceptional results</li>
                            </>
@@ -903,18 +904,18 @@ export default function ProposalEditor() {
                        <h2 className="text-xl font-semibold mb-3 text-primary border-b border-gray-200 pb-2">
                          Next Steps
                        </h2>
-                       <p className="text-gray-700 leading-relaxed">
-                         {getContentValue('call_to_action', 'next_steps') || 
-                          'Ready to get started? Please review this proposal and let us know if you have any questions. To proceed, simply sign below and return this document. We\'ll then schedule a kickoff call to begin transforming your vision into reality.'}
-                       </p>
+                        <p className="leading-relaxed">
+                          {getContentValue('call_to_action', 'next_steps') || 
+                           'Ready to get started? Please review this proposal and let us know if you have any questions. To proceed, simply sign below and return this document. We\'ll then schedule a kickoff call to begin transforming your vision into reality.'}
+                        </p>
                      </section>
 
                      <section className="mt-8 pt-6 border-t border-gray-200">
                        <div className="text-center">
-                         <p className="text-gray-600 mb-2">Ready to get started?</p>
-                         <p className="text-sm text-gray-500">
-                           Contact us at {proposal.client_email} to discuss next steps.
-                         </p>
+                          <p className="opacity-80 mb-2">Ready to get started?</p>
+                          <p className="text-sm opacity-60">
+                            Contact us at {proposal.client_email} to discuss next steps.
+                          </p>
                        </div>
                      </section>
                    </div>
