@@ -6,34 +6,31 @@ import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { z } from 'zod';
-
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
-
 const emailSchema = z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters");
-
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       const validatedEmail = emailSchema.parse(email);
       setIsSubscribing(true);
-
-      const { error } = await supabase.functions.invoke('send-newsletter-email', {
-        body: { email: validatedEmail }
+      const {
+        error
+      } = await supabase.functions.invoke('send-newsletter-email', {
+        body: {
+          email: validatedEmail
+        }
       });
-
       if (error) throw error;
-
       toast({
         title: "Successfully subscribed!",
         description: "Thank you for subscribing to our newsletter."
       });
-
       setEmail('');
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -53,8 +50,7 @@ const Footer = () => {
       setIsSubscribing(false);
     }
   };
-  return (
-    <footer className="bg-card/50 border-t">
+  return <footer className="bg-card/50 border-t">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand Section */}
@@ -133,14 +129,7 @@ const Footer = () => {
               Get the latest tips for creating winning proposals.
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                maxLength={255}
-              />
+              <Input type="email" placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={255} />
               <Button type="submit" size="sm" className="w-full" disabled={isSubscribing}>
                 {isSubscribing ? 'Subscribing...' : 'Subscribe'}
               </Button>
@@ -149,11 +138,9 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-12 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2024 ProposalKraft. All rights reserved.</p>
+          <p>© 2025 ProposalKraft. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
