@@ -3,11 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
+import PaymentLinks from '@/components/PaymentLinks';
+import ProposalSharing from '@/components/ProposalSharing';
 
 interface ProposalData {
   id: string;
