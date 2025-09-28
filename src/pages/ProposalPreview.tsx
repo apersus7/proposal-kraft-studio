@@ -43,6 +43,7 @@ export default function ProposalPreview() {
     
     try {
       setLoading(true);
+      console.log('Fetching proposal:', id);
       
       // Fetch the proposal data
       const { data: proposalData, error: proposalError } = await supabase
@@ -51,6 +52,9 @@ export default function ProposalPreview() {
         .eq('id', id)
         .eq('user_id', user.id)
         .single();
+
+      console.log('Proposal data:', proposalData);
+      console.log('Proposal error:', proposalError);
 
       if (proposalError || !proposalData) {
         setError('Proposal not found or you do not have permission to view it.');
@@ -318,85 +322,37 @@ export default function ProposalPreview() {
                   </div>
                 ) : null;
 
-          case 'executive_summary':
-            return (
-              <div key={index} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-primary">{section.title}</h2>
-                <p className="text-muted-foreground">{section.content}</p>
-              </div>
-            );
-
-          case 'services':
-            return (
-              <div key={index} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-primary">{section.title}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {section.items?.map((item: string, itemIndex: number) => (
-                    <div key={itemIndex} className="flex items-center p-3 bg-secondary/50 rounded-lg">
-                      <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
-                      <span>{item}</span>
+              case 'payment_link':
+                return (
+                  <div key={index} className="mb-8">
+                    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border">
+                      <h3 className="text-xl font-semibold mb-2 text-center">{section.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-center">{section.content?.text}</p>
+                      {section.content?.paymentUrl ? (
+                        <div className="text-center">
+                          <Button 
+                            asChild 
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            <a 
+                              href={section.content.paymentUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                            >
+                              <CreditCard className="h-4 w-4 mr-2" />
+                              {section.content?.buttonText || 'Pay Now'} 
+                              {section.content?.amount && ` - $${section.content.amount}`}
+                            </a>
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center text-muted-foreground text-sm">
+                          Payment link will be available soon
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </div>
-            );
-
-          case 'pricing':
-            return (
-              <div key={index} className="mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-primary">{section.title}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {section.packages?.map((pkg: any, pkgIndex: number) => (
-                    <Card key={pkgIndex} className="p-6">
-                      <h3 className="text-xl font-semibold mb-2">{pkg.name}</h3>
-                      <div className="text-3xl font-bold text-primary mb-4">
-                        {formatCurrency(pkg.price)}
-                      </div>
-                      <ul className="space-y-2">
-                        {pkg.features?.map((feature: string, featureIndex: number) => (
-                          <li key={featureIndex} className="flex items-center">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            );
-
-          case 'payment_link':
-            return (
-              <div key={index} className="mb-8">
-                <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border">
-                  <h3 className="text-xl font-semibold mb-2 text-center">{section.title}</h3>
-                  <p className="text-muted-foreground mb-4 text-center">{section.content?.text}</p>
-                  {section.content?.paymentUrl ? (
-                    <div className="text-center">
-                      <Button 
-                        asChild 
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <a 
-                          href={section.content.paymentUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <CreditCard className="h-4 w-4 mr-2" />
-                          {section.content?.buttonText || 'Pay Now'} 
-                          {section.content?.amount && ` - $${section.content.amount}`}
-                        </a>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-center text-muted-foreground text-sm">
-                      Payment link will be available soon
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
+                  </div>
+                );
 
               default:
                 return (
@@ -485,12 +441,12 @@ export default function ProposalPreview() {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
+          {/* Header with Action Buttons */}
           <Card className="mb-8">
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-4 mb-4 flex-wrap">
                     <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
                       <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Dashboard
@@ -504,11 +460,20 @@ export default function ProposalPreview() {
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Proposal
                     </Button>
+                    <ProposalSharing 
+                      proposalId={proposal.id} 
+                      proposalTitle={proposal.title}
+                    />
+                    <PaymentLinks 
+                      proposalId={proposal.id}
+                      proposalAmount={proposal.worth?.toString()}
+                      proposalCurrency="USD"
+                    />
                   </div>
                   <h1 className="text-3xl font-bold text-foreground mb-2">
                     {proposal.title}
                   </h1>
-                  <div className="flex items-center gap-4 text-muted-foreground">
+                  <div className="flex items-center gap-4 text-muted-foreground flex-wrap">
                     <div className="flex items-center gap-1">
                       <Building2 className="h-4 w-4" />
                       <span>{proposal.client_name}</span>
@@ -533,31 +498,65 @@ export default function ProposalPreview() {
             </CardContent>
           </Card>
 
-          {/* Content */}
-          <Card>
-            <CardContent className="p-8">
-              <div className="prose prose-slate max-w-none">
-                {renderContent(proposal.content)}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Main Content with Tabs */}
+          <Tabs defaultValue="preview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="preview">
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </TabsTrigger>
+              <TabsTrigger value="payment">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Payment
+              </TabsTrigger>
+              <TabsTrigger value="signature">
+                <PenTool className="h-4 w-4 mr-2" />
+                E-Signature
+              </TabsTrigger>
+            </TabsList>
 
-          {/* E-Signature Section */}
-          {signers.length > 0 && (
-            <Card className="mt-6">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4">
-                  Electronic Signatures Required
-                </h3>
-                <ESignatureFlow
-                  proposalId={proposal.id}
-                  signers={signers}
-                  onSignersUpdate={setSigners}
-                  isOwner={true}
-                />
-              </CardContent>
-            </Card>
-          )}
+            <TabsContent value="preview">
+              <Card>
+                <CardContent className="p-8">
+                  <div className="prose prose-slate max-w-none">
+                    {renderContent(proposal.content)}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="payment">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Payment Management
+                  </h3>
+                  <PaymentLinks 
+                    proposalId={proposal.id}
+                    proposalAmount={proposal.worth?.toString()}
+                    proposalCurrency="USD"
+                    defaultOpen={true}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="signature">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Electronic Signatures
+                  </h3>
+                  <ESignatureFlow
+                    proposalId={proposal.id}
+                    signers={signers}
+                    onSignersUpdate={setSigners}
+                    isOwner={true}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
 
           {/* Footer */}
           <div className="mt-8 text-center text-muted-foreground">
