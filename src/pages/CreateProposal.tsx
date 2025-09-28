@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
+import RichTextEditor from '@/components/RichTextEditor';
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
@@ -1001,11 +1002,11 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Textarea
+                    <RichTextEditor
                       value={getContentValue('objective', 'content')}
-                      onChange={(e) => updateSectionValue('objective', 'content', e.target.value)}
+                      onChange={(value) => updateSectionValue('objective', 'content', value)}
                       placeholder="Describe the main objectives and goals of this project..."
-                      className="min-h-[120px]"
+                      minHeight="120px"
                       style={{ color: textColor }}
                     />
                   </CardContent>
@@ -1033,21 +1034,21 @@ export default function CreateProposal() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Solution Overview</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('proposed_solution', 'content')}
-                        onChange={(e) => updateSectionValue('proposed_solution', 'content', e.target.value)}
+                        onChange={(value) => updateSectionValue('proposed_solution', 'content', value)}
                         placeholder="Describe your approach, process, methodology, and why this solution fits their specific situation..."
-                        className="min-h-[120px]"
+                        minHeight="120px"
                         style={{ color: textColor }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Why This Solution Fits</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('proposed_solution', 'why_fits')}
-                        onChange={(e) => updateSectionValue('proposed_solution', 'why_fits', e.target.value)}
+                        onChange={(value) => updateSectionValue('proposed_solution', 'why_fits', value)}
                         placeholder="Explain why your solution is the perfect fit for their specific needs..."
-                        className="min-h-[80px]"
+                        minHeight="80px"
                         style={{ color: textColor }}
                       />
                     </div>
@@ -1084,11 +1085,11 @@ export default function CreateProposal() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Deliverables Overview</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('scope_of_work', 'content')}
-                        onChange={(e) => updateSectionValue('scope_of_work', 'content', e.target.value)}
+                        onChange={(value) => updateSectionValue('scope_of_work', 'content', value)}
                         placeholder="Detailed breakdown of deliverables and activities..."
-                        className="min-h-[120px]"
+                        minHeight="120px"
                         style={{ color: textColor }}
                       />
                     </div>
@@ -1191,22 +1192,22 @@ export default function CreateProposal() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Payment Terms</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('pricing', 'payment_terms')}
-                        onChange={(e) => updateSectionValue('pricing', 'payment_terms', e.target.value)}
+                        onChange={(value) => updateSectionValue('pricing', 'payment_terms', value)}
                         placeholder="50% upfront, 50% on completion"
-                        className="min-h-[60px]"
+                        minHeight="60px"
                         style={{ color: textColor }}
                       />
                     </div>
 
                     <div className="space-y-2">
                       <Label>Value Breakdown (Optional)</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('pricing', 'breakdown')}
-                        onChange={(e) => updateSectionValue('pricing', 'breakdown', e.target.value)}
+                        onChange={(value) => updateSectionValue('pricing', 'breakdown', value)}
                         placeholder="Design: $5,000&#10;Development: $8,000&#10;Testing: $2,000"
-                        className="min-h-[80px]"
+                        minHeight="80px"
                         style={{ color: textColor }}
                       />
                     </div>
@@ -1255,11 +1256,11 @@ export default function CreateProposal() {
                         </div>
                         <div className="space-y-1">
                           <Label className="text-xs">Testimonial Content</Label>
-                          <Textarea
+                          <RichTextEditor
                             value={testimonial.content || ''}
-                            onChange={(e) => updateTestimonial(index, 'content', e.target.value)}
+                            onChange={(value) => updateTestimonial(index, 'content', value)}
                             placeholder="Working with this team was amazing. They delivered exceptional results..."
-                            className="min-h-[80px]"
+                            minHeight="80px"
                             style={{ color: textColor }}
                           />
                         </div>
@@ -1307,11 +1308,11 @@ export default function CreateProposal() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Why Choose Us</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('why_us', 'content')}
-                        onChange={(e) => updateSectionValue('why_us', 'content', e.target.value)}
+                        onChange={(value) => updateSectionValue('why_us', 'content', value)}
                         placeholder="Explain what makes you unique, your expertise, track record, and why clients should choose you..."
-                        className="min-h-[120px]"
+                        minHeight="120px"
                         style={{ color: textColor }}
                       />
                     </div>
@@ -1347,11 +1348,11 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Textarea
+                    <RichTextEditor
                       value={getContentValue('terms_conditions', 'content')}
-                      onChange={(e) => updateSectionValue('terms_conditions', 'content', e.target.value)}
+                      onChange={(value) => updateSectionValue('terms_conditions', 'content', value)}
                       placeholder="Project terms, conditions, and legal requirements..."
-                      className="min-h-[120px]"
+                      minHeight="120px"
                       style={{ color: textColor }}
                     />
                   </CardContent>
@@ -1393,21 +1394,21 @@ export default function CreateProposal() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label>Next Steps</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('call_to_action', 'next_steps')}
-                        onChange={(e) => updateSectionValue('call_to_action', 'next_steps', e.target.value)}
+                        onChange={(value) => updateSectionValue('call_to_action', 'next_steps', value)}
                         placeholder="Ready to get started? Let's schedule a kickoff call to begin transforming your vision into reality."
-                        className="min-h-[60px]"
+                        minHeight="60px"
                         style={{ color: textColor }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Contact Details</Label>
-                      <Textarea
+                      <RichTextEditor
                         value={getContentValue('call_to_action', 'contact_details')}
-                        onChange={(e) => updateSectionValue('call_to_action', 'contact_details', e.target.value)}
+                        onChange={(value) => updateSectionValue('call_to_action', 'contact_details', value)}
                         placeholder="Email: contact@yourcompany.com&#10;Phone: (555) 123-4567&#10;Schedule: calendly.com/yourname"
-                        className="min-h-[60px]"
+                        minHeight="60px"
                         style={{ color: textColor }}
                       />
                     </div>
