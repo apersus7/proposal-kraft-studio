@@ -35,9 +35,11 @@ const handler = async (req: Request): Promise<Response> => {
     
     console.log('Sending proposal email to:', recipientEmail)
 
-    // Generate a basic share URL if not provided
-    // For secure shares, shareUrl should be provided with the token
-    const finalShareUrl = shareUrl || `https://proposalkraft.com/proposal/${proposalId}`
+    // Use the provided shareUrl - it should always contain the correct token
+    if (!shareUrl) {
+      throw new Error('Share URL is required for email notifications')
+    }
+    const finalShareUrl = shareUrl
 
     const emailResponse = await resend.emails.send({
       from: "Proposals <ceo@proposalkraft.com>",
