@@ -25,7 +25,7 @@ interface ProposalData {
 
 export default function ProposalPreview() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [proposal, setProposal] = useState<ProposalData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,10 +33,21 @@ export default function ProposalPreview() {
   const [signers, setSigners] = useState<any[]>([]);
 
   useEffect(() => {
+    // Redirect to auth if not logged in
+    if (!user && !loading) {
+      navigate('/auth');
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to view this proposal.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     if (id && user) {
       fetchProposal();
     }
-  }, [id, user]);
+  }, [id, user, navigate]);
 
   const fetchProposal = async () => {
     if (!id || !user) return;

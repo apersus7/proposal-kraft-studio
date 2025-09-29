@@ -34,11 +34,19 @@ const handler = async (req: Request): Promise<Response> => {
     const { proposalId, recipientEmail, proposalTitle, senderName, shareUrl }: ShareEmailRequest = await req.json()
     
     console.log('Sending proposal email to:', recipientEmail)
+    console.log('Share URL being sent:', shareUrl)
 
     // Use the provided shareUrl - it should always contain the correct token
     if (!shareUrl) {
       throw new Error('Share URL is required for email notifications')
     }
+    
+    // Verify it's using /shared/ route, not /proposal/
+    if (!shareUrl.includes('/shared/')) {
+      console.error('Invalid share URL format:', shareUrl)
+      throw new Error('Share URL must use /shared/ route for public access')
+    }
+    
     const finalShareUrl = shareUrl
 
     const emailResponse = await resend.emails.send({
