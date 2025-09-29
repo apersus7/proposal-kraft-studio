@@ -18,6 +18,8 @@ serve(async (req) => {
 
   try {
     const { token } = (await req.json()) as RequestBody;
+    console.log("get-shared-proposal: received token", token);
+    
     if (!token) {
       return new Response(
         JSON.stringify({ error: "Missing token" }),
@@ -25,7 +27,7 @@ serve(async (req) => {
       );
     }
 
-    const decodedToken = decodeURIComponent(token);
+    // Token is already decoded by React Router, don't decode again
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -36,8 +38,10 @@ serve(async (req) => {
     const { data: share, error: shareError } = await supabase
       .from("secure_proposal_shares")
       .select("id, proposal_id, created_at, expires_at, permissions")
-      .eq("share_token", decodedToken)
+      .eq("share_token", token)
       .maybeSingle();
+    
+    console.log("get-shared-proposal: share lookup result", { found: !!share, error: shareError });
 
     if (shareError) {
       console.error("get-shared-proposal: shareError", shareError);
