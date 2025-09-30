@@ -114,7 +114,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         ref={editorRef}
         contentEditable
         className={cn(
-          "w-full px-3 py-2 text-sm text-foreground bg-background focus:outline-none",
+          "w-full px-3 py-2 text-sm text-primary-foreground bg-background focus:outline-none",
           className
         )}
         style={{ 
