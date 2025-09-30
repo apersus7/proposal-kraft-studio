@@ -31,8 +31,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const sanitizeColors = useCallback((html: string) => {
     if (!html) return html;
-    // Remove inline black color declarations to ensure visibility in dark themes
-    return html.replace(/color:\s*(?:rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)|#000000|#000)\s*;?/gi, '');
+    // Strip any inline color declarations to ensure editor shows white text on dark template
+    return html
+      .replace(/\sstyle=\"([^\"]*)\"/gi, (match) => match.replace(/color\s*:\s*[^;\"]+;?/gi, ''))
+      .replace(/color:\s*[^;\"]+;?/gi, '');
   }, []);
 
   const sanitizedValue = useMemo(() => sanitizeColors(value), [value, sanitizeColors]);
@@ -136,8 +138,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         }
         /* Force readable editing color over dark templates */
         .rte-editable, .rte-editable * {
-          color: hsl(var(--primary-foreground)) !important;
-          caret-color: hsl(var(--primary-foreground));
+          color: hsl(0 0% 100%) !important;
+          caret-color: hsl(0 0% 100%);
         }
       `}</style>
     </div>
