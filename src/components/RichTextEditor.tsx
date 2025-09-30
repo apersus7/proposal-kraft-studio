@@ -114,7 +114,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         ref={editorRef}
         contentEditable
         className={cn(
-          "w-full px-3 py-2 text-sm text-primary-foreground bg-background focus:outline-none",
+          "rte-editable w-full px-3 py-2 text-sm bg-background focus:outline-none",
           className
         )}
         style={{ 
@@ -133,6 +133,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           content: attr(data-placeholder);
           color: hsl(var(--muted-foreground));
           pointer-events: none;
+        }
+        /* Force readable editing color over dark templates */
+        .rte-editable, .rte-editable * {
+          color: hsl(var(--primary-foreground)) !important;
+          caret-color: hsl(var(--primary-foreground));
         }
       `}</style>
     </div>
