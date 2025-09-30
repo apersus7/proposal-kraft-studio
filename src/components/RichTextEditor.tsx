@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bold, Italic, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,12 +29,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'
   ];
 
-  const execCommand = useCallback((command: string, value?: string) => {
-    document.execCommand(command, false, value);
+  const sanitizeColors = useCallback((html: string) => {
+    if (!html) return html;
+    // Remove inline black color declarations to ensure visibility in dark themes
+    return html.replace(/color:\s*(?:rgb\(\s*0\s*,\s*0\s*,\s*0\s*\)|#000000|#000)\s*;?/gi, '');
+  }, []);
+
+  const sanitizedValue = useMemo(() => sanitizeColors(value), [value, sanitizeColors]);
+
+  const execCommand = useCallback((command: string, val?: string) => {
+    document.execCommand(command, false, val);
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      onChange(sanitizeColors(editorRef.current.innerHTML));
     }
-  }, [onChange]);
+  }, [onChange, sanitizeColors]);
 
   const applyColor = useCallback((color: string) => {
     execCommand('foreColor', color);
@@ -42,9 +50,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      onChange(sanitizeColors(editorRef.current.innerHTML));
     }
-  }, [onChange]);
+  }, [onChange, sanitizeColors]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
@@ -113,7 +121,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           minHeight,
           ...style 
         }}
-        dangerouslySetInnerHTML={{ __html: value }}
+        dangerouslySetInnerHTML={{ __html: sanitizedValue }}
         onInput={handleInput}
         onPaste={handlePaste}
         data-placeholder={placeholder}
