@@ -58,6 +58,12 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(data.share_token)}`;
       
+      // Update proposal status to "shared"
+      await sb
+        .from('proposals')
+        .update({ status: 'shared' })
+        .eq('id', proposalId);
+      
       await navigator.clipboard.writeText(shareUrl);
       
       toast({
@@ -128,6 +134,12 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       
       // Use the secure share URL that doesn't require authentication
       const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(secureShare.share_token)}`;
+      
+      // Update proposal status to "shared"
+      await sb
+        .from('proposals')
+        .update({ status: 'shared' })
+        .eq('id', proposalId);
       
       await sb.functions.invoke('send-proposal-email', {
         body: {

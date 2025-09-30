@@ -4,13 +4,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 import PaymentLinks from '@/components/PaymentLinks';
 import ProposalSharing from '@/components/ProposalSharing';
+import ExportDialog from '@/components/ProposalEditor/ExportDialog';
 
 interface ProposalData {
   id: string;
@@ -474,6 +475,15 @@ export default function ProposalPreview() {
                     <ProposalSharing 
                       proposalId={proposal.id} 
                       proposalTitle={proposal.title}
+                    />
+                    <ExportDialog 
+                      proposal={proposal}
+                      trigger={
+                        <Button variant="outline" size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </Button>
+                      }
                     />
                     <PaymentLinks 
                       proposalId={proposal.id}
