@@ -10,7 +10,6 @@ import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Sett
 import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 import Footer from '@/components/Footer';
-import AnnouncementBar from '@/components/AnnouncementBar';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
   id: string;
@@ -104,7 +103,6 @@ const Index = () => {
   // If user is authenticated, show proposals dashboard
   if (user) {
     return <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
-        <AnnouncementBar />
         {/* Header */}
         <header className="border-b bg-card/80 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -239,7 +237,6 @@ const Index = () => {
 
   // If user is not authenticated, show landing page
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
-      <AnnouncementBar />
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
