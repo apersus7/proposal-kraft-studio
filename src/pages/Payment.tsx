@@ -14,75 +14,25 @@ import { toast } from '@/hooks/use-toast';
 import { useSubscription } from '@/hooks/useSubscription';
 
 const plans = {
-  launch: {
-    name: 'Launch Sale',
-    price: 17,
-    description: '🚀 Limited special offer - Unlock all features!',
+  dealcloser: {
+    name: 'The Deal Closer',
+    price: 28,
+    description: 'Everything you need to close more deals',
     features: [
       'Unlimited proposals',
       'Unlimited templates',
       'Unlimited customisation',
-      'Tracking',
+      'Tracking & Analytics',
       'E-signature',
       'Export in various formats',
       'CRM integration',
       'Upload custom template',
       'Payment integration',
       'Reminders',
-      'Team collaboration'
+      'Team collaboration',
+      'Priority support'
     ],
-    badge: 'Special Offer'
-  },
-  freelance: {
-    name: 'Freelance',
-    price: 19,
-    description: 'Perfect for freelancers and small businesses',
-    features: [
-      '5 proposals with watermark',
-      'Unlimited templates',
-      'Unlimited customisation',
-      'Tracking',
-      'E-signature',
-      'Export in various formats'
-    ],
-    badge: undefined
-  },
-  agency: {
-    name: 'Agency',
-    price: 49,
-    description: 'Best for growing businesses and teams',
-    features: [
-      'Unlimited proposals',
-      'Unlimited templates', 
-      'Unlimited customisation',
-      'Tracking',
-      'E-signature',
-      'Export in various formats',
-      'CRM integration',
-      'Upload custom template',
-      'Reminders',
-      'Team collaboration'
-    ],
-    badge: undefined
-  },
-  enterprise: {
-    name: 'Enterprise',
-    price: 69,
-    description: 'For large organizations with advanced needs',
-    features: [
-      'Unlimited proposals',
-      'Unlimited templates',
-      'Unlimited customisation', 
-      'Tracking',
-      'E-signature',
-      'Export in various formats',
-      'CRM integration',
-      'Upload custom template',
-      'Payment integration',
-      'Reminders',
-      'Team collaboration'
-    ],
-    badge: undefined
+    badge: 'Best Value'
   }
 };
 
@@ -112,10 +62,12 @@ export default function Payment() {
       return;
     }
 
-    // Get plan from URL params
+    // Get plan from URL params or default to dealcloser
     const planFromUrl = searchParams.get('plan');
     if (planFromUrl && plans[planFromUrl as keyof typeof plans]) {
       setSelectedPlan(planFromUrl);
+    } else {
+      setSelectedPlan('dealcloser');
     }
 
     // Pre-fill user info if available
@@ -215,57 +167,36 @@ export default function Payment() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Plan Selection & User Info */}
           <div className="space-y-6">
-            {/* Plan Selection */}
+            {/* Plan Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Select Your Plan</CardTitle>
-                <CardDescription>Choose the plan that best fits your needs</CardDescription>
+                <CardTitle>Your Plan</CardTitle>
+                <CardDescription>Everything you need to close more deals</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {Object.entries(plans).map(([key, plan]) => (
-                  <div 
-                    key={key}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all relative ${
-                      selectedPlan === key 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedPlan(key)}
-                  >
-                    {plan.badge && (
-                      <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500">
-                        {plan.badge}
-                      </Badge>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-semibold">{plan.name}</h3>
-                        <p className="text-sm text-muted-foreground">{plan.description}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold">${plan.price}</div>
-                        <div className="text-sm text-muted-foreground">/month</div>
-                      </div>
+                <div className="p-6 border-2 border-primary bg-primary/5 rounded-lg relative">
+                  <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-blue-500">
+                    Best Value
+                  </Badge>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">The Deal Closer</h3>
+                      <p className="text-sm text-muted-foreground">Everything you need to close more deals</p>
                     </div>
-                    {selectedPlan === key && (
-                      <div className="mt-3 pt-3 border-t">
-                        <div className="grid grid-cols-1 gap-1 text-sm">
-                          {plan.features.slice(0, 4).map((feature, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              <Check className="h-3 w-3 text-green-500" />
-                              <span>{feature}</span>
-                            </div>
-                          ))}
-                          {plan.features.length > 4 && (
-                            <div className="text-muted-foreground">
-                              +{plan.features.length - 4} more features
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                    <div className="text-right">
+                      <div className="text-3xl font-bold">${plans.dealcloser.price}</div>
+                      <div className="text-sm text-muted-foreground">/month</div>
+                    </div>
                   </div>
-                ))}
+                  <div className="grid grid-cols-1 gap-2 text-sm">
+                    {plans.dealcloser.features.map((feature, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
