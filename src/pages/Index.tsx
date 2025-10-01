@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useSubscription } from '@/hooks/useSubscription';
 import Footer from '@/components/Footer';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
@@ -29,6 +30,7 @@ const Index = () => {
     signOut
   } = useAuth();
   const navigate = useNavigate();
+  const { subscription, loading: subscriptionLoading } = useSubscription();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,6 +68,14 @@ const Index = () => {
       setLoadingProposals(false);
     }
   };
+  const handleCreateProposal = () => {
+    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
+      navigate('/payment');
+      return;
+    }
+    navigate('/create-proposal');
+  };
+
   const getStatusBadge = (proposal: Proposal) => {
     if (proposal.payment_status === 'paid') {
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Payment Done</Badge>;
@@ -102,7 +112,7 @@ const Index = () => {
                 <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
               </div>
               <div className="flex items-center space-x-3">
-                <Button onClick={() => navigate('/create-proposal')} size="sm">
+                <Button onClick={handleCreateProposal} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   New Proposal
                 </Button>
@@ -176,7 +186,7 @@ const Index = () => {
                 <p className="text-muted-foreground text-center max-w-sm mb-6">
                   Get started by creating your first proposal. Choose from our professional templates.
                 </p>
-                <Button onClick={() => navigate('/create-proposal')}>
+                <Button onClick={handleCreateProposal}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Proposal
                 </Button>

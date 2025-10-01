@@ -131,12 +131,7 @@ export default function Dashboard() {
 
   const handleCreateProposal = () => {
     if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-      toast({
-        title: "Subscription Required",
-        description: "Please subscribe to a plan to create proposals.",
-        variant: "destructive"
-      });
-      navigate('/pricing');
+      navigate('/payment');
       return;
     }
     navigate('/create-proposal');
