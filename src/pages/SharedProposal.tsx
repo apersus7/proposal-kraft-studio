@@ -147,48 +147,74 @@ export default function SharedProposal() {
       return <p className="text-muted-foreground">No content available.</p>;
     }
 
-    // Check if content is an array of sections (new format)
-    if (Array.isArray(content)) {
-      return content.map((section: any) => {
-        if (!section || typeof section !== 'object') return null;
+    // New structured format: top-level object with `sections: [...]`
+    if (Array.isArray(content.sections)) {
+      const sections = content.sections as any[];
+      return sections.map((sec, idx) => {
+        if (!sec || typeof sec !== 'object') return null;
+        const type = (sec.type || '').toString();
+
+        const titleByType: Record<string, string> = {
+          cover_page: 'Cover',
+          objective: 'Objective',
+          proposed_solution: 'Proposed Solution',
+          scope_of_work: 'Scope of Work',
+          pricing: 'Pricing',
+          value_proposition: 'Value Proposition',
+          why_us: 'Why Us',
+          terms_conditions: 'Terms & Conditions',
+          call_to_action: 'Next Steps',
+        };
+
+        const heading = sec.title || titleByType[type] || `Section ${idx + 1}`;
+        const text = typeof sec.content === 'string' ? sec.content : sec.content?.text;
 
         return (
-          <div key={section.id} className="mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-primary">
-              {section.title}
-            </h3>
-            {section.type === 'payment_link' ? (
-              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border">
-                <div className="text-center">
-                  <h4 className="font-semibold mb-2">Ready to proceed?</h4>
-                  <p className="text-muted-foreground mb-4">{section.content?.text}</p>
-                  {section.content?.paymentUrl ? (
-                    <Button 
-                      asChild 
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <a 
-                        href={section.content.paymentUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        {section.content?.buttonText || 'Pay Now'} 
-                        {section.content?.amount && ` - $${section.content.amount}`}
-                      </a>
-                    </Button>
-                  ) : (
-                    <div className="text-muted-foreground text-sm">
-                      Payment link will be available soon
-                    </div>
-                  )}
+          <div key={idx} className="mb-8">
+            <h3 className="text-lg font-semibold mb-3 text-primary">{heading}</h3>
+
+            {/* Cover page */}
+            {type === 'cover_page' && (
+              <div className="flex items-center gap-4 mb-3">
+                {sec.company_logo && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={sec.company_logo} alt={`${sec.company_name || 'Company'} logo`} className="h-12 w-12 object-contain rounded" loading="lazy" />
+                )}
+                <div>
+                  {sec.company_name && <p className="font-medium">{sec.company_name}</p>}
+                  {sec.tagline && <p className="text-muted-foreground">{sec.tagline}</p>}
                 </div>
               </div>
-            ) : (
+            )}
+
+            {/* Generic text content */}
+            {text && (
               <div className="prose prose-slate max-w-none">
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {section.content?.text || 'No content available.'}
-                </p>
+                <p className="whitespace-pre-wrap text-muted-foreground">{text}</p>
+              </div>
+            )}
+
+            {/* Timeline (scope_of_work) */}
+            {Array.isArray(sec.timeline) && sec.timeline.length > 0 && (
+              <div className="mt-4">
+                <h4 className="font-medium mb-2">Timeline</h4>
+                <ul className="list-disc pl-6 text-muted-foreground">
+                  {sec.timeline.map((t: any, i: number) => (
+                    <li key={i}>{t?.phase ? `${t.phase} — ${t.duration || ''}` : ''}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Testimonials (value_proposition) */}
+            {Array.isArray(sec.testimonials) && sec.testimonials.length > 0 && (
+              <div className="mt-4">
+                <h4 className="font-medium mb-2">Testimonials</h4>
+                <ul className="list-disc pl-6 text-muted-foreground">
+                  {sec.testimonials.map((t: any, i: number) => (
+                    <li key={i}>{t?.name || t?.link}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -196,36 +222,45 @@ export default function SharedProposal() {
       });
     }
 
-    // Legacy format support
-    return Object.entries(content).map(([section, data]: [string, any]) => {
-      if (!data || typeof data !== 'object') return null;
-
-      const sectionTitle = section.split('_').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
-
-      return (
-        <div key={section} className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-primary">
-            {sectionTitle}
-          </h3>
-          <div className="space-y-3">
-            {Object.entries(data).map(([key, value]: [string, any]) => {
-              if (!value) return null;
-              
-              const fieldName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-              
-              return (
-                <div key={key} className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium text-foreground mb-1">{fieldName}</h4>
-                  <p className="text-muted-foreground">{value.toString()}</p>
-                </div>
-              );
-            })}
+    // Legacy array format (content is an array)
+    if (Array.isArray(content)) {
+      return content.map((section: any, i: number) => {
+        if (!section || typeof section !== 'object') return null;
+        return (
+          <div key={section.id ?? i} className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-primary">{section.title}</h3>
+            <div className="prose prose-slate max-w-none">
+              <p className="text-muted-foreground whitespace-pre-wrap">{section.content?.text || ''}</p>
+            </div>
           </div>
-        </div>
-      );
-    });
+        );
+      });
+    }
+
+    // Fallback legacy object map (exclude arrays to avoid [object Object])
+    return Object.entries(content)
+      .filter(([_, v]) => v && typeof v === 'object' && !Array.isArray(v))
+      .map(([section, data]: [string, any]) => {
+        const sectionTitle = section
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        return (
+          <div key={section} className="mb-8">
+            <h3 className="text-lg font-semibold mb-4 text-primary">{sectionTitle}</h3>
+            <div className="space-y-3">
+              {Object.entries(data).map(([key, value]: [string, any]) => (
+                <div key={key} className="border-l-2 border-primary/20 pl-4">
+                  <h4 className="font-medium text-foreground mb-1">
+                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                  </h4>
+                  <p className="text-muted-foreground">{String(value)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      });
   };
 
   return (
