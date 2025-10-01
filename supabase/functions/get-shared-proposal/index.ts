@@ -27,7 +27,17 @@ serve(async (req) => {
       );
     }
 
-    // Token is already decoded by React Router, don't decode again
+    // Normalize token for safety (handle URL decoding, spaces-as-plus, base64url, and padding)
+    let normalizedToken = token;
+    try { normalizedToken = decodeURIComponent(normalizedToken); } catch {}
+    normalizedToken = normalizedToken
+      .replace(/\s/g, '+') // spaces back to plus
+      .replace(/-/g, '+')   // base64url to base64
+      .replace(/_/g, '/');  // base64url to base64
+    const pad = normalizedToken.length % 4;
+    if (pad) normalizedToken = normalizedToken + '='.repeat(4 - pad);
+
+    console.log("get-shared-proposal: normalized token", normalizedToken);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -38,9 +48,9 @@ serve(async (req) => {
     const { data: share, error: shareError } = await supabase
       .from("secure_proposal_shares")
       .select("id, proposal_id, created_at, expires_at, permissions")
-      .eq("share_token", token)
+      .eq("share_token", normalizedToken)
       .maybeSingle();
-    
+
     console.log("get-shared-proposal: share lookup result", { found: !!share, error: shareError });
 
     if (shareError) {

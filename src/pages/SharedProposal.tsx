@@ -45,8 +45,11 @@ export default function SharedProposal() {
     if (!token) return;
     try {
       setLoading(true);
-      // Normalize token from URL: decode and fix any whitespace-to-plus encoding issues
-      const normalizedToken = decodeURIComponent(token).replace(/\s/g, '+');
+      // Robust token normalization: decode, fix spaces/URL-safe chars, and restore padding
+      let normalizedToken = decodeURIComponent(token);
+      normalizedToken = normalizedToken.replace(/\s/g, '+').replace(/-/g, '+').replace(/_/g, '/');
+      const pad = normalizedToken.length % 4;
+      if (pad) normalizedToken = normalizedToken + '='.repeat(4 - pad);
       const { data, error } = await supabase.functions.invoke('get-shared-proposal', {
         body: { token: normalizedToken },
       });
