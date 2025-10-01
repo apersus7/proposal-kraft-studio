@@ -158,7 +158,7 @@ export default function SharedProposal() {
 
     // Normalize sections if present
     let normalizedSections: any[] | null = null;
-    const maybeSections = (content as any).sections;
+    const maybeSections = (content as any).sections ?? (content as any).Sections;
     if (typeof maybeSections !== 'undefined') {
       let sectionsCandidate: any = maybeSections;
       if (typeof sectionsCandidate === 'string') {
@@ -169,6 +169,9 @@ export default function SharedProposal() {
         const keys = Object.keys(sectionsCandidate);
         if (keys.every(k => /^\d+$/.test(k))) {
           sectionsCandidate = keys.sort((a,b)=>Number(a)-Number(b)).map(k => (sectionsCandidate as any)[k]);
+        } else {
+          // Fallback to object values order if not purely numeric keys
+          sectionsCandidate = Object.values(sectionsCandidate);
         }
       }
       if (Array.isArray(sectionsCandidate)) normalizedSections = sectionsCandidate;

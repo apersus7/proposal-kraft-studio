@@ -79,6 +79,12 @@ serve(async (req) => {
     let proposalData: any;
     if (share.content_snapshot) {
       // Use frozen snapshot
+      let snapshot: any = share.content_snapshot;
+      if (typeof snapshot === 'string') {
+        try { snapshot = JSON.parse(snapshot); } catch {}
+      }
+      console.log("get-shared-proposal: using snapshot", { present: true, type: typeof snapshot });
+
       const { data: basicProposal } = await supabase
         .from("proposals")
         .select("id, title, client_name, client_email, worth, created_at, status")
@@ -88,11 +94,12 @@ serve(async (req) => {
       if (basicProposal) {
         proposalData = {
           ...basicProposal,
-          content: share.content_snapshot
+          content: snapshot
         };
       }
     } else {
       // Fallback to current proposal version
+      console.log("get-shared-proposal: no snapshot found, serving live content");
       const { data: proposal, error: proposalError } = await supabase
         .from("proposals")
         .select("id, title, client_name, client_email, content, worth, created_at, status")
