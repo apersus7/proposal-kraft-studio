@@ -45,8 +45,10 @@ export default function SharedProposal() {
     if (!token) return;
     try {
       setLoading(true);
+      // Normalize token from URL: decode and fix any whitespace-to-plus encoding issues
+      const normalizedToken = decodeURIComponent(token).replace(/\s/g, '+');
       const { data, error } = await supabase.functions.invoke('get-shared-proposal', {
-        body: { token },
+        body: { token: normalizedToken },
       });
 
       if (error) {
