@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
+import { useSubscription } from '@/hooks/useSubscription';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
@@ -30,6 +31,7 @@ interface Profile {
 export default function Dashboard() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const { subscription, loading: subscriptionLoading } = useSubscription();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -120,10 +122,24 @@ export default function Dashboard() {
     switch (status) {
       case 'draft': return 'secondary';
       case 'sent': return 'default';
+      case 'shared': return 'success';
       case 'accepted': return 'destructive';
       case 'rejected': return 'outline';
       default: return 'secondary';
     }
+  };
+
+  const handleCreateProposal = () => {
+    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
+      toast({
+        title: "Subscription Required",
+        description: "Please subscribe to a plan to create proposals.",
+        variant: "destructive"
+      });
+      navigate('/pricing');
+      return;
+    }
+    navigate('/create-proposal');
   };
 
   const handleSignOut = async () => {
@@ -153,7 +169,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
              <div className="flex items-center space-x-3">
-               <Button onClick={() => navigate('/create-proposal')} size="sm">
+               <Button onClick={handleCreateProposal} size="sm">
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
@@ -205,7 +221,7 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <Button onClick={() => navigate('/create-proposal')} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4 mr-2" />
             Create Proposal
           </Button>
@@ -245,7 +261,7 @@ export default function Dashboard() {
               <p className="text-muted-foreground text-center max-w-sm mb-6">
                 Get started by creating your first proposal. Choose from our professional templates.
               </p>
-              <Button onClick={() => navigate('/create-proposal')}>
+              <Button onClick={handleCreateProposal}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Proposal
               </Button>
