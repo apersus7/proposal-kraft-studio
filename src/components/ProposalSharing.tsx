@@ -14,6 +14,19 @@ import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 const sb = supabase as any;
 
+const getPublicBaseUrl = () => {
+  try {
+    const host = window.location.hostname;
+    if (host.endsWith('lovableproject.com')) {
+      return 'https://proposalkraft.com';
+    }
+    return window.location.origin;
+  } catch {
+    return window.location.origin;
+  }
+};
+
+
 interface ProposalSharingProps {
   proposalId: string;
   proposalTitle: string;
@@ -56,7 +69,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       if (error) throw error;
 
-      const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(data.share_token)}`;
+      const shareUrl = `${getPublicBaseUrl()}/shared/${encodeURIComponent(data.share_token)}`;
       
       // Update proposal status to "shared"
       await sb
@@ -133,7 +146,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .single();
       
       // Use the secure share URL that doesn't require authentication
-      const shareUrl = `${window.location.origin}/shared/${encodeURIComponent(secureShare.share_token)}`;
+      const shareUrl = `${getPublicBaseUrl()}/shared/${encodeURIComponent(secureShare.share_token)}`;
       
       // Update proposal status to "shared"
       await sb
@@ -371,7 +384,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            const url = `${window.location.origin}/shared/${encodeURIComponent(share.share_token)}`;
+                            const url = `${getPublicBaseUrl()}/shared/${encodeURIComponent(share.share_token)}`;
                             navigator.clipboard.writeText(url);
                             toast({ title: "Copied", description: "Link copied to clipboard" });
                           }}
