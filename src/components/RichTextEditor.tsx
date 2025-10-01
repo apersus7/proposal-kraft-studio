@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useRef, useCallback, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bold, Italic, Palette } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -22,6 +22,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   minHeight = '120px'
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isInternalUpdate = useRef(false);
 
   const colors = [
     '#000000', '#374151', '#6b7280', '#9ca3af',
@@ -39,9 +40,21 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const sanitizedValue = useMemo(() => sanitizeColors(value), [value, sanitizeColors]);
 
+  // Only update the editor content when value changes externally (not from typing)
+  useEffect(() => {
+    if (editorRef.current && !isInternalUpdate.current) {
+      const currentContent = editorRef.current.innerHTML;
+      if (currentContent !== sanitizedValue) {
+        editorRef.current.innerHTML = sanitizedValue;
+      }
+    }
+    isInternalUpdate.current = false;
+  }, [sanitizedValue]);
+
   const execCommand = useCallback((command: string, val?: string) => {
     document.execCommand(command, false, val);
     if (editorRef.current) {
+      isInternalUpdate.current = true;
       onChange(sanitizeColors(editorRef.current.innerHTML));
     }
   }, [onChange, sanitizeColors]);
@@ -52,6 +65,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
+      isInternalUpdate.current = true;
       onChange(sanitizeColors(editorRef.current.innerHTML));
     }
   }, [onChange, sanitizeColors]);
@@ -123,7 +137,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           minHeight,
           ...style 
         }}
-        dangerouslySetInnerHTML={{ __html: sanitizedValue }}
         onInput={handleInput}
         onPaste={handlePaste}
         data-placeholder={placeholder}
