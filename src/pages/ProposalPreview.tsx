@@ -226,7 +226,7 @@ export default function ProposalPreview() {
                                 borderLeftColor: section.timelineColor || primaryColor
                               }}
                             >
-                              <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
+                              <span className="font-medium">{phase.phase}:</span> {phase.duration}{phase.description ? ` - ${phase.description}` : ''}
                             </div>
                           ))}
                         </div>
@@ -285,7 +285,7 @@ export default function ProposalPreview() {
                           )}
                           <div className="flex items-center justify-between">
                             {testimonial.name && (
-                              <p className="font-medium">- {testimonial.name}</p>
+                              <p className="font-medium"><span className="font-black">•</span> {testimonial.name}</p>
                             )}
                             {testimonial.link && (
                               <a 
