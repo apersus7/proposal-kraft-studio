@@ -1,5 +1,8 @@
 project_id = "kmgmjfifunncweqgnbvz"
 
+[functions.get-shared-proposal]
+verify_jwt = false
+
 [functions.send-proposal-email]
 verify_jwt = false
 
@@ -25,9 +28,6 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.generate-payment-client-token]
-verify_jwt = false
-
-[functions.get-shared-proposal]
 verify_jwt = false
 
 [functions.send-contact-email]
