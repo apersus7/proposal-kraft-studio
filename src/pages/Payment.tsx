@@ -14,6 +14,20 @@ import { toast } from '@/hooks/use-toast';
 import { useSubscription } from '@/hooks/useSubscription';
 
 const plans = {
+  launch: {
+    name: 'Launch Sale',
+    price: 17,
+    description: '🚀 Limited time special offer!',
+    features: [
+      '5 proposals with watermark',
+      'Unlimited templates',
+      'Unlimited customisation',
+      'Tracking',
+      'E-signature',
+      'Export in various formats'
+    ],
+    badge: 'Special Offer'
+  },
   freelance: {
     name: 'Freelance',
     price: 19,
@@ -25,7 +39,8 @@ const plans = {
       'Tracking',
       'E-signature',
       'Export in various formats'
-    ]
+    ],
+    badge: undefined
   },
   agency: {
     name: 'Agency',
@@ -42,7 +57,8 @@ const plans = {
       'Upload custom template',
       'Reminders',
       'Team collaboration'
-    ]
+    ],
+    badge: undefined
   },
   enterprise: {
     name: 'Enterprise',
@@ -60,7 +76,8 @@ const plans = {
       'Payment integration',
       'Reminders',
       'Team collaboration'
-    ]
+    ],
+    badge: undefined
   }
 };
 
@@ -203,13 +220,18 @@ export default function Payment() {
                 {Object.entries(plans).map(([key, plan]) => (
                   <div 
                     key={key}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                    className={`p-4 border rounded-lg cursor-pointer transition-all relative ${
                       selectedPlan === key 
                         ? 'border-primary bg-primary/5' 
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => setSelectedPlan(key)}
                   >
+                    {plan.badge && (
+                      <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500">
+                        {plan.badge}
+                      </Badge>
+                    )}
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-semibold">{plan.name}</h3>
