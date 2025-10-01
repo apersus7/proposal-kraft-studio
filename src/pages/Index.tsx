@@ -69,10 +69,6 @@ const Index = () => {
     }
   };
   const handleCreateProposal = () => {
-    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-      navigate('/payment');
-      return;
-    }
     navigate('/create-proposal');
   };
 
