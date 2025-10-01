@@ -47,7 +47,7 @@ serve(async (req) => {
     // Look up the share by token
     const { data: share, error: shareError } = await supabase
       .from("secure_proposal_shares")
-      .select("id, proposal_id, created_at, expires_at, permissions")
+      .select("id, proposal_id, created_at, expires_at, permissions, content_snapshot")
       .eq("share_token", normalizedToken)
       .maybeSingle();
 
@@ -75,15 +75,41 @@ serve(async (req) => {
       );
     }
 
-    // Fetch the proposal data
-    const { data: proposal, error: proposalError } = await supabase
-      .from("proposals")
-      .select("id, title, client_name, client_email, content, worth, created_at, status")
-      .eq("id", share.proposal_id)
-      .maybeSingle();
+    // Fetch the proposal data (use snapshot if available, otherwise current version)
+    let proposalData: any;
+    if (share.content_snapshot) {
+      // Use frozen snapshot
+      const { data: basicProposal } = await supabase
+        .from("proposals")
+        .select("id, title, client_name, client_email, worth, created_at, status")
+        .eq("id", share.proposal_id)
+        .maybeSingle();
+      
+      if (basicProposal) {
+        proposalData = {
+          ...basicProposal,
+          content: share.content_snapshot
+        };
+      }
+    } else {
+      // Fallback to current proposal version
+      const { data: proposal, error: proposalError } = await supabase
+        .from("proposals")
+        .select("id, title, client_name, client_email, content, worth, created_at, status")
+        .eq("id", share.proposal_id)
+        .maybeSingle();
 
-    if (proposalError || !proposal) {
-      console.error("get-shared-proposal: proposalError", proposalError);
+      if (proposalError || !proposal) {
+        console.error("get-shared-proposal: proposalError", proposalError);
+        return new Response(
+          JSON.stringify({ error: "Proposal not found" }),
+          { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      proposalData = proposal;
+    }
+
+    if (!proposalData) {
       return new Response(
         JSON.stringify({ error: "Proposal not found" }),
         { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -102,7 +128,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ share, proposal, signers: signers ?? [] }),
+      JSON.stringify({ share, proposal: proposalData, signers: signers ?? [] }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (e) {

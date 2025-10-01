@@ -52,12 +52,22 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       // Set default expiration to 30 days from now if no expiration is set
       const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
+      // Fetch current proposal content to snapshot it
+      const { data: proposalData, error: proposalError } = await supabase
+        .from('proposals')
+        .select('content')
+        .eq('id', proposalId)
+        .single();
+
+      if (proposalError) throw proposalError;
+
       const { data, error } = await supabase
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
+          content_snapshot: proposalData.content, // Freeze content at share time
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
@@ -81,7 +91,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       
       toast({
         title: "Secure Link Generated",
-        description: "Link copied to clipboard"
+        description: "Link copied to clipboard (frozen snapshot)"
       });
 
       fetchShareLinks();
@@ -102,6 +112,15 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
     
     setLoading(true);
     try {
+      // Fetch current proposal content to snapshot it
+      const { data: proposalData, error: proposalError } = await supabase
+        .from('proposals')
+        .select('content')
+        .eq('id', proposalId)
+        .single();
+
+      if (proposalError) throw proposalError;
+
       // Create a secure share token first (like the generate secure link does)
       const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
@@ -111,6 +130,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
           proposal_id: proposalId,
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
+          content_snapshot: proposalData.content, // Freeze content at share time
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
@@ -166,7 +186,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       toast({
         title: "Proposal Shared",
-        description: `Proposal shared with ${emailShare} via email`
+        description: `Proposal shared with ${emailShare} via email (frozen snapshot)`
       });
 
       setEmailShare('');
