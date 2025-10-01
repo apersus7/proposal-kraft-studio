@@ -106,6 +106,14 @@ const Index = () => {
                   <Plus className="h-4 w-4 mr-2" />
                   New Proposal
                 </Button>
+                <Button 
+                  onClick={() => navigate('/pricing')} 
+                  size="sm"
+                  className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
+                >
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full">
