@@ -292,8 +292,7 @@ export default function ProposalPreview() {
                                 href={testimonial.link} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                style={{ color: section.testimonialColor || '#2563eb' }}
-                                className="hover:underline"
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
                               >
                                 View Profile
                               </a>
