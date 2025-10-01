@@ -256,6 +256,15 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Launch Sale Banner */}
+      <section className="py-4 bg-gradient-to-r from-green-600 to-emerald-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-white font-semibold text-lg">
+            🎉 <span className="font-bold">THE LAUNCH SALE</span> - Get ProposalKraft for only $17/month! Limited Time Offer 🎉
+          </p>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -269,7 +278,7 @@ const Index = () => {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">Start your Free Trial</Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3">View Pricing</Button>
+            <Button size="lg" variant="outline" onClick={() => navigate('/pricing')} className="text-lg px-8 py-3">View Pricing</Button>
           </div>
         </div>
       </section>

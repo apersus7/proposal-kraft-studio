@@ -77,11 +77,13 @@ async function handleSubscriptionActivated(supabaseClient: any, resource: any) {
   let planType = 'freelance'; // default
   
   // Map PayPal plan ID to our plan types
+  const launchPlanId = Deno.env.get('PAYPAL_PLAN_ID_LAUNCH');
   const freelancePlanId = Deno.env.get('PAYPAL_PLAN_ID_FREELANCE');
   const agencyPlanId = Deno.env.get('PAYPAL_PLAN_ID_AGENCY');
   const enterprisePlanId = Deno.env.get('PAYPAL_PLAN_ID_ENTERPRISE');
   
-  if (planId === freelancePlanId) planType = 'freelance';
+  if (planId === launchPlanId) planType = 'launch';
+  else if (planId === freelancePlanId) planType = 'freelance';
   else if (planId === agencyPlanId) planType = 'agency';
   else if (planId === enterprisePlanId) planType = 'enterprise';
 

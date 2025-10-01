@@ -9,6 +9,18 @@ import { useToast } from '@/hooks/use-toast';
 
 // Plan definitions
 const plans = {
+  launch: {
+    id: 'launch',
+    name: 'The Launch Sale',
+    price: '$17/month',
+    description: 'Limited time offer - Lock in this price forever!',
+    features: [
+      'Up to 10 proposals/month',
+      'AI Proposal Generator',
+      'Custom branding',
+      'Email support'
+    ]
+  },
   freelance: {
     id: 'freelance',
     name: 'Freelance',

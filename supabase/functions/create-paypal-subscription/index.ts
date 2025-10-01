@@ -44,6 +44,7 @@ serve(async (req) => {
 
     // Get PayPal plan IDs
     const planIds = {
+      launch: Deno.env.get('PAYPAL_PLAN_ID_LAUNCH'),
       freelance: Deno.env.get('PAYPAL_PLAN_ID_FREELANCE'),
       agency: Deno.env.get('PAYPAL_PLAN_ID_AGENCY'),
       enterprise: Deno.env.get('PAYPAL_PLAN_ID_ENTERPRISE'),
