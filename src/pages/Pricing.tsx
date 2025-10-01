@@ -12,9 +12,12 @@ const Pricing = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
-  // Allow both guests and authenticated users to view pricing (no redirect)
-  // Removed redirect of authenticated users to home to enable upgrades
-
+  // Redirect authenticated users to home dashboard
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/');
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -73,56 +76,6 @@ const Pricing = () => {
         {/* Pricing Cards */}
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Launch Sale Banner */}
-            <div className="mb-12">
-              <Card className="relative border-4 border-green-500 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-600 via-emerald-500 to-green-600"></div>
-                <CardHeader className="text-center pb-4 pt-8">
-                  <div className="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">
-                    🎉 THE LAUNCH SALE - LIMITED TIME 🎉
-                  </div>
-                  <CardTitle className="text-3xl mb-2">Special Launch Offer</CardTitle>
-                  <CardDescription className="text-lg mb-4">
-                    Lock in this exclusive price forever!
-                  </CardDescription>
-                  <div className="text-5xl font-bold text-green-600 mb-2">
-                    $17
-                    <span className="text-xl font-normal text-muted-foreground">/month</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Limited time - Price locked forever</p>
-                </CardHeader>
-                <CardContent className="space-y-4 pb-8">
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">Up to 10 proposals/month</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">AI Proposal Generator</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">Custom branding</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm">Email support</span>
-                    </div>
-                  </div>
-                  <div className="pt-4">
-                    <Button 
-                      size="lg" 
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-lg py-6"
-                      onClick={() => user ? navigate('/checkout?plan=launch') : navigate('/auth')}
-                    >
-                      {user ? 'Grab This Deal Now!' : 'Sign Up to Get This Deal'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Freelance Plan */}
               <Card className="relative border-border/50 hover:border-primary/50 transition-colors">

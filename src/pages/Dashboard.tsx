@@ -173,14 +173,6 @@ export default function Dashboard() {
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
-               <Button 
-                 onClick={() => navigate('/pricing')} 
-                 size="sm"
-                 className="bg-gradient-to-r from-accent to-primary hover:opacity-90 transition-opacity"
-               >
-                 <Crown className="h-4 w-4 mr-2" />
-                 Upgrade
-               </Button>
                <DropdownMenu>
                  <DropdownMenuTrigger asChild>
                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
@@ -204,10 +196,10 @@ export default function Dashboard() {
                      <Settings className="mr-2 h-4 w-4" />
                      Settings
                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/pricing')}>
-                      <Crown className="mr-2 h-4 w-4" />
-                      Upgrade Plan
-                    </DropdownMenuItem>
+                   <DropdownMenuItem onClick={() => navigate('/payment')}>
+                     <Crown className="mr-2 h-4 w-4" />
+                     Upgrade Plan
+                   </DropdownMenuItem>
                    <DropdownMenuSeparator />
                    <DropdownMenuItem onClick={handleSignOut}>
                      <LogOut className="mr-2 h-4 w-4" />

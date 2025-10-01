@@ -452,51 +452,8 @@ export default function Settings() {
 
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Available Plans</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
-                    {/* Launch Sale Plan */}
-                    <Card className="relative border-2 border-accent">
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="px-3 bg-gradient-to-r from-accent to-primary">🎉 Launch Sale</Badge>
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="text-lg">The Launch Sale</CardTitle>
-                        <div className="text-2xl font-bold">$17<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>Limited time offer - Perfect for early adopters</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>10 proposals per month</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>All templates included</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Full customization</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>E-signature</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Export capabilities</span>
-                          </div>
-                        </div>
-                        <Button 
-                          className="w-full bg-gradient-to-r from-accent to-primary hover:opacity-90"
-                          onClick={() => navigate(`/payment?plan=launch`)}
-                          disabled={subscription.hasActiveSubscription && subscription.planType === 'launch'}
-                        >
-                          {(subscription.hasActiveSubscription && subscription.planType === 'launch') ? 'Current Plan' : 'Get Launch Price'}
-                        </Button>
-                      </CardContent>
-                    </Card>
-
                     {/* Freelance Plan */}
                     <Card className="relative">
                       <CardHeader>
