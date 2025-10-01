@@ -226,7 +226,7 @@ export default function ProposalPreview() {
                                 borderLeftColor: section.timelineColor || primaryColor
                               }}
                             >
-                              <span className="font-black">{idx + 1})</span> {phase.duration}{phase.description ? ` - ${phase.description}` : ''}
+                              <span className="font-black">{idx + 1})</span> <span className="font-medium">{phase.phase}:</span> {phase.duration}{phase.description ? ` - ${phase.description}` : ''}
                             </div>
                           ))}
                         </div>
