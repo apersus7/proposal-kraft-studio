@@ -218,7 +218,14 @@ export default function ProposalPreview() {
                         <h3 className="text-lg font-medium mb-2">Timeline:</h3>
                         <div className="space-y-2">
                           {section.timeline.map((phase: any, idx: number) => (
-                            <div key={idx} className="p-3 bg-gray-50 rounded">
+                            <div 
+                              key={idx} 
+                              className="p-3 rounded border-l-4" 
+                              style={{ 
+                                backgroundColor: section.timelineColor ? `${section.timelineColor}10` : '#f9fafb',
+                                borderLeftColor: section.timelineColor || primaryColor
+                              }}
+                            >
                               <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
                             </div>
                           ))}
@@ -234,8 +241,14 @@ export default function ProposalPreview() {
                     <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
                       Investment
                     </h2>
-                    <div className="bg-gray-50 p-6 rounded-lg">
-                      <p className="text-xl font-bold mb-2" style={{ color: primaryColor }}>
+                    <div 
+                      className="p-6 rounded-lg border-2" 
+                      style={{ 
+                        backgroundColor: section.highlightColor ? `${section.highlightColor}10` : '#f9fafb',
+                        borderColor: section.highlightColor || primaryColor
+                      }}
+                    >
+                      <p className="text-xl font-bold mb-2" style={{ color: section.highlightColor || primaryColor }}>
                         Total Project Investment: {content.currency === 'EUR' ? '€' : content.currency === 'GBP' ? '£' : '$'}{content.pricing || proposal?.worth || 'XX,XXX'}
                       </p>
                       {section.payment_terms && (
@@ -259,7 +272,14 @@ export default function ProposalPreview() {
                     </h2>
                     <div className="space-y-4">
                       {section.testimonials.map((testimonial: any, idx: number) => (
-                        <div key={idx} className="bg-gray-50 p-4 rounded-lg">
+                        <div 
+                          key={idx} 
+                          className="p-4 rounded-lg border-l-4" 
+                          style={{ 
+                            backgroundColor: section.testimonialColor ? `${section.testimonialColor}10` : '#f9fafb',
+                            borderLeftColor: section.testimonialColor || primaryColor
+                          }}
+                        >
                           {testimonial.content && (
                             <p className="italic mb-2">"{testimonial.content}"</p>
                           )}
@@ -272,7 +292,8 @@ export default function ProposalPreview() {
                                 href={testimonial.link} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 underline"
+                                style={{ color: section.testimonialColor || '#2563eb' }}
+                                className="hover:underline"
                               >
                                 View Profile
                               </a>
