@@ -76,82 +76,33 @@ const Pricing = () => {
         {/* Pricing Cards */}
         <section className="py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Freelance Plan */}
-              <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl mb-2">Freelance</CardTitle>
-                  <CardDescription className="text-muted-foreground mb-4">
-                    Perfect for freelancers and small businesses
-                  </CardDescription>
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    $19
-                    <span className="text-lg font-normal text-muted-foreground">/month</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Billed monthly</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">5 proposals with watermark</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited templates</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited customisation</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Tracking</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">E-signature</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Export in various formats</span>
-                    </div>
-                  </div>
-                  <div className="pt-6">
-                    <Button 
-                      size="lg" 
-                      className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=freelance') : navigate('/auth')}
-                    >
-                      {user ? 'Get Started' : 'Sign Up to Subscribe'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Agency Plan */}
+            <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* The Deal Closer Plan */}
               <Card className="relative border-primary shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
-                    Most Popular
+                  <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
+                    Limited Time Offer
                   </span>
                 </div>
                 <CardHeader className="text-center pb-8 pt-8">
-                  <CardTitle className="text-2xl mb-2">Agency</CardTitle>
+                  <CardTitle className="text-2xl mb-2">The Deal Closer</CardTitle>
                   <CardDescription className="text-muted-foreground mb-4">
-                    Best for growing businesses and teams
+                    Everything you need to close more deals
                   </CardDescription>
+                  <div className="mb-2">
+                    <span className="text-2xl line-through text-muted-foreground">$80</span>
+                  </div>
                   <div className="text-4xl font-bold text-primary mb-2">
-                    $49
+                    $28
                     <span className="text-lg font-normal text-muted-foreground">/month</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Billed monthly</p>
+                  <p className="text-sm text-green-600 font-semibold">Save 65%</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited proposal</span>
+                      <span className="text-sm">Unlimited proposals</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
@@ -163,75 +114,7 @@ const Pricing = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Tracking</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">E-signature</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Export in various formats</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">CRM integration</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Upload custom template</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Reminders</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Team collaboration</span>
-                    </div>
-                  </div>
-                  <div className="pt-6">
-                    <Button 
-                      size="lg" 
-                      className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=agency') : navigate('/auth')}
-                    >
-                      {user ? 'Start Free Trial' : 'Sign Up to Subscribe'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Enterprise Plan */}
-              <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl mb-2">Enterprise</CardTitle>
-                  <CardDescription className="text-muted-foreground mb-4">
-                    For large organizations with advanced needs
-                  </CardDescription>
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    $69
-                    <span className="text-lg font-normal text-muted-foreground">/month</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Billed monthly</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited proposal</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited templates</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Unlimited customisation</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Tracking</span>
+                      <span className="text-sm">Tracking & Analytics</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
@@ -261,14 +144,78 @@ const Pricing = () => {
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-sm">Team collaboration</span>
                     </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Priority support</span>
+                    </div>
                   </div>
                   <div className="pt-6">
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=enterprise') : navigate('/auth')}
+                      onClick={() => user ? navigate('/payment?plan=dealcloser') : navigate('/auth')}
                     >
-                      {user ? 'Get Enterprise' : 'Sign Up to Subscribe'}
+                      {user ? 'Get Started' : 'Sign Up to Subscribe'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Enterprise Plan */}
+              <Card className="relative border-border/50 hover:border-primary/50 transition-colors">
+                <CardHeader className="text-center pb-8">
+                  <CardTitle className="text-2xl mb-2">Enterprise</CardTitle>
+                  <CardDescription className="text-muted-foreground mb-4">
+                    For large organizations with advanced needs
+                  </CardDescription>
+                  <div className="text-4xl font-bold text-primary mb-2">
+                    Custom
+                  </div>
+                  <p className="text-sm text-muted-foreground">Contact us for pricing</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Everything in The Deal Closer</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Custom integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Dedicated account manager</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Advanced security features</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Custom training & onboarding</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">SLA guarantees</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">White-label options</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">API access</span>
+                    </div>
+                  </div>
+                  <div className="pt-6">
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => navigate('/contact')}
+                    >
+                      Contact Support
                     </Button>
                   </div>
                 </CardContent>
@@ -279,19 +226,17 @@ const Pricing = () => {
             <div className="mt-20">
               <h3 className="text-2xl font-bold text-center mb-10">Compare Plans</h3>
               <div className="overflow-x-auto">
-                <table className="w-full border border-border rounded-lg">
+                <table className="w-full border border-border rounded-lg max-w-4xl mx-auto">
                   <thead>
                     <tr className="border-b border-border bg-muted/30">
                       <th className="text-left p-4 font-semibold">Features</th>
-                      <th className="text-center p-4 font-semibold">Freelance</th>
-                      <th className="text-center p-4 font-semibold">Agency</th>
+                      <th className="text-center p-4 font-semibold">The Deal Closer</th>
                       <th className="text-center p-4 font-semibold">Enterprise</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-border">
-                      <td className="p-4">Monthly proposals</td>
-                      <td className="text-center p-4">5 (with watermark)</td>
+                      <td className="p-4">Proposals</td>
                       <td className="text-center p-4">Unlimited</td>
                       <td className="text-center p-4">Unlimited</td>
                     </tr>
@@ -299,17 +244,14 @@ const Pricing = () => {
                       <td className="p-4">Templates</td>
                       <td className="text-center p-4">Unlimited</td>
                       <td className="text-center p-4">Unlimited</td>
-                      <td className="text-center p-4">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4">Customisation</td>
                       <td className="text-center p-4">Unlimited</td>
                       <td className="text-center p-4">Unlimited</td>
-                      <td className="text-center p-4">Unlimited</td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Tracking</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="p-4">Tracking & Analytics</td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
@@ -317,41 +259,64 @@ const Pricing = () => {
                       <td className="p-4">E-signature</td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
                       <td className="p-4">Export formats</td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border">
                       <td className="p-4">CRM integration</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
                       <td className="p-4">Upload custom template</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border">
-                      <td className="p-4">Reminders</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="p-4">Payment integration</td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
                     <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Team collaboration</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="p-4">Reminders</td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
-                    <tr>
-                      <td className="p-4">Payment integration</td>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Team collaboration</td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Priority support</td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Custom integrations</td>
                       <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">Dedicated account manager</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">Advanced security</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border bg-muted/10">
+                      <td className="p-4">White-label options</td>
+                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
+                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <td className="p-4">API access</td>
                       <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
                       <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
                     </tr>
