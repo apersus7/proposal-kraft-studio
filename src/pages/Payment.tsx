@@ -12,39 +12,24 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useSubscription } from '@/hooks/useSubscription';
-
 const plans = {
   dealcloser: {
     name: 'The Deal Closer',
     price: 28,
     description: 'Everything you need to close more deals',
-    features: [
-      'Unlimited proposals',
-      'Unlimited templates',
-      'Unlimited customisation',
-      'Tracking & Analytics',
-      'E-signature',
-      'Export in various formats',
-      'CRM integration',
-      'Upload custom template',
-      'Payment integration',
-      'Reminders',
-      'Team collaboration',
-      'Priority support'
-    ],
+    features: ['Unlimited proposals', 'Unlimited templates', 'Unlimited customisation', 'Tracking & Analytics', 'E-signature', 'Export in various formats', 'CRM integration', 'Upload custom template', 'Payment integration', 'Reminders', 'Team collaboration', 'Priority support'],
     badge: 'Best Value'
   }
 };
-
-const countries = [
-  'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 
-  'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Other'
-];
-
+const countries = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Other'];
 export default function Payment() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { subscription } = useSubscription();
+  const {
+    user
+  } = useAuth();
+  const {
+    subscription
+  } = useSubscription();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('');
@@ -59,7 +44,6 @@ export default function Payment() {
     minutes: 59,
     seconds: 59
   });
-
   useEffect(() => {
     // Redirect if not authenticated
     if (!user) {
@@ -77,7 +61,10 @@ export default function Payment() {
 
     // Pre-fill user info if available
     if (user.email) {
-      setUserInfo(prev => ({ ...prev, email: user.email! }));
+      setUserInfo(prev => ({
+        ...prev,
+        email: user.email!
+      }));
     }
   }, [user, searchParams, navigate]);
 
@@ -86,19 +73,28 @@ export default function Payment() {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
+          return {
+            ...prev,
+            seconds: prev.seconds - 1
+          };
         } else if (prev.minutes > 0) {
-          return { hours: prev.hours, minutes: prev.minutes - 1, seconds: 59 };
+          return {
+            hours: prev.hours,
+            minutes: prev.minutes - 1,
+            seconds: 59
+          };
         } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+          return {
+            hours: prev.hours - 1,
+            minutes: 59,
+            seconds: 59
+          };
         }
         return prev;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
-
   const handlePayment = async () => {
     if (!selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country) {
       toast({
@@ -118,32 +114,29 @@ export default function Payment() {
       });
       return;
     }
-
     setLoading(true);
-
     try {
-      console.log('Creating subscription for:', { 
+      console.log('Creating subscription for:', {
         plan: selectedPlan,
         method: paymentMethod,
-        userInfo 
+        userInfo
       });
-
-      const { data, error } = await supabase.functions.invoke('create-paypal-subscription', {
-        body: { 
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-paypal-subscription', {
+        body: {
           planId: selectedPlan
         }
       });
-
       if (error) {
         console.error('Subscription creation error:', error);
         throw new Error(error.message || 'Failed to create subscription');
       }
-
       if (data?.error) {
         console.error('PayPal error:', data.error);
         throw new Error(data.error);
       }
-
       if (data?.approvalUrl) {
         console.log('Redirecting to PayPal:', data.approvalUrl);
         // Redirect to PayPal for subscription approval
@@ -162,41 +155,16 @@ export default function Payment() {
       setLoading(false);
     }
   };
-
   const selectedPlanDetails = selectedPlan ? plans[selectedPlan as keyof typeof plans] : null;
-
   if (!user) return null;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Limited Time Offer Banner */}
-        <div className="mb-6 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white rounded-lg p-6 shadow-lg">
-          <div className="flex items-start gap-4">
-            <Zap className="h-8 w-8 flex-shrink-0 animate-pulse" />
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-2">🔥 Limited Time Offer!</h2>
-              <p className="text-lg mb-3">Get The Deal Closer plan at an exclusive price - only $28/month!</p>
-              <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3 backdrop-blur-sm w-fit">
-                <Clock className="h-5 w-5" />
-                <span className="font-mono text-xl font-bold">
-                  {String(timeLeft.hours).padStart(2, '0')}:
-                  {String(timeLeft.minutes).padStart(2, '0')}:
-                  {String(timeLeft.seconds).padStart(2, '0')}
-                </span>
-                <span className="text-sm">remaining</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Header */}
         <div className="mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/dashboard')}
-            className="mb-4"
-          >
+          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
           </Button>
@@ -229,12 +197,10 @@ export default function Payment() {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 gap-2 text-sm">
-                    {plans.dealcloser.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
+                    {plans.dealcloser.features.map((feature, idx) => <div key={idx} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                         <span>{feature}</span>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
               </CardContent>
@@ -249,40 +215,31 @@ export default function Payment() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    value={userInfo.name}
-                    onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter your full name"
-                    required
-                  />
+                  <Input id="name" value={userInfo.name} onChange={e => setUserInfo(prev => ({
+                  ...prev,
+                  name: e.target.value
+                }))} placeholder="Enter your full name" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={userInfo.email}
-                    onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="Enter your email"
-                    required
-                  />
+                  <Input id="email" type="email" value={userInfo.email} onChange={e => setUserInfo(prev => ({
+                  ...prev,
+                  email: e.target.value
+                }))} placeholder="Enter your email" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="country">Country *</Label>
-                  <Select 
-                    value={userInfo.country} 
-                    onValueChange={(value) => setUserInfo(prev => ({ ...prev, country: value }))}
-                  >
+                  <Select value={userInfo.country} onValueChange={value => setUserInfo(prev => ({
+                  ...prev,
+                  country: value
+                }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
                     <SelectContent>
-                      {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
+                      {countries.map(country => <SelectItem key={country} value={country}>
                           {country}
-                        </SelectItem>
-                      ))}
+                        </SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -299,14 +256,7 @@ export default function Payment() {
                 <CardDescription>Choose how you'd like to pay</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === 'paypal' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setPaymentMethod('paypal')}
-                >
+                <div className={`p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'paypal' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`} onClick={() => setPaymentMethod('paypal')}>
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
                       <span className="text-white text-xs font-bold">PP</span>
@@ -318,14 +268,7 @@ export default function Payment() {
                   </div>
                 </div>
                 
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === 'card' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setPaymentMethod('card')}
-                >
+                <div className={`p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300'}`} onClick={() => setPaymentMethod('card')}>
                   <div className="flex items-center gap-3">
                     <CreditCard className="w-8 h-8 text-gray-600" />
                     <div>
@@ -338,8 +281,7 @@ export default function Payment() {
             </Card>
 
             {/* Order Summary */}
-            {selectedPlanDetails && (
-              <Card>
+            {selectedPlanDetails && <Card>
                 <CardHeader>
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
@@ -354,12 +296,7 @@ export default function Payment() {
                     <span>${selectedPlanDetails.price}</span>
                   </div>
                   
-                  <Button 
-                    className="w-full mt-6" 
-                    size="lg"
-                    onClick={handlePayment}
-                    disabled={loading || !selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country}
-                  >
+                  <Button className="w-full mt-6" size="lg" onClick={handlePayment} disabled={loading || !selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country}>
                     {loading ? 'Processing...' : `Subscribe for $${selectedPlanDetails.price}/month with ${paymentMethod === 'paypal' ? 'PayPal' : 'Card'}`}
                   </Button>
 
@@ -368,11 +305,9 @@ export default function Payment() {
                     <p>Cancel anytime from your account settings</p>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
