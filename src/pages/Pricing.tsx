@@ -148,6 +148,18 @@ const Pricing = () => {
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
                       <span className="text-sm">Priority support</span>
                     </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Custom integrations</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">Advanced security features</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm">API access</span>
+                    </div>
                   </div>
                   <div className="pt-6">
                     <Button 
@@ -166,7 +178,7 @@ const Pricing = () => {
                 <CardHeader className="text-center pb-8">
                   <CardTitle className="text-2xl mb-2">Enterprise</CardTitle>
                   <CardDescription className="text-muted-foreground mb-4">
-                    For large organizations with advanced needs
+                    For large organizations with custom requirements
                   </CardDescription>
                   <div className="text-4xl font-bold text-primary mb-2">
                     Custom
@@ -174,40 +186,6 @@ const Pricing = () => {
                   <p className="text-sm text-muted-foreground">Contact us for pricing</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Everything in The Deal Closer</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Custom integrations</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Dedicated account manager</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Advanced security features</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">Custom training & onboarding</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">SLA guarantees</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">White-label options</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">API access</span>
-                    </div>
-                  </div>
                   <div className="pt-6">
                     <Button 
                       size="lg" 
@@ -220,109 +198,6 @@ const Pricing = () => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
-
-            {/* Feature Comparison Table */}
-            <div className="mt-20">
-              <h3 className="text-2xl font-bold text-center mb-10">Compare Plans</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full border border-border rounded-lg max-w-4xl mx-auto">
-                  <thead>
-                    <tr className="border-b border-border bg-muted/30">
-                      <th className="text-left p-4 font-semibold">Features</th>
-                      <th className="text-center p-4 font-semibold">The Deal Closer</th>
-                      <th className="text-center p-4 font-semibold">Enterprise</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Proposals</td>
-                      <td className="text-center p-4">Unlimited</td>
-                      <td className="text-center p-4">Unlimited</td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Templates</td>
-                      <td className="text-center p-4">Unlimited</td>
-                      <td className="text-center p-4">Unlimited</td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Customisation</td>
-                      <td className="text-center p-4">Unlimited</td>
-                      <td className="text-center p-4">Unlimited</td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Tracking & Analytics</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">E-signature</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Export formats</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">CRM integration</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Upload custom template</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Payment integration</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Reminders</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Team collaboration</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Priority support</td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Custom integrations</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">Dedicated account manager</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">Advanced security</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border bg-muted/10">
-                      <td className="p-4">White-label options</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                    <tr className="border-b border-border">
-                      <td className="p-4">API access</td>
-                      <td className="text-center p-4"><X className="h-4 w-4 text-muted-foreground mx-auto" /></td>
-                      <td className="text-center p-4"><CheckCircle className="h-4 w-4 text-primary mx-auto" /></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
         </section>
