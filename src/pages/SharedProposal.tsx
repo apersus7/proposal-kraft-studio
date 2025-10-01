@@ -142,15 +142,38 @@ export default function SharedProposal() {
     return null;
   }
 
-  const renderContent = (content: any) => {
+  const renderContent = (rawContent: any) => {
+    // Parse if string
+    let content = rawContent;
+    if (typeof content === 'string') {
+      try { content = JSON.parse(content); } catch {}
+    }
+
     if (!content || typeof content !== 'object') {
       return <p className="text-muted-foreground">No content available.</p>;
     }
 
-    // New structured format: top-level object with `sections: [...]`
-    if (Array.isArray(content.sections)) {
-      const sections = content.sections as any[];
-      return sections.map((sec, idx) => {
+    // Normalize sections if present
+    let normalizedSections: any[] | null = null;
+    const maybeSections = (content as any).sections;
+    if (typeof maybeSections !== 'undefined') {
+      let sectionsCandidate: any = maybeSections;
+      if (typeof sectionsCandidate === 'string') {
+        try { sectionsCandidate = JSON.parse(sectionsCandidate); } catch {}
+      }
+      if (sectionsCandidate && typeof sectionsCandidate === 'object' && !Array.isArray(sectionsCandidate)) {
+        // Convert numeric-keyed object to array
+        const keys = Object.keys(sectionsCandidate);
+        if (keys.every(k => /^\d+$/.test(k))) {
+          sectionsCandidate = keys.sort((a,b)=>Number(a)-Number(b)).map(k => (sectionsCandidate as any)[k]);
+        }
+      }
+      if (Array.isArray(sectionsCandidate)) normalizedSections = sectionsCandidate;
+    }
+
+    // New structured format with `sections`
+    if (normalizedSections) {
+      return normalizedSections.map((sec, idx) => {
         if (!sec || typeof sec !== 'object') return null;
         const type = (sec.type || '').toString();
 
@@ -173,7 +196,6 @@ export default function SharedProposal() {
           <div key={idx} className="mb-8">
             <h3 className="text-lg font-semibold mb-3 text-primary">{heading}</h3>
 
-            {/* Cover page */}
             {type === 'cover_page' && (
               <div className="flex items-center gap-4 mb-3">
                 {sec.company_logo && (
@@ -187,14 +209,12 @@ export default function SharedProposal() {
               </div>
             )}
 
-            {/* Generic text content */}
             {text && (
               <div className="prose prose-slate max-w-none">
                 <p className="whitespace-pre-wrap text-muted-foreground">{text}</p>
               </div>
             )}
 
-            {/* Timeline (scope_of_work) */}
             {Array.isArray(sec.timeline) && sec.timeline.length > 0 && (
               <div className="mt-4">
                 <h4 className="font-medium mb-2">Timeline</h4>
@@ -206,7 +226,6 @@ export default function SharedProposal() {
               </div>
             )}
 
-            {/* Testimonials (value_proposition) */}
             {Array.isArray(sec.testimonials) && sec.testimonials.length > 0 && (
               <div className="mt-4">
                 <h4 className="font-medium mb-2">Testimonials</h4>
@@ -237,27 +256,20 @@ export default function SharedProposal() {
       });
     }
 
-    // Fallback legacy object map (exclude arrays to avoid [object Object])
+    // Fallback legacy object map: show JSON for objects to avoid [object Object]
     return Object.entries(content)
-      .filter(([_, v]) => v && typeof v === 'object' && !Array.isArray(v))
+      .filter(([_, v]) => v != null)
       .map(([section, data]: [string, any]) => {
         const sectionTitle = section
           .split('_')
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
+        const isRenderableText = typeof data === 'string' || typeof data === 'number';
+        const display = isRenderableText ? String(data) : JSON.stringify(data, null, 2);
         return (
           <div key={section} className="mb-8">
             <h3 className="text-lg font-semibold mb-4 text-primary">{sectionTitle}</h3>
-            <div className="space-y-3">
-              {Object.entries(data).map(([key, value]: [string, any]) => (
-                <div key={key} className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium text-foreground mb-1">
-                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
-                  </h4>
-                  <p className="text-muted-foreground">{String(value)}</p>
-                </div>
-              ))}
-            </div>
+            <pre className="text-sm text-muted-foreground bg-muted/30 p-3 rounded overflow-auto">{display}</pre>
           </div>
         );
       });
