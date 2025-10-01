@@ -47,6 +47,7 @@ serve(async (req) => {
       freelance: Deno.env.get('PAYPAL_PLAN_ID_FREELANCE'),
       agency: Deno.env.get('PAYPAL_PLAN_ID_AGENCY'),
       enterprise: Deno.env.get('PAYPAL_PLAN_ID_ENTERPRISE'),
+      dealcloser: Deno.env.get('PAYPAL_PLAN_ID_DEALCLOSER'),
     } as const;
 
     const paypalPlanId = planIds[planId as keyof typeof planIds];

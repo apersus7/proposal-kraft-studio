@@ -2,12 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CreditCard, Check } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -36,11 +33,6 @@ const plans = {
   }
 };
 
-const countries = [
-  'United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 
-  'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Other'
-];
-
 export default function Payment() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -48,12 +40,6 @@ export default function Payment() {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'card'>('paypal');
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    email: user?.email || '',
-    country: ''
-  });
 
   useEffect(() => {
     // Redirect if not authenticated
@@ -69,18 +55,13 @@ export default function Payment() {
     } else {
       setSelectedPlan('dealcloser');
     }
-
-    // Pre-fill user info if available
-    if (user.email) {
-      setUserInfo(prev => ({ ...prev, email: user.email! }));
-    }
   }, [user, searchParams, navigate]);
 
   const handlePayment = async () => {
-    if (!selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country) {
+    if (!selectedPlan) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields and select a plan.",
+        description: "Please select a plan.",
         variant: "destructive"
       });
       return;
@@ -99,24 +80,19 @@ export default function Payment() {
     setLoading(true);
 
     try {
-      console.log('Creating payment for:', { 
-        plan: selectedPlan, 
-        method: paymentMethod, 
-        userInfo 
+      console.log('Creating subscription for:', { 
+        plan: selectedPlan
       });
 
-      const { data, error } = await supabase.functions.invoke('create-paypal-payment', {
+      const { data, error } = await supabase.functions.invoke('create-paypal-subscription', {
         body: { 
-          planId: selectedPlan,
-          amount: plans[selectedPlan as keyof typeof plans].price,
-          userInfo: userInfo,
-          paymentMethod: paymentMethod
+          planId: selectedPlan
         }
       });
 
       if (error) {
-        console.error('Payment creation error:', error);
-        throw new Error(error.message || 'Failed to create payment');
+        console.error('Subscription creation error:', error);
+        throw new Error(error.message || 'Failed to create subscription');
       }
 
       if (data?.error) {
@@ -126,16 +102,16 @@ export default function Payment() {
 
       if (data?.approvalUrl) {
         console.log('Redirecting to PayPal:', data.approvalUrl);
-        // Redirect to PayPal for payment
+        // Redirect to PayPal for subscription approval
         window.location.href = data.approvalUrl;
       } else {
-        throw new Error('No payment URL received from PayPal');
+        throw new Error('No approval URL received from PayPal');
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Subscription error:', error);
       toast({
-        title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Failed to process payment. Please try again.",
+        title: "Subscription Failed",
+        description: error instanceof Error ? error.message : "Failed to create subscription. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -164,8 +140,8 @@ export default function Payment() {
           <p className="text-gray-600 mt-2">Secure payment processing via PayPal</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Plan Selection & User Info */}
+        <div className="grid grid-cols-1 gap-8">
+          {/* Plan Details Card */}
           <div className="space-y-6">
             {/* Plan Details */}
             <Card>
@@ -200,103 +176,6 @@ export default function Payment() {
               </CardContent>
             </Card>
 
-            {/* User Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Information</CardTitle>
-                <CardDescription>We need this information for your payment</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    value={userInfo.name}
-                    onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={userInfo.email}
-                    onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="country">Country *</Label>
-                  <Select 
-                    value={userInfo.country} 
-                    onValueChange={(value) => setUserInfo(prev => ({ ...prev, country: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - Payment Method & Summary */}
-          <div className="space-y-6">
-            {/* Payment Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Method</CardTitle>
-                <CardDescription>Choose how you'd like to pay</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === 'paypal' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setPaymentMethod('paypal')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                      <span className="text-white text-xs font-bold">PP</span>
-                    </div>
-                    <div>
-                      <div className="font-medium">PayPal Account</div>
-                      <div className="text-sm text-muted-foreground">Pay with your PayPal account</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div 
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === 'card' 
-                      ? 'border-primary bg-primary/5' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-8 h-8 text-gray-600" />
-                    <div>
-                      <div className="font-medium">Credit/Debit Card</div>
-                      <div className="text-sm text-muted-foreground">Pay as guest with any card (via PayPal)</div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Order Summary */}
             {selectedPlanDetails && (
               <Card>
@@ -306,11 +185,11 @@ export default function Payment() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span>{selectedPlanDetails.name} Plan</span>
-                    <span>${selectedPlanDetails.price}</span>
+                    <span>${selectedPlanDetails.price}/month</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-semibold text-lg">
-                    <span>Total</span>
+                    <span>Monthly Total</span>
                     <span>${selectedPlanDetails.price}</span>
                   </div>
                   
@@ -318,14 +197,14 @@ export default function Payment() {
                     className="w-full mt-6" 
                     size="lg"
                     onClick={handlePayment}
-                    disabled={loading || !selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country}
+                    disabled={loading || !selectedPlan}
                   >
-                    {loading ? 'Processing...' : `Pay $${selectedPlanDetails.price} with ${paymentMethod === 'paypal' ? 'PayPal' : 'Card'}`}
+                    {loading ? 'Processing...' : `Subscribe for $${selectedPlanDetails.price}/month`}
                   </Button>
 
                   <div className="text-xs text-muted-foreground text-center mt-4">
                     <p>🔒 Secure payment processing via PayPal</p>
-                    <p>Your payment information is protected</p>
+                    <p>Cancel anytime from your account settings</p>
                   </div>
                 </CardContent>
               </Card>
