@@ -164,7 +164,7 @@ export default function Payment() {
 
         {/* Header */}
         <div className="mb-8">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-4">
+          <Button onClick={() => navigate('/dashboard')} className="mb-4 bg-green-600 text-white hover:bg-green-700">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
           </Button>
