@@ -17,14 +17,19 @@ const plans = {
   launch: {
     name: 'Launch Sale',
     price: 17,
-    description: '🚀 Limited time special offer!',
+    description: '🚀 Limited special offer - Unlock all features!',
     features: [
-      '5 proposals with watermark',
+      'Unlimited proposals',
       'Unlimited templates',
       'Unlimited customisation',
       'Tracking',
       'E-signature',
-      'Export in various formats'
+      'Export in various formats',
+      'CRM integration',
+      'Upload custom template',
+      'Payment integration',
+      'Reminders',
+      'Team collaboration'
     ],
     badge: 'Special Offer'
   },
@@ -239,7 +244,7 @@ export default function Payment() {
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-bold">${plan.price}</div>
-                        <div className="text-sm text-muted-foreground">one-time</div>
+                        <div className="text-sm text-muted-foreground">/month</div>
                       </div>
                     </div>
                     {selectedPlan === key && (
