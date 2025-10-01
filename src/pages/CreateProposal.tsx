@@ -1138,6 +1138,23 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="space-y-2 pb-3 border-b">
+                      <Label>Timeline Card Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={getContentValue('scope_of_work', 'timelineColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('scope_of_work', 'timelineColor', e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={getContentValue('scope_of_work', 'timelineColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('scope_of_work', 'timelineColor', e.target.value)}
+                          placeholder="#3b82f6"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                     {Array.isArray(getContentValue('scope_of_work', 'timeline')) ? getContentValue('scope_of_work', 'timeline').map((phase: any, index: number) => (
                       <div key={index} className="grid grid-cols-3 gap-3 p-3 border rounded-lg">
                         <div className="space-y-1">
@@ -1192,6 +1209,23 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="space-y-2 pb-3 border-b">
+                      <Label>Pricing Highlight Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={getContentValue('pricing', 'highlightColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('pricing', 'highlightColor', e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={getContentValue('pricing', 'highlightColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('pricing', 'highlightColor', e.target.value)}
+                          placeholder="#3b82f6"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <Label>Payment Terms</Label>
                       <RichTextEditor
@@ -1225,6 +1259,23 @@ export default function CreateProposal() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="space-y-2 pb-3 border-b">
+                      <Label>Testimonial Card Color</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={getContentValue('value_proposition', 'testimonialColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('value_proposition', 'testimonialColor', e.target.value)}
+                          className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
+                        />
+                        <Input
+                          value={getContentValue('value_proposition', 'testimonialColor') || primaryColor}
+                          onChange={(e) => updateSectionValue('value_proposition', 'testimonialColor', e.target.value)}
+                          placeholder="#3b82f6"
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
                     {Array.isArray(getContentValue('value_proposition', 'testimonials')) ? getContentValue('value_proposition', 'testimonials').map((testimonial: any, index: number) => (
                       <div key={index} className="p-4 border rounded-lg space-y-3">
                         <div className="flex justify-between items-center">
