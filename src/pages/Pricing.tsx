@@ -12,12 +12,9 @@ const Pricing = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
-  // Redirect authenticated users to home dashboard
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/');
-    }
-  }, [user, loading, navigate]);
+  // Allow both guests and authenticated users to view pricing (no redirect)
+  // Removed redirect of authenticated users to home to enable upgrades
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
