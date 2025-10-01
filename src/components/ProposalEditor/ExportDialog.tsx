@@ -32,95 +32,32 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
   const exportToPDF = async () => {
     setIsExporting(true);
     try {
-      // Create a temporary div with the proposal content
-      const exportDiv = document.createElement('div');
-      exportDiv.style.position = 'absolute';
-      exportDiv.style.left = '-9999px';
-      exportDiv.style.width = '210mm'; // A4 width
-      exportDiv.style.padding = '20mm';
-      exportDiv.style.backgroundColor = 'white';
-      exportDiv.style.fontFamily = 'Arial, sans-serif';
-      exportDiv.style.fontSize = '12px';
-      exportDiv.style.lineHeight = '1.6';
+      // Find the actual rendered proposal content
+      const proposalContent = document.getElementById('proposal-preview-content');
       
-      // Build HTML content based on selected sections
-      let htmlContent = '';
-      
-      if (includeSections.cover) {
-        htmlContent += `
-          <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #22c55e; padding-bottom: 20px;">
-            <h1 style="font-size: 32px; color: #22c55e; margin-bottom: 10px;">${proposal.title}</h1>
-            <h2 style="font-size: 20px; color: #666; margin-bottom: 20px;">Prepared for ${proposal.client_name}</h2>
-            <p style="font-size: 14px; color: #888;">${proposal.content?.sections?.find((s: any) => s.type === 'cover_page')?.tagline || ''}</p>
-            <p style="font-size: 12px; color: #888; margin-top: 20px;">Generated on ${new Date().toLocaleDateString()}</p>
-          </div>
-        `;
+      if (!proposalContent) {
+        throw new Error('Proposal content not found');
       }
 
-      const sections = proposal.content?.sections || [];
-      
-      sections.forEach((section: any) => {
-        const sectionKey = section.type as keyof typeof includeSections;
-        if (includeSections[sectionKey] && section.content) {
-          const sectionTitle = section.type.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
-          htmlContent += `
-            <div style="margin-bottom: 30px; page-break-inside: avoid;">
-              <h2 style="font-size: 18px; color: #22c55e; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">
-                ${sectionTitle}
-              </h2>
-              <div style="white-space: pre-wrap; margin-bottom: 15px;">
-                ${section.content}
-              </div>
-            </div>
-          `;
-        }
-      });
-
-      // Handle timeline separately if scope of work is included
-      const scopeSection = sections.find((s: any) => s.type === 'scope_of_work');
-      if (includeSections.scope_of_work && scopeSection?.timeline?.length > 0) {
-        htmlContent += `
-          <div style="margin-bottom: 30px;">
-            <h3 style="font-size: 16px; color: #22c55e; margin-bottom: 15px;">Timeline & Milestones</h3>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-              <thead>
-                <tr style="background-color: #f8f9fa;">
-                  <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Phase</th>
-                  <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Duration</th>
-                  <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${scopeSection.timeline.map((phase: any) => `
-                  <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${phase.phase || ''}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${phase.duration || ''}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${phase.description || ''}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
-      }
-
-      exportDiv.innerHTML = htmlContent;
-      document.body.appendChild(exportDiv);
-
-      // Generate PDF
-      const canvas = await html2canvas(exportDiv, {
+      // Generate PDF from the actual rendered content
+      const canvas = await html2canvas(proposalContent, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false
       });
 
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
       const imgWidth = 210;
       const pageHeight = 295;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
-
       let position = 0;
 
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
@@ -133,15 +70,12 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
         heightLeft -= pageHeight;
       }
 
-      // Clean up
-      document.body.removeChild(exportDiv);
-
       // Download the PDF
       pdf.save(`${proposal.title.replace(/[^a-zA-Z0-9]/g, '_')}_proposal.pdf`);
 
       toast({
         title: "Export Successful",
-        description: "Your proposal has been exported as a PDF"
+        description: "Your proposal has been exported as a PDF with exact styling"
       });
     } catch (error) {
       console.error('Export error:', error);
@@ -158,30 +92,20 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
   const exportAsImage = async () => {
     setIsExporting(true);
     try {
-      // Similar logic but export as PNG
-      const exportDiv = document.createElement('div');
-      exportDiv.style.position = 'absolute';
-      exportDiv.style.left = '-9999px';
-      exportDiv.style.width = '800px';
-      exportDiv.style.padding = '40px';
-      exportDiv.style.backgroundColor = 'white';
-      exportDiv.style.fontFamily = 'Arial, sans-serif';
-      exportDiv.innerHTML = `
-        <div style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-size: 32px; color: #22c55e;">${proposal.title}</h1>
-          <h2 style="font-size: 20px; color: #666;">Prepared for ${proposal.client_name}</h2>
-        </div>
-      `;
+      // Find the actual rendered proposal content
+      const proposalContent = document.getElementById('proposal-preview-content');
+      
+      if (!proposalContent) {
+        throw new Error('Proposal content not found');
+      }
 
-      document.body.appendChild(exportDiv);
-
-      const canvas = await html2canvas(exportDiv, {
+      // Generate image from the actual rendered content
+      const canvas = await html2canvas(proposalContent, {
         scale: 2,
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false
       });
-
-      document.body.removeChild(exportDiv);
 
       // Download as image
       const link = document.createElement('a');
@@ -191,7 +115,7 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
 
       toast({
         title: "Export Successful",
-        description: "Your proposal has been exported as an image"
+        description: "Your proposal has been exported as an image with exact styling"
       });
     } catch (error) {
       console.error('Export error:', error);

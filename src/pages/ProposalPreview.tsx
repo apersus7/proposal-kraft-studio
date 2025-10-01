@@ -559,7 +559,7 @@ export default function ProposalPreview() {
             <TabsContent value="preview">
               <Card>
                 <CardContent className="p-8">
-                  <div className="prose prose-slate max-w-none">
+                  <div id="proposal-preview-content" className="prose prose-slate max-w-none">
                     {renderContent(proposal.content)}
                   </div>
                 </CardContent>
