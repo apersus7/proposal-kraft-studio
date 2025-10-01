@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, CreditCard, Check } from 'lucide-react';
+import { ArrowLeft, CreditCard, Check, Clock, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -54,6 +54,11 @@ export default function Payment() {
     email: user?.email || '',
     country: ''
   });
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 23,
+    minutes: 59,
+    seconds: 59
+  });
 
   useEffect(() => {
     // Redirect if not authenticated
@@ -75,6 +80,24 @@ export default function Payment() {
       setUserInfo(prev => ({ ...prev, email: user.email! }));
     }
   }, [user, searchParams, navigate]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { hours: prev.hours, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        }
+        return prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handlePayment = async () => {
     if (!selectedPlan || !userInfo.name || !userInfo.email || !userInfo.country) {
@@ -147,6 +170,26 @@ export default function Payment() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-4xl mx-auto">
+        {/* Limited Time Offer Banner */}
+        <div className="mb-6 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white rounded-lg p-6 shadow-lg">
+          <div className="flex items-start gap-4">
+            <Zap className="h-8 w-8 flex-shrink-0 animate-pulse" />
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold mb-2">🔥 Limited Time Offer!</h2>
+              <p className="text-lg mb-3">Get The Deal Closer plan at an exclusive price - only $28/month!</p>
+              <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3 backdrop-blur-sm w-fit">
+                <Clock className="h-5 w-5" />
+                <span className="font-mono text-xl font-bold">
+                  {String(timeLeft.hours).padStart(2, '0')}:
+                  {String(timeLeft.minutes).padStart(2, '0')}:
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </span>
+                <span className="text-sm">remaining</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <Button 
@@ -172,13 +215,13 @@ export default function Payment() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="p-6 border-2 border-primary bg-primary/5 rounded-lg relative">
-                  <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-blue-500">
-                    Best Value
+                  <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 animate-pulse">
+                    Limited Offer
                   </Badge>
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-2xl font-bold">The Deal Closer</h3>
-                      <p className="text-sm text-muted-foreground">Everything you need to close more deals</p>
+                      <p className="text-sm text-muted-foreground">⏰ Limited time exclusive offer</p>
                     </div>
                     <div className="text-right">
                       <div className="text-3xl font-bold">${plans.dealcloser.price}</div>
