@@ -64,17 +64,6 @@ export default function CreateProposal() {
       return;
     }
 
-    // Check subscription status
-    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-      toast({
-        title: "Subscription Required",
-        description: "Please subscribe to a plan to create proposals.",
-        variant: "destructive"
-      });
-      navigate('/pricing');
-      return;
-    }
-
     // Check if we're editing an existing proposal
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
@@ -83,7 +72,7 @@ export default function CreateProposal() {
       setEditingProposalId(editId);
       loadProposalForEditing(editId);
     }
-  }, [user, subscriptionLoading, subscription, navigate]);
+  }, [user, navigate]);
 
   const loadProposalForEditing = async (proposalId: string) => {
     if (!user) return;
