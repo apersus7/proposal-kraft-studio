@@ -55,8 +55,11 @@ export default function SharedProposal() {
       });
 
       if (error) {
-        console.error('get-shared-proposal error:', error);
-        setError(typeof error.message === 'string' ? error.message : 'Unable to load shared proposal.');
+        const status = (error as any)?.context?.status;
+        console.error('get-shared-proposal error:', { status, error });
+        if (status === 404) setError('This share link is invalid. Please ask the sender for a new link.');
+        else if (status === 410) setError('This share link has expired. Please ask the sender to generate a new one.');
+        else setError('Unable to load shared proposal. Please try again.');
         return;
       }
 
