@@ -503,7 +503,7 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
   return (
     <div
       className="min-h-screen"
-      style={{ backgroundColor: theme.backgroundColor, color: theme.textColor, fontFamily: `'${theme.selectedFont}', sans-serif` }}
+      style={{ backgroundColor: '#000000', color: theme.textColor, fontFamily: `'${theme.selectedFont}', sans-serif` }}
     >
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
