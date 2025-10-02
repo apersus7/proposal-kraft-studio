@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut } from 'lucide-react';
+import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut, Menu } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
   id: string;
@@ -238,7 +239,9 @@ const Index = () => {
               <img src={logo} alt="ProposalKraft" className="h-8" />
               <span className="text-xl font-bold text-primary">ProposalKraft</span>
             </Link>
-            <div className="flex items-center space-x-4">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-4">
               <Link to="/features">
                 <Button variant="ghost">Features</Button>
               </Link>
@@ -255,43 +258,71 @@ const Index = () => {
                 Get Started
               </Button>
             </div>
+
+            {/* Mobile Navigation */}
+            <Sheet>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <nav className="flex flex-col space-y-4 mt-8">
+                  <Link to="/features" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start">Features</Button>
+                  </Link>
+                  <Link to="/pricing" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start">Pricing</Button>
+                  </Link>
+                  <Link to="/solutions" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start">Solutions</Button>
+                  </Link>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/auth')}>
+                    Sign In
+                  </Button>
+                  <Button className="w-full" onClick={() => navigate('/auth')}>
+                    Get Started
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 lg:py-32">
+      <section className="py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-8">
-            <img src={logo} alt="ProposalKraft" className="h-20 mx-auto mb-6" />
+          <div className="mb-6 sm:mb-8">
+            <img src={logo} alt="ProposalKraft" className="h-16 sm:h-20 mx-auto mb-4 sm:mb-6" />
           </div>
-          <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold tracking-tight mb-4 sm:mb-6">
             Craft Professional
             <span className="text-primary block">Business Proposals using AI</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">Start closing deals</Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3" onClick={() => navigate('/pricing')}>View Pricing</Button>
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 px-4">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+            <Button size="lg" onClick={() => navigate('/auth')} className="text-base sm:text-lg px-6 sm:px-8 py-3">Start closing deals</Button>
+            <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3" onClick={() => navigate('/pricing')}>View Pricing</Button>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-12 sm:py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">Everything You Need</h2>
-            <p className="text-xl text-muted-foreground">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Everything You Need</h2>
+            <p className="text-lg sm:text-xl text-muted-foreground">
               Professional proposal creation made simple
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             <Card>
               <CardHeader className="text-center">
-                <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Beautiful Templates</CardTitle>
+                <FileText className="h-10 sm:h-12 w-10 sm:w-12 text-primary mx-auto mb-4" />
+                <CardTitle className="text-lg sm:text-xl">Beautiful Templates</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-center">
@@ -302,8 +333,8 @@ const Index = () => {
 
             <Card>
               <CardHeader className="text-center">
-                <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Quick Creation</CardTitle>
+                <Zap className="h-10 sm:h-12 w-10 sm:w-12 text-primary mx-auto mb-4" />
+                <CardTitle className="text-lg sm:text-xl">Quick Creation</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-center">Create proposal In seconds using efficient AI proposal generator</CardDescription>
@@ -312,8 +343,8 @@ const Index = () => {
 
             <Card>
               <CardHeader className="text-center">
-                <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Custom Branding</CardTitle>
+                <Shield className="h-10 sm:h-12 w-10 sm:w-12 text-primary mx-auto mb-4" />
+                <CardTitle className="text-lg sm:text-xl">Custom Branding</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-center">
@@ -324,8 +355,8 @@ const Index = () => {
 
             <Card>
               <CardHeader className="text-center">
-                <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-                <CardTitle>Client Management</CardTitle>
+                <Users className="h-10 sm:h-12 w-10 sm:w-12 text-primary mx-auto mb-4" />
+                <CardTitle className="text-lg sm:text-xl">Client Management</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-center">
@@ -338,15 +369,15 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
+      <section className="py-12 sm:py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
             Ready to Create Your First Proposal?
           </h2>
-          <p className="text-xl text-muted-foreground mb-10">
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10">
             Join thousands of businesses creating winning proposals with ProposalKraft.
           </p>
-          <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">
+          <Button size="lg" onClick={() => navigate('/auth')} className="text-base sm:text-lg px-6 sm:px-8 py-3">
             Get Started Today
           </Button>
         </div>
