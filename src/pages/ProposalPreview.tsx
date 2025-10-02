@@ -33,6 +33,19 @@ export default function ProposalPreview() {
   const [error, setError] = useState<string | null>(null);
   const [signers, setSigners] = useState<any[]>([]);
 
+  // Extract theme from proposal content
+  const getTheme = () => {
+    const content = proposal?.content || {};
+    return {
+      backgroundColor: content.backgroundColor || '#ffffff',
+      textColor: content.textColor || '#000000',
+      headingColor: content.headingColor || '#000000',
+      primaryColor: content.primaryColor || '#3B82F6',
+      secondaryColor: content.secondaryColor || '#6B7280',
+      selectedFont: content.selectedFont || 'Inter',
+    };
+  };
+
   useEffect(() => {
     // Redirect to auth if not logged in
     if (!user && !loading) {
@@ -49,6 +62,21 @@ export default function ProposalPreview() {
       fetchProposal();
     }
   }, [id, user, navigate]);
+
+  // Load custom Google Font if selected
+  useEffect(() => {
+    const font = proposal?.content?.selectedFont;
+    if (font && font !== 'Inter') {
+      const id = `gf-${font.replace(/\s+/g, '-')}`;
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
+        document.head.appendChild(link);
+      }
+    }
+  }, [proposal?.content?.selectedFont]);
 
   const fetchProposal = async () => {
     if (!id || !user) return;
@@ -469,8 +497,13 @@ export default function ProposalPreview() {
     return null;
   }
 
+  const theme = getTheme();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: theme.backgroundColor, color: theme.textColor, fontFamily: `'${theme.selectedFont}', sans-serif` }}
+    >
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header with Action Buttons */}
