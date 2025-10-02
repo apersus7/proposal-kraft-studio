@@ -31,7 +31,6 @@ export default function DragDropEditor({ sections, onSectionsUpdate }: DragDropE
     { value: 'scope_of_work', label: 'Scope of Work' },
     { value: 'pricing', label: 'Pricing' },
     { value: 'payment_link', label: 'Payment Link' },
-    { value: 'terms', label: 'Terms & Conditions' },
     { value: 'about_us', label: 'About Us' },
     { value: 'custom_text', label: 'Custom Text' },
   ];

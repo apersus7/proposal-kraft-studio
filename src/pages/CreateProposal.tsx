@@ -52,7 +52,6 @@ export default function CreateProposal() {
         { type: 'pricing', packages: [], payment_terms: '', total: '' },
         { type: 'value_proposition', advantages: [], case_studies: [], testimonials: [], team: [] },
         { type: 'why_us', content: '', advantages: [], differentiators: [] },
-        { type: 'terms_conditions', content: '' },
         { type: 'call_to_action', next_steps: '' }
       ]
     },
@@ -1389,25 +1388,6 @@ export default function CreateProposal() {
                         className="min-h-[80px]"
                       />
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* Terms & Conditions */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Terms & Conditions</CardTitle>
-                    <CardDescription>
-                      Legal terms and project conditions
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <RichTextEditor
-                      value={getContentValue('terms_conditions', 'content')}
-                      onChange={(value) => updateSectionValue('terms_conditions', 'content', value)}
-                      placeholder="Project terms, conditions, and legal requirements..."
-                      minHeight="120px"
-                      style={{ color: textColor }}
-                    />
                   </CardContent>
                 </Card>
 

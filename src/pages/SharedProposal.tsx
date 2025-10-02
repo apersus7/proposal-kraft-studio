@@ -218,7 +218,6 @@ export default function SharedProposal() {
           pricing: 'Pricing',
           value_proposition: 'Value Proposition',
           why_us: 'Why Us',
-          terms_conditions: 'Terms & Conditions',
           call_to_action: 'Next Steps',
         };
 
