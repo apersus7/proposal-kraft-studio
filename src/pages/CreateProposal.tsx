@@ -1043,7 +1043,18 @@ export default function CreateProposal() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>Why This Solution Fits</Label>
+                      <div className="flex items-center justify-between">
+                        <Label>Why This Solution Fits</Label>
+                        <Button 
+                          onClick={() => generateAIContent('proposed_solution', proposalData.project_name)}
+                          disabled={generatingAI === 'proposed_solution'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'proposed_solution' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                      </div>
                       <RichTextEditor
                         value={getContentValue('proposed_solution', 'why_fits')}
                         onChange={(value) => updateSectionValue('proposed_solution', 'why_fits', value)}
@@ -1066,25 +1077,25 @@ export default function CreateProposal() {
                 {/* Scope of Work */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      Scope of Work
-                      <Button 
-                        onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
-                        disabled={generatingAI === 'scope_of_work'}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
-                      </Button>
-                    </CardTitle>
+                    <CardTitle>Scope of Work</CardTitle>
                     <CardDescription>
                       Detailed breakdown of deliverables and activities
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Deliverables Overview</Label>
+                      <div className="flex items-center justify-between">
+                        <Label>Deliverables Overview</Label>
+                        <Button 
+                          onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                          disabled={generatingAI === 'scope_of_work'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                      </div>
                       <RichTextEditor
                         value={getContentValue('scope_of_work', 'content')}
                         onChange={(value) => updateSectionValue('scope_of_work', 'content', value)}
@@ -1095,7 +1106,18 @@ export default function CreateProposal() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label>Key Deliverables</Label>
+                      <div className="flex items-center justify-between">
+                        <Label>Key Deliverables</Label>
+                        <Button 
+                          onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                          disabled={generatingAI === 'scope_of_work'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                      </div>
                       <Textarea
                         value={getContentValue('scope_of_work', 'deliverables')?.join('\n') || ''}
                         onChange={(e) => updateSectionValue('scope_of_work', 'deliverables', e.target.value.split('\n').filter(Boolean))}
@@ -1105,7 +1127,18 @@ export default function CreateProposal() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>What's Included</Label>
+                      <div className="flex items-center justify-between">
+                        <Label>What's Included</Label>
+                        <Button 
+                          onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                          disabled={generatingAI === 'scope_of_work'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                      </div>
                       <Textarea
                         value={getContentValue('scope_of_work', 'included')?.join('\n') || ''}
                         onChange={(e) => updateSectionValue('scope_of_work', 'included', e.target.value.split('\n').filter(Boolean))}
@@ -1115,7 +1148,18 @@ export default function CreateProposal() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>What's Not Included</Label>
+                      <div className="flex items-center justify-between">
+                        <Label>What's Not Included</Label>
+                        <Button 
+                          onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                          disabled={generatingAI === 'scope_of_work'}
+                          variant="outline" 
+                          size="sm"
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                        </Button>
+                      </div>
                       <Textarea
                         value={getContentValue('scope_of_work', 'excluded')?.join('\n') || ''}
                         onChange={(e) => updateSectionValue('scope_of_work', 'excluded', e.target.value.split('\n').filter(Boolean))}
@@ -1130,7 +1174,18 @@ export default function CreateProposal() {
                 {/* Timeline & Milestones */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Timeline & Milestones</CardTitle>
+                    <CardTitle className="flex items-center justify-between">
+                      Timeline & Milestones
+                      <Button 
+                        onClick={() => generateAIContent('scope_of_work', proposalData.project_name)}
+                        disabled={generatingAI === 'scope_of_work'}
+                        variant="outline" 
+                        size="sm"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        {generatingAI === 'scope_of_work' ? 'Generating...' : 'AI Generate'}
+                      </Button>
+                    </CardTitle>
                     <CardDescription>
                       Project phases and delivery schedule
                     </CardDescription>
@@ -1190,18 +1245,7 @@ export default function CreateProposal() {
                 {/* Pricing */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      Investment & Pricing
-                      <Button 
-                        onClick={() => generateAIContent('pricing', proposalData.project_name)}
-                        disabled={generatingAI === 'pricing'}
-                        variant="outline" 
-                        size="sm"
-                      >
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        {generatingAI === 'pricing' ? 'Generating...' : 'AI Generate'}
-                      </Button>
-                    </CardTitle>
+                    <CardTitle>Investment & Pricing</CardTitle>
                     <CardDescription>
                       Payment terms and pricing breakdown
                     </CardDescription>
