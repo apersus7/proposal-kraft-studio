@@ -19,6 +19,7 @@ interface Proposal {
   status: string;
   created_at: string;
   updated_at: string;
+  allSignaturesSigned?: boolean;
 }
 
 interface Profile {
@@ -95,7 +96,25 @@ export default function Dashboard() {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      setProposals(data || []);
+      
+      // Check signature status for each proposal
+      const proposalsWithSignatures = await Promise.all(
+        (data || []).map(async (proposal) => {
+          const { data: signatures } = await supabase
+            .from('proposal_signatures')
+            .select('status')
+            .eq('proposal_id', proposal.id);
+          
+          const allSignaturesSigned = 
+            signatures && 
+            signatures.length > 0 && 
+            signatures.every(sig => sig.status === 'signed');
+          
+          return { ...proposal, allSignaturesSigned };
+        })
+      );
+      
+      setProposals(proposalsWithSignatures);
     } catch (error) {
       console.error('Error fetching proposals:', error);
     } finally {
@@ -123,10 +142,18 @@ export default function Dashboard() {
       case 'draft': return 'secondary';
       case 'sent': return 'default';
       case 'shared': return 'success';
+      case 'signed': return 'default';
       case 'accepted': return 'destructive';
       case 'rejected': return 'outline';
       default: return 'secondary';
     }
+  };
+
+  const getDisplayStatus = (proposal: Proposal) => {
+    if (proposal.allSignaturesSigned) {
+      return 'signed';
+    }
+    return proposal.status;
   };
 
   const handleCreateProposal = () => {
@@ -269,8 +296,8 @@ export default function Dashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg line-clamp-1">{proposal.title}</CardTitle>
-                    <Badge variant={getStatusColor(proposal.status)}>
-                      {proposal.status}
+                    <Badge variant={getStatusColor(getDisplayStatus(proposal))}>
+                      {getDisplayStatus(proposal)}
                     </Badge>
                   </div>
                   <CardDescription>Client: {proposal.client_name}</CardDescription>
