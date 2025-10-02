@@ -109,15 +109,16 @@ CLIENT & PROJECT DETAILS:
     prompt += `\n- Additional Context: ${contextHint}`;
   }
 
-  prompt += `\n\nGenerate ${section === 'scope_of_work' ? '120-180' : '100-150'} words of personalized, compelling content.
+  prompt += `\n\nGenerate ${section === 'scope_of_work' ? '60-80' : '50-70'} words MAXIMUM of personalized, compelling content.
 
 CRITICAL REQUIREMENTS:
+- KEEP IT SHORT - Maximum ${section === 'scope_of_work' ? '80' : '70'} words
 - Write in plain text only (NO markdown formatting like ##, **, etc.)
-- Keep it short, conversational, and human
+- Be concise and conversational
 - Make it specific to ${clientName}'s ${projectName} project
-- Focus on their unique needs and how you'll deliver value
-- Use existing sections as context for consistency
-- Sound natural and professional, not robotic or template-like`;
+- Focus on key value points only
+- Sound natural and human, not robotic
+- Every sentence must add clear value`;
 
   return prompt;
 };
@@ -164,7 +165,7 @@ serve(async (req) => {
           }
         ],
         temperature: 0.7,
-        max_tokens: 800,
+        max_tokens: 200,
       }),
     });
 
