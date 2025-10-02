@@ -12,15 +12,23 @@ const generateSystemPrompt = (section: string) => {
   const basePrompt = `You are an expert proposal writer who creates compelling, personalized business proposals. 
 Your writing is professional, persuasive, and tailored to the specific client and project.
 
+CRITICAL FORMATTING RULES:
+- NEVER use markdown headers (##, ###, etc.)
+- NEVER use bold/italic markdown formatting (**text**, *text*)
+- Write in plain text with natural paragraph breaks
+- Use simple bullet points with • or - (not markdown bullets)
+- Keep sentences short and conversational
+- Write like a human, not a robot
+
 IMPORTANT GUIDELINES:
 - Always personalize content using the client's name and project details
 - Think about the client's business needs and pain points
 - Use specific, concrete language instead of generic statements
 - Focus on value and outcomes for THIS specific client
 - Keep tone professional but warm and engaging
-- Use bullet points for clarity and scannability
 - Avoid overly salesy or cliché language
-- Be specific about deliverables and benefits`;
+- Be specific about deliverables and benefits
+- Write concisely - every word should add value`;
 
   const sectionPrompts = {
     'objective': `${basePrompt}
@@ -101,10 +109,15 @@ CLIENT & PROJECT DETAILS:
     prompt += `\n- Additional Context: ${contextHint}`;
   }
 
-  prompt += `\n\nGenerate ${section === 'scope_of_work' ? '200-300' : '150-250'} words of personalized, compelling content for this section.
-Make it specific to ${clientName}'s ${projectName} project.
-Focus on their unique needs and how you'll deliver value.
-Use the existing sections as context to maintain consistency.`;
+  prompt += `\n\nGenerate ${section === 'scope_of_work' ? '120-180' : '100-150'} words of personalized, compelling content.
+
+CRITICAL REQUIREMENTS:
+- Write in plain text only (NO markdown formatting like ##, **, etc.)
+- Keep it short, conversational, and human
+- Make it specific to ${clientName}'s ${projectName} project
+- Focus on their unique needs and how you'll deliver value
+- Use existing sections as context for consistency
+- Sound natural and professional, not robotic or template-like`;
 
   return prompt;
 };
@@ -181,16 +194,25 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const generatedContent = data.choices?.[0]?.message?.content;
+    let generatedContent = data.choices?.[0]?.message?.content;
 
     if (!generatedContent) {
       throw new Error('No content generated from AI');
     }
 
-    console.log('AI content generated successfully');
+    // Clean up markdown formatting to ensure plain text
+    generatedContent = generatedContent
+      .replace(/^#+\s+/gm, '')           // Remove markdown headers (##, ###)
+      .replace(/\*\*(.+?)\*\*/g, '$1')   // Remove bold formatting
+      .replace(/\*(.+?)\*/g, '$1')       // Remove italic formatting
+      .replace(/`(.+?)`/g, '$1')         // Remove inline code formatting
+      .replace(/^\s*[-*]\s+/gm, '• ')    // Normalize bullet points to •
+      .trim();
+
+    console.log('AI content generated and cleaned successfully');
 
     return new Response(JSON.stringify({ 
-      content: generatedContent.trim() 
+      content: generatedContent 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
