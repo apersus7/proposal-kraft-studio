@@ -596,44 +596,6 @@ export default function CreateProposal() {
                     <h3 className="text-lg font-medium">Colors</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="primary-color">Primary Color</Label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            id="primary-color"
-                            type="color"
-                            value={primaryColor}
-                            onChange={(e) => setPrimaryColor(e.target.value)}
-                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
-                          />
-                          <Input
-                            value={primaryColor}
-                            onChange={(e) => setPrimaryColor(e.target.value)}
-                            placeholder="#3b82f6"
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="secondary-color">Secondary Color</Label>
-                        <div className="flex items-center gap-2">
-                          <input
-                            id="secondary-color"
-                            type="color"
-                            value={secondaryColor}
-                            onChange={(e) => setSecondaryColor(e.target.value)}
-                            className="w-12 h-12 border-2 border-border rounded-lg cursor-pointer"
-                          />
-                          <Input
-                            value={secondaryColor}
-                            onChange={(e) => setSecondaryColor(e.target.value)}
-                            placeholder="#1e40af"
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
                         <Label htmlFor="background-color">Background Color</Label>
                         <div className="flex items-center gap-2">
                           <input
