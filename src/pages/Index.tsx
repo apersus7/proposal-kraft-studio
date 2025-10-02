@@ -272,7 +272,7 @@ const Index = () => {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">Start closing deals</Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-3">View Pricing</Button>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-3" onClick={() => navigate('/pricing')}>View Pricing</Button>
           </div>
         </div>
       </section>
