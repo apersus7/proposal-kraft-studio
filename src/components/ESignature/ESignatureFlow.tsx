@@ -44,6 +44,7 @@ export default function ESignatureFlow({
   const [activeSignature, setActiveSignature] = useState<string | null>(null);
   const [signatureMode, setSignatureMode] = useState<'draw' | 'type'>('draw');
   const [typedSignature, setTypedSignature] = useState('');
+  const [signerEmail, setSignerEmail] = useState('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -181,6 +182,29 @@ export default function ESignatureFlow({
   };
 
   const saveSignature = async (signerId: string) => {
+    // For non-owners (shared view), validate email is provided
+    if (!isOwner && !signerEmail.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate email format for non-owners
+    if (!isOwner && signerEmail.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(signerEmail.trim())) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid email address",
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+
     let signatureData = '';
 
     if (signatureMode === 'draw') {
@@ -219,15 +243,22 @@ export default function ESignatureFlow({
       // Use anon access for shared proposal signing (no auth required)
       const supabaseClient = isOwner ? supabase : supabase;
       
+      const updateData: any = {
+        signature_data: signatureData,
+        signed_at: new Date().toISOString(),
+        status: 'signed',
+        ip_address: '127.0.0.1', // In production, get real IP
+        user_agent: navigator.userAgent
+      };
+
+      // For non-owners, also update the email if provided
+      if (!isOwner && signerEmail.trim()) {
+        updateData.signer_email = signerEmail.trim();
+      }
+
       const { error } = await supabaseClient
         .from('proposal_signatures')
-        .update({
-          signature_data: signatureData,
-          signed_at: new Date().toISOString(),
-          status: 'signed',
-          ip_address: '127.0.0.1', // In production, get real IP
-          user_agent: navigator.userAgent
-        })
+        .update(updateData)
         .eq('id', signerId);
 
       if (error) throw error;
@@ -240,6 +271,7 @@ export default function ESignatureFlow({
               status: 'signed' as const,
               signed_at: new Date().toISOString(),
               signature_data: signatureData,
+              email: !isOwner && signerEmail.trim() ? signerEmail.trim() : signer.email,
               ip_address: '127.0.0.1',
               user_agent: navigator.userAgent
             }
@@ -249,6 +281,7 @@ export default function ESignatureFlow({
       onSignersUpdate(updatedSigners);
       setActiveSignature(null);
       setTypedSignature('');
+      setSignerEmail('');
 
       toast({
         title: "Success",
@@ -495,6 +528,24 @@ export default function ESignatureFlow({
                               By signing below, you agree to the terms and conditions outlined in this proposal.
                             </AlertDescription>
                           </Alert>
+                          
+                          {/* Email Input for non-owners (clients) */}
+                          {!isOwner && (
+                            <div className="space-y-2">
+                              <Label htmlFor="signer-email-input">Email Address *</Label>
+                              <Input
+                                id="signer-email-input"
+                                type="email"
+                                value={signerEmail}
+                                onChange={(e) => setSignerEmail(e.target.value)}
+                                placeholder="your.email@example.com"
+                                required
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Please confirm your email address to complete the signature
+                              </p>
+                            </div>
+                          )}
                           
                           <div className="flex space-x-2 mb-4">
                             <Button
