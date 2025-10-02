@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useSubscription } from '@/hooks/useSubscription';
+
 import Footer from '@/components/Footer';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
@@ -30,7 +30,6 @@ const Index = () => {
     signOut
   } = useAuth();
   const navigate = useNavigate();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

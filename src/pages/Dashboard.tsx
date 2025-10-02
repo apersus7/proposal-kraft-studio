@@ -157,10 +157,6 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = () => {
-    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-      navigate('/payment');
-      return;
-    }
     navigate('/create-proposal');
   };
 
