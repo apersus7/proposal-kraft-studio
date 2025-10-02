@@ -35,11 +35,38 @@ export default function SharedProposal() {
   const [error, setError] = useState<string | null>(null);
   const [signers, setSigners] = useState<any[]>([]);
 
+  // Extract theme from proposal content
+  const getTheme = () => {
+    if (!proposal?.content) return {};
+    const content = proposal.content;
+    return {
+      backgroundColor: content.backgroundColor || '#ffffff',
+      textColor: content.textColor || '#000000',
+      headingColor: content.headingColor || '#000000',
+      primaryColor: content.primaryColor || '#3B82F6',
+      secondaryColor: content.secondaryColor || '#6B7280',
+      selectedFont: content.selectedFont || 'Inter'
+    };
+  };
+
   useEffect(() => {
     if (token) {
       fetchSharedProposal();
     }
   }, [token]);
+
+  // Load custom font if specified
+  useEffect(() => {
+    if (proposal?.content?.selectedFont) {
+      const font = proposal.content.selectedFont;
+      if (font && font !== 'Inter') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
+        document.head.appendChild(link);
+      }
+    }
+  }, [proposal]);
 
   const fetchSharedProposal = async () => {
     if (!token) return;
@@ -200,7 +227,7 @@ export default function SharedProposal() {
 
         return (
           <div key={idx} className="mb-8">
-            <h3 className="text-lg font-semibold mb-3 text-primary">{heading}</h3>
+            <h3 className="text-lg font-semibold mb-3" style={{ color: getTheme().headingColor }}>{heading}</h3>
 
             {type === 'cover_page' && (
               <div className="flex items-center gap-4 mb-3">
@@ -209,22 +236,22 @@ export default function SharedProposal() {
                   <img src={sec.company_logo} alt={`${sec.company_name || 'Company'} logo`} className="h-12 w-12 object-contain rounded" loading="lazy" />
                 )}
                 <div>
-                  {sec.company_name && <p className="font-medium">{sec.company_name}</p>}
-                  {sec.tagline && <p className="text-muted-foreground">{sec.tagline}</p>}
+                  {sec.company_name && <p className="font-medium" style={{ color: getTheme().textColor }}>{sec.company_name}</p>}
+                  {sec.tagline && <p style={{ color: getTheme().textColor, opacity: 0.7 }}>{sec.tagline}</p>}
                 </div>
               </div>
             )}
 
             {text && (
               <div className="prose prose-slate max-w-none">
-                <p className="whitespace-pre-wrap text-muted-foreground">{text}</p>
+                <p className="whitespace-pre-wrap" style={{ color: getTheme().textColor }}>{text}</p>
               </div>
             )}
 
             {Array.isArray(sec.timeline) && sec.timeline.length > 0 && (
               <div className="mt-4">
-                <h4 className="font-medium mb-2">Timeline</h4>
-                <ul className="list-disc pl-6 text-muted-foreground">
+                <h4 className="font-medium mb-2" style={{ color: getTheme().headingColor }}>Timeline</h4>
+                <ul className="list-disc pl-6" style={{ color: getTheme().textColor }}>
                   {sec.timeline.map((t: any, i: number) => (
                     <li key={i}>{t?.phase ? `${t.phase} — ${t.duration || ''}` : ''}</li>
                   ))}
@@ -234,8 +261,8 @@ export default function SharedProposal() {
 
             {Array.isArray(sec.testimonials) && sec.testimonials.length > 0 && (
               <div className="mt-4">
-                <h4 className="font-medium mb-2">Testimonials</h4>
-                <ul className="list-disc pl-6 text-muted-foreground">
+                <h4 className="font-medium mb-2" style={{ color: getTheme().headingColor }}>Testimonials</h4>
+                <ul className="list-disc pl-6" style={{ color: getTheme().textColor }}>
                   {sec.testimonials.map((t: any, i: number) => (
                     <li key={i}>{t?.name || t?.link}</li>
                   ))}
@@ -253,9 +280,9 @@ export default function SharedProposal() {
         if (!section || typeof section !== 'object') return null;
         return (
           <div key={section.id ?? i} className="mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-primary">{section.title}</h3>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{section.title}</h3>
             <div className="prose prose-slate max-w-none">
-              <p className="text-muted-foreground whitespace-pre-wrap">{section.content?.text || ''}</p>
+              <p className="whitespace-pre-wrap" style={{ color: getTheme().textColor }}>{section.content?.text || ''}</p>
             </div>
           </div>
         );
@@ -274,15 +301,23 @@ export default function SharedProposal() {
         const display = isRenderableText ? String(data) : JSON.stringify(data, null, 2);
         return (
           <div key={section} className="mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-primary">{sectionTitle}</h3>
-            <pre className="text-sm text-muted-foreground bg-muted/30 p-3 rounded overflow-auto">{display}</pre>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{sectionTitle}</h3>
+            <pre className="text-sm p-3 rounded overflow-auto" style={{ color: getTheme().textColor, backgroundColor: `${getTheme().backgroundColor}dd` }}>{display}</pre>
           </div>
         );
       });
   };
 
+  const theme = getTheme();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div 
+      className="min-h-screen" 
+      style={{ 
+        backgroundColor: theme.backgroundColor,
+        fontFamily: `'${theme.selectedFont}', sans-serif`
+      }}
+    >
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -319,7 +354,7 @@ export default function SharedProposal() {
           </Card>
 
           {/* Content */}
-          <Card>
+          <Card style={{ backgroundColor: 'white' }}>
             <CardContent className="p-8">
               <div className="prose prose-slate max-w-none">
                 {renderContent(proposal.content)}
