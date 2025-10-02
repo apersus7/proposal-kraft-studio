@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import PaymentLinks from '@/components/PaymentLinks';
@@ -281,7 +281,7 @@ export default function SharedProposal() {
         return (
           <div key={section.id ?? i} className="mb-8">
             <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{section.title}</h3>
-            <div className="prose prose-slate max-w-none">
+            <div className="prose max-w-none">
               <p className="whitespace-pre-wrap" style={{ color: getTheme().textColor }}>{section.content?.text || ''}</p>
             </div>
           </div>
@@ -309,6 +309,7 @@ export default function SharedProposal() {
   };
 
   const theme = getTheme();
+  const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed');
 
   return (
     <div 
@@ -345,9 +346,13 @@ export default function SharedProposal() {
                     )}
                   </div>
                 </div>
-                <Badge variant="secondary" className="ml-4">
-                  <Eye className="h-3 w-3 mr-1" />
-                  Shared Proposal
+                <Badge variant={allSigned ? "default" : "secondary"} className="ml-4">
+                  {allSigned ? (
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Eye className="h-3 w-3 mr-1" />
+                  )}
+                  {allSigned ? 'Signed' : 'Shared Proposal'}
                 </Badge>
               </div>
             </CardContent>
@@ -356,7 +361,13 @@ export default function SharedProposal() {
           {/* Content */}
           <Card style={{ backgroundColor: 'white' }}>
             <CardContent className="p-8">
-              <div className="prose prose-slate max-w-none">
+              <div className="prose max-w-none" style={{
+                ['--tw-prose-body' as any]: theme.textColor,
+                ['--tw-prose-headings' as any]: theme.headingColor,
+                ['--tw-prose-links' as any]: theme.primaryColor,
+                ['--tw-prose-bold' as any]: theme.headingColor,
+                ['--tw-prose-quotes' as any]: theme.textColor,
+              }}>
                 {renderContent(proposal.content)}
               </div>
             </CardContent>

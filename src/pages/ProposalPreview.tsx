@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool, Download } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool, Download, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -497,7 +497,8 @@ export default function ProposalPreview() {
     return null;
   }
 
-  const theme = getTheme();
+const theme = getTheme();
+const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed');
 
   return (
     <div
@@ -564,9 +565,13 @@ export default function ProposalPreview() {
                     )}
                   </div>
                 </div>
-                <Badge variant="secondary" className="ml-4">
-                  <Eye className="h-3 w-3 mr-1" />
-                  Proposal View
+                <Badge variant={allSigned ? "default" : "secondary"} className="ml-4">
+                  {allSigned ? (
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Eye className="h-3 w-3 mr-1" />
+                  )}
+                  {allSigned ? 'Signed' : 'Proposal View'}
                 </Badge>
               </div>
             </CardContent>
@@ -592,7 +597,13 @@ export default function ProposalPreview() {
             <TabsContent value="preview">
               <Card>
                 <CardContent className="p-8">
-                  <div id="proposal-preview-content" className="prose prose-slate max-w-none">
+                  <div id="proposal-preview-content" className="prose max-w-none" style={{
+                    ['--tw-prose-body' as any]: theme.textColor,
+                    ['--tw-prose-headings' as any]: theme.headingColor,
+                    ['--tw-prose-links' as any]: theme.primaryColor,
+                    ['--tw-prose-bold' as any]: theme.headingColor,
+                    ['--tw-prose-quotes' as any]: theme.textColor,
+                  }}>
                     {renderContent(proposal.content)}
                   </div>
                 </CardContent>
