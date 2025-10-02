@@ -245,9 +245,9 @@ const Index = () => {
               <Link to="/features">
                 <Button variant="ghost">Features</Button>
               </Link>
-              <Link to="/pricing">
-                <Button variant="ghost">Pricing</Button>
-              </Link>
+              <Button variant="ghost" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+                Request Demo
+              </Button>
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
@@ -271,9 +271,9 @@ const Index = () => {
                   <Link to="/features" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Features</Button>
                   </Link>
-                  <Link to="/pricing" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">Pricing</Button>
-                  </Link>
+                  <Button variant="ghost" className="w-full justify-start" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+                    Request Demo
+                  </Button>
                   <Link to="/solutions" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Solutions</Button>
                   </Link>
@@ -303,7 +303,7 @@ const Index = () => {
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 px-4">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <Button size="lg" onClick={() => navigate('/auth')} className="text-base sm:text-lg px-6 sm:px-8 py-3">Start closing deals</Button>
-            <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3" onClick={() => navigate('/pricing')}>View Pricing</Button>
+            <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>Request Demo</Button>
           </div>
         </div>
       </section>
