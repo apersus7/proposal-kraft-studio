@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-
 import Footer from '@/components/Footer';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
@@ -70,7 +69,6 @@ const Index = () => {
   const handleCreateProposal = () => {
     navigate('/create-proposal');
   };
-
   const getStatusBadge = (proposal: Proposal) => {
     if (proposal.payment_status === 'paid') {
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Payment Done</Badge>;
@@ -273,7 +271,7 @@ const Index = () => {
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">Start your Free Trial</Button>
+            <Button size="lg" onClick={() => navigate('/auth')} className="text-lg px-8 py-3">Start closing deals</Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-3">View Pricing</Button>
           </div>
         </div>
