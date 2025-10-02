@@ -32,7 +32,7 @@ import { toast } from '@/hooks/use-toast';
 import PaymentIntegration from '@/components/PaymentIntegration';
 import BrandKitManager from '@/components/BrandKitManager';
 import PaymentSettings from '@/components/PaymentSettings';
-import { useSubscription } from '@/hooks/useSubscription';
+import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -52,9 +52,8 @@ interface Profile {
 export default function Settings() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { subscription, loading: subscriptionLoading, refresh: refreshSubscription } = useSubscription();
+  const { hasPaid, loading: paymentLoading } = usePaymentStatus();
   const [loading, setLoading] = useState(false);
-  const [subscriptionActionLoading, setSubscriptionActionLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
@@ -159,51 +158,8 @@ export default function Settings() {
   if (!user) return null;
 
   const handleSubscribe = async (planId: string) => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to subscribe to a plan.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setSubscriptionActionLoading(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('create-paypal-subscription', {
-        body: { planId }
-      });
-
-      if (error) {
-        console.error('Subscription creation error:', error);
-        throw new Error(error.message || 'Failed to create subscription');
-      }
-
-      if (data?.error) {
-        console.error('PayPal error:', data.error);
-        throw new Error(data.error);
-      }
-
-      if (data?.approvalUrl) {
-        console.log('Redirecting to PayPal:', data.approvalUrl);
-        // Redirect to PayPal for approval
-        window.location.href = data.approvalUrl;
-      } else {
-        throw new Error('No approval URL received from PayPal');
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        title: "Subscription Failed",
-        description: error instanceof Error ? error.message : "Failed to create subscription. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setSubscriptionActionLoading(false);
-      // Refresh subscription status after a delay
-      setTimeout(() => refreshSubscription(), 2000);
-    }
+    // Redirect to payment page
+    navigate('/payment');
   };
 
   // Check for PayPal return parameters
@@ -431,206 +387,45 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-medium">
-                        Current Plan: {subscription.hasActiveSubscription 
-                          ? `${subscription.planType?.charAt(0).toUpperCase()}${subscription.planType?.slice(1)} Plan`
-                          : 'Free Access'
-                        }
+                        Current Status: {hasPaid ? 'Premium Access' : 'No Access'}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {subscription.hasActiveSubscription
-                          ? `Active until ${subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : 'N/A'}`
-                          : 'All features enabled - No subscription required'
+                        {hasPaid
+                          ? 'You have full access to all features'
+                          : 'Complete payment to unlock all features'
                         }
                       </p>
-                      {subscriptionLoading && (
-                        <p className="text-xs text-muted-foreground mt-1">Loading subscription status...</p>
+                      {paymentLoading && (
+                        <p className="text-xs text-muted-foreground mt-1">Loading payment status...</p>
                       )}
                     </div>
-                    <Badge variant={subscription.hasActiveSubscription ? "default" : "secondary"}>
-                      {subscription.hasActiveSubscription ? subscription.status : 'Free'}
+                    <Badge variant={hasPaid ? "default" : "secondary"}>
+                      {hasPaid ? 'Paid' : 'Unpaid'}
                     </Badge>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Available Plans</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    
-                    {/* Freelance Plan */}
-                    <Card className="relative">
-                      <CardHeader>
-                        <CardTitle className="text-lg">Freelance</CardTitle>
-                        <div className="text-2xl font-bold">$19<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>Perfect for freelancers and small businesses</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>5 proposals with watermark</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited templates</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited customisation</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Tracking</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>E-signature</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Export in various formats</span>
-                          </div>
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          className="w-full"
-                          onClick={() => navigate(`/payment?plan=freelance`)}
-                          disabled={subscription.hasActiveSubscription && subscription.planType === 'freelance'}
-                        >
-                          {(subscription.hasActiveSubscription && subscription.planType === 'freelance') ? 'Current Plan' : 'Subscribe Now'}
-                        </Button>
-                      </CardContent>
-                    </Card>
-
-                    {/* Agency Plan */}
-                    <Card className="relative border-primary">
-                      <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                        <Badge variant="default" className="px-3">Most Popular</Badge>
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Agency</CardTitle>
-                        <div className="text-2xl font-bold">$49<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>Best for growing businesses and teams</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited proposals</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited templates</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited customisation</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Tracking</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>E-signature</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Export in various formats</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Upload custom template</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Reminders</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Team collaboration</span>
-                          </div>
-                        </div>
-                        <Button 
-                          className="w-full"
-                          onClick={() => navigate(`/payment?plan=agency`)}
-                          disabled={subscription.hasActiveSubscription && subscription.planType === 'agency'}
-                        >
-                          {(subscription.hasActiveSubscription && subscription.planType === 'agency') ? 'Current Plan' : 'Subscribe Now'}
-                        </Button>
-                      </CardContent>
-                    </Card>
-
-                    {/* Enterprise Plan */}
-                    <Card className="relative">
-                      <CardHeader>
-                        <CardTitle className="text-lg">Enterprise</CardTitle>
-                        <div className="text-2xl font-bold">$69<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-                        <CardDescription>For large organizations with advanced needs</CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited proposals</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited templates</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Unlimited customisation</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Tracking</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>E-signature</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Export in various formats</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Upload custom template</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Payment integration</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Reminders</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>Team collaboration</span>
-                          </div>
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          className="w-full"
-                          onClick={() => navigate(`/payment?plan=enterprise`)}
-                          disabled={subscription.hasActiveSubscription && subscription.planType === 'enterprise'}
-                        >
-                          {(subscription.hasActiveSubscription && subscription.planType === 'enterprise') ? 'Current Plan' : 'Subscribe Now'}
-                        </Button>
-                      </CardContent>
-                    </Card>
-
+                {!hasPaid && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Get Full Access</h3>
+                    <p className="text-sm text-muted-foreground">
+                      One-time payment of $28 to unlock all features permanently.
+                    </p>
+                    <Button onClick={() => navigate('/payment')}>
+                      Go to Payment
+                    </Button>
                   </div>
-                </div>
-
-                <div className="text-center p-6 border rounded-lg border-dashed bg-muted/20">
-                  <h3 className="font-medium mb-2">🎉 Special Access</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You currently have complimentary access to all Professional features. Enjoy creating unlimited proposals with full functionality!
-                  </p>
-                </div>
+                )}
               </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>🎉 Special Access</CardTitle>
+                <CardDescription>
+                  You currently have complimentary access to all Professional features. Enjoy creating unlimited proposals with full functionality!
+                </CardDescription>
+              </CardHeader>
             </Card>
           </TabsContent>
 

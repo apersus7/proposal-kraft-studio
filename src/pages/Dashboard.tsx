@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
-import { useSubscription } from '@/hooks/useSubscription';
+import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
@@ -32,7 +32,7 @@ interface Profile {
 export default function Dashboard() {
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
+  const { hasPaid, loading: paymentLoading } = usePaymentStatus();
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -44,6 +44,12 @@ export default function Dashboard() {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!loading && !paymentLoading && user && !hasPaid) {
+      navigate('/payment');
+    }
+  }, [user, loading, paymentLoading, hasPaid, navigate]);
 
   useEffect(() => {
     if (user) {
@@ -157,6 +163,10 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = () => {
+    if (!paymentLoading && !hasPaid) {
+      navigate('/payment');
+      return;
+    }
     navigate('/create-proposal');
   };
 
@@ -171,6 +181,17 @@ export default function Dashboard() {
         <div className="text-center">
           <img src={logo} alt="ProposalKraft" className="h-12 mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (paymentLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <img src={logo} alt="ProposalKraft" className="h-12 mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Checking payment status...</p>
         </div>
       </div>
     );

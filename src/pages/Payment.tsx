@@ -11,7 +11,7 @@ import { ArrowLeft, CreditCard, Check, Clock, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { useSubscription } from '@/hooks/useSubscription';
+import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 const plans = {
   dealcloser: {
     name: 'The Deal Closer',
@@ -24,12 +24,8 @@ const plans = {
 const countries = ['United States', 'Canada', 'United Kingdom', 'Australia', 'Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Sweden', 'Norway', 'Denmark', 'Other'];
 export default function Payment() {
   const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
-  const {
-    subscription
-  } = useSubscription();
+  const { user } = useAuth();
+  const { hasPaid } = usePaymentStatus();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('');
@@ -105,13 +101,13 @@ export default function Payment() {
       return;
     }
 
-    // Check if user already has this plan
-    if (subscription.hasActiveSubscription && subscription.planType === selectedPlan) {
+    // Check if user already paid
+    if (hasPaid) {
       toast({
-        title: "Already Subscribed",
-        description: "You already have this plan active.",
-        variant: "destructive"
+        title: "Already Paid",
+        description: "You already have access to all features.",
       });
+      navigate('/dashboard');
       return;
     }
     setLoading(true);
