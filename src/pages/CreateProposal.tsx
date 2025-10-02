@@ -216,17 +216,43 @@ export default function CreateProposal() {
   const generateAIContent = async (section: string, context?: string) => {
     setGeneratingAI(section);
     try {
+      // Gather comprehensive context about the client and project
+      const comprehensiveContext = {
+        section,
+        clientName: proposalData.client_name,
+        clientEmail: proposalData.client_email,
+        projectName: proposalData.project_name,
+        proposalTitle: proposalData.title,
+        projectWorth: proposalData.pricing,
+        currency: proposalData.currency || 'USD',
+        // Include any existing content for context
+        existingObjective: getContentValue('objective', 'content'),
+        existingSolution: getContentValue('proposed_solution', 'content'),
+        existingScopeOfWork: getContentValue('scope_of_work', 'content'),
+        // Additional context hint
+        contextHint: context
+      };
+
       const { data, error } = await supabase.functions.invoke('generate-proposal-content', {
-        body: { section, context }
+        body: comprehensiveContext
       });
+      
       if (error) throw error;
+      
       if (data?.content) {
         updateSectionValue(section, 'content', data.content);
-        toast({ title: 'AI Content Generated', description: `${section.replace('_', ' ')} updated` });
+        toast({ 
+          title: 'AI Content Generated', 
+          description: `${section.replace(/_/g, ' ')} section updated with tailored content` 
+        });
       }
     } catch (err) {
       console.error('Error generating AI content:', err);
-      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+      toast({ 
+        title: 'Error', 
+        description: 'Failed to generate content. Please try again.', 
+        variant: 'destructive' 
+      });
     } finally {
       setGeneratingAI(null);
     }

@@ -5,45 +5,108 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple content templates for different sections
-const contentTemplates = {
-  'objective': (context: string) => `Transform ${context} to achieve:
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-• Enhanced performance and user experience
-• Streamlined operations and improved efficiency
-• Modern technology implementation
-• Measurable business outcomes
+// Enhanced prompts that think deeply about the client and project
+const generateSystemPrompt = (section: string) => {
+  const basePrompt = `You are an expert proposal writer who creates compelling, personalized business proposals. 
+Your writing is professional, persuasive, and tailored to the specific client and project.
 
-Focused on delivering immediate value and long-term success.`,
-  
-  'scope_of_work': (context: string) => `${context} project includes:
+IMPORTANT GUIDELINES:
+- Always personalize content using the client's name and project details
+- Think about the client's business needs and pain points
+- Use specific, concrete language instead of generic statements
+- Focus on value and outcomes for THIS specific client
+- Keep tone professional but warm and engaging
+- Use bullet points for clarity and scannability
+- Avoid overly salesy or cliché language
+- Be specific about deliverables and benefits`;
 
-• Requirements analysis and planning
-• Design and development implementation
-• Testing and quality assurance
-• Training and deployment
-• Post-launch support
+  const sectionPrompts = {
+    'objective': `${basePrompt}
 
-Structured approach with clear milestones and deliverables.`,
+For the PROJECT OBJECTIVE section:
+- Clearly articulate what the client wants to achieve
+- Connect to their business goals and challenges
+- Explain the "why" behind the project
+- Set clear, measurable objectives
+- Show you understand their specific situation`,
 
-  'pricing': (context: string) => `Investment breakdown:
+    'proposed_solution': `${basePrompt}
 
-• Planning & Strategy: Research, planning, documentation
-• Implementation: Development, testing, deployment
-• Support: Training, optimization, ongoing support
+For the PROPOSED SOLUTION section:
+- Explain your approach and methodology clearly
+- Show why your solution is perfect for THIS client
+- Highlight unique aspects of your approach
+- Connect solution features to client benefits
+- Be specific about tools, processes, and deliverables`,
 
-Milestone-based payments with transparent pricing and no hidden costs.`,
+    'scope_of_work': `${basePrompt}
 
-  'about_us': (context: string) => `Expert team specializing in ${context} with proven results:
+For the SCOPE OF WORK section:
+- Break down deliverables in detail
+- Provide clear, organized structure
+- Specify what's included and excluded
+- Show the logical flow of work
+- Make it easy to understand what they're getting`,
 
-• 5+ years industry experience
-• 50+ successful projects delivered
-• Certified professionals and specialists
-• Quality-first approach
-• Transparent communication
-• Results-driven methodology
+    'call_to_action': `${basePrompt}
 
-Helping businesses achieve 40% efficiency gains and measurable ROI.`
+For the NEXT STEPS section:
+- Create a clear path forward
+- Make it easy for the client to proceed
+- Include specific action items
+- Provide contact information
+- Create a sense of momentum and urgency (without being pushy)`
+  };
+
+  return sectionPrompts[section as keyof typeof sectionPrompts] || basePrompt;
+};
+
+const generateUserPrompt = (context: any) => {
+  const {
+    section,
+    clientName,
+    projectName,
+    proposalTitle,
+    projectWorth,
+    currency,
+    existingObjective,
+    existingSolution,
+    existingScopeOfWork,
+    contextHint
+  } = context;
+
+  let prompt = `Generate compelling content for the "${section.replace(/_/g, ' ')}" section of a business proposal.
+
+CLIENT & PROJECT DETAILS:
+- Client Name: ${clientName || 'Not specified'}
+- Project Name: ${projectName || 'Not specified'}
+- Proposal Title: ${proposalTitle || 'Not specified'}
+- Project Value: ${projectWorth ? `${currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '$'}${projectWorth}` : 'Not specified'}`;
+
+  if (existingObjective) {
+    prompt += `\n- Project Objective (for context): ${existingObjective.substring(0, 200)}...`;
+  }
+
+  if (existingSolution) {
+    prompt += `\n- Proposed Solution (for context): ${existingSolution.substring(0, 200)}...`;
+  }
+
+  if (existingScopeOfWork) {
+    prompt += `\n- Scope of Work (for context): ${existingScopeOfWork.substring(0, 200)}...`;
+  }
+
+  if (contextHint) {
+    prompt += `\n- Additional Context: ${contextHint}`;
+  }
+
+  prompt += `\n\nGenerate ${section === 'scope_of_work' ? '200-300' : '150-250'} words of personalized, compelling content for this section.
+Make it specific to ${clientName}'s ${projectName} project.
+Focus on their unique needs and how you'll deliver value.
+Use the existing sections as context to maintain consistency.`;
+
+  return prompt;
 };
 
 serve(async (req) => {
@@ -52,34 +115,86 @@ serve(async (req) => {
   }
 
   try {
-    const { section, context } = await req.json();
+    const context = await req.json();
+    const { section } = context;
 
-    console.log(`Generating content for section: ${section}`);
-    console.log(`Context: ${context}`);
+    console.log(`Generating AI content for section: ${section}`);
+    console.log(`Client: ${context.clientName}, Project: ${context.projectName}`);
 
-    // Get the appropriate template or use a default one
-    const templateFunction = contentTemplates[section as keyof typeof contentTemplates];
-    
-    let generatedContent;
-    if (templateFunction) {
-      generatedContent = templateFunction(context || 'your business needs');
-    } else {
-      // Default content for unknown sections
-      generatedContent = `${section.replace('_', ' ').toUpperCase()} for ${context || 'this project'}:
-
-• Customized solution approach
-• Industry-standard practices
-• Clear deliverables and timelines
-• Comprehensive support
-
-Designed to maximize value and achieve your goals.`;
+    if (!LOVABLE_API_KEY) {
+      console.error('LOVABLE_API_KEY not configured');
+      return new Response(JSON.stringify({ 
+        error: 'AI service not configured properly' 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('Generated content successfully');
+    // Call Lovable AI Gateway with enhanced context
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          {
+            role: 'system',
+            content: generateSystemPrompt(section)
+          },
+          {
+            role: 'user',
+            content: generateUserPrompt(context)
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      }),
+    });
 
-    return new Response(JSON.stringify({ content: generatedContent.trim() }), {
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI Gateway error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ 
+          error: 'Rate limit exceeded. Please wait a moment and try again.' 
+        }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ 
+          error: 'AI credits depleted. Please add credits to your Lovable workspace.' 
+        }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      throw new Error(`AI Gateway responded with ${response.status}`);
+    }
+
+    const data = await response.json();
+    const generatedContent = data.choices?.[0]?.message?.content;
+
+    if (!generatedContent) {
+      throw new Error('No content generated from AI');
+    }
+
+    console.log('AI content generated successfully');
+
+    return new Response(JSON.stringify({ 
+      content: generatedContent.trim() 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
   } catch (error) {
     console.error('Error in generate-proposal-content function:', error);
     return new Response(JSON.stringify({ 
