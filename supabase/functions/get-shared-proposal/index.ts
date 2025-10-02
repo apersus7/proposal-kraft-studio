@@ -123,7 +123,7 @@ serve(async (req) => {
       );
     }
 
-    // Fetch signers (public view)
+    // Fetch signers (public view) - always fresh, not frozen in snapshot
     const { data: signers, error: signersError } = await supabase
       .from("proposal_signatures")
       .select("id, signer_name, signer_email, status, signed_at, signature_data, ip_address, user_agent, created_at")
@@ -134,8 +134,21 @@ serve(async (req) => {
       console.error("get-shared-proposal: signersError", signersError);
     }
 
+    // Map signers to match ESignatureFlow expected format
+    const formattedSigners = (signers ?? []).map((sig, idx) => ({
+      id: sig.id,
+      name: sig.signer_name,
+      email: sig.signer_email,
+      order: idx + 1,
+      status: sig.status,
+      signed_at: sig.signed_at,
+      signature_data: sig.signature_data,
+      ip_address: sig.ip_address,
+      user_agent: sig.user_agent
+    }));
+
     return new Response(
-      JSON.stringify({ share, proposal: proposalData, signers: signers ?? [] }),
+      JSON.stringify({ share, proposal: proposalData, signers: formattedSigners }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (e) {
