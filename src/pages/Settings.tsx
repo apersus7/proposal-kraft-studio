@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   ArrowLeft, 
   User, 
+  Mail,
+  Phone,
+  MapPin,
   Building, 
   CreditCard, 
   Zap, 
@@ -26,7 +29,6 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import CRMIntegration from '@/components/CRMIntegration';
 import PaymentIntegration from '@/components/PaymentIntegration';
 import BrandKitManager from '@/components/BrandKitManager';
 import PaymentSettings from '@/components/PaymentSettings';
@@ -537,10 +539,6 @@ export default function Settings() {
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>CRM integration</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                             <span>Upload custom template</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -597,10 +595,6 @@ export default function Settings() {
                           </div>
                           <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                            <span>CRM integration</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                             <span>Upload custom template</span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -641,18 +635,6 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="integrations" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>CRM Integration</CardTitle>
-                <CardDescription>
-                  Connect your favorite CRM to sync contacts and opportunities
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CRMIntegration />
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>Payment Integration</CardTitle>
