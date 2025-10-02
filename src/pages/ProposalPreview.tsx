@@ -332,40 +332,6 @@ export default function ProposalPreview() {
                   </div>
                 ) : null;
 
-              case 'why_us':
-                return (section.content || section.advantages?.length > 0 || section.differentiators?.length > 0) ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
-                      Why Choose Us
-                    </h2>
-                    {section.content && (
-                      <div className="mb-4">
-                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
-                      </div>
-                    )}
-                    {section.advantages?.length > 0 && (
-                      <div className="mb-4">
-                        <h3 className="text-lg font-medium mb-2">Key Advantages:</h3>
-                        <ul className="list-disc list-inside space-y-1">
-                          {section.advantages.map((item: string, idx: number) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    {section.differentiators?.length > 0 && (
-                      <div>
-                        <h3 className="text-lg font-medium mb-2">What Sets Us Apart:</h3>
-                        <ul className="list-disc list-inside space-y-1">
-                          {section.differentiators.map((item: string, idx: number) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ) : null;
-
               case 'call_to_action':
                 return section.next_steps ? (
                   <div key={index} className="mb-8">

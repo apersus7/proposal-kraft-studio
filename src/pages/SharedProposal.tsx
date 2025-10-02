@@ -217,7 +217,6 @@ export default function SharedProposal() {
           scope_of_work: 'Scope of Work',
           pricing: 'Pricing',
           value_proposition: 'Value Proposition',
-          why_us: 'Why Us',
           call_to_action: 'Next Steps',
         };
 
