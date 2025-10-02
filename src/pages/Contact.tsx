@@ -123,9 +123,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  123 Business Ave<br />
-                  Suite 100<br />
-                  New York, NY 10001
+                  7085 rue Louis Hémon<br />
+                  Diberville<br />
+                  Montreal H2E 2T6
                 </p>
               </CardContent>
             </Card>
