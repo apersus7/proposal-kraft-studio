@@ -87,7 +87,8 @@ serve(async (req) => {
         cancel_url: cancelUrl,
         shipping_preference: 'NO_SHIPPING',
         payment_method: {
-          payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
+          payee_preferred: paymentMethod === 'card' ? 'IMMEDIATE_PAYMENT_REQUIRED' : 'UNRESTRICTED',
+          payer_selected: paymentMethod === 'card' ? 'PAYPAL' : 'PAYPAL'
         }
       },
       payer: {

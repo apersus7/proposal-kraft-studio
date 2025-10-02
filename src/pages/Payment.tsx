@@ -112,23 +112,17 @@ export default function Payment() {
     }
     setLoading(true);
     try {
-      console.log('Creating payment for:', {
+      console.log('Creating subscription for:', {
         plan: selectedPlan,
         method: paymentMethod,
         userInfo
       });
-      
-      // Use subscription for PayPal, one-time payment for cards (guest checkout)
-      const functionName = paymentMethod === 'paypal' ? 'create-paypal-subscription' : 'create-paypal-payment';
       const {
         data,
         error
-      } = await supabase.functions.invoke(functionName, {
+      } = await supabase.functions.invoke('create-paypal-subscription', {
         body: {
-          planId: selectedPlan,
-          amount: selectedPlanDetails?.price,
-          userInfo,
-          paymentMethod
+          planId: selectedPlan
         }
       });
       if (error) {
