@@ -251,8 +251,8 @@ const Index = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              <Button variant="ghost" onClick={() => navigate('/auth')}>
-                Sign In
+              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+                Request Demo
               </Button>
               <Button onClick={() => navigate('/auth')}>
                 Get Started
@@ -277,8 +277,8 @@ const Index = () => {
                   <Link to="/solutions" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Solutions</Button>
                   </Link>
-                  <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/auth')}>
-                    Sign In
+                  <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+                    Request Demo
                   </Button>
                   <Button className="w-full" onClick={() => navigate('/auth')}>
                     Get Started
