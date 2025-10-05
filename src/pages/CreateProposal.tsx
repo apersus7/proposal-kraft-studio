@@ -837,7 +837,7 @@ export default function CreateProposal() {
 
                       {/* Sample Content Sections */}
                       <div className="space-y-4">
-                        <div className="border-l-4 pl-4" style={{ borderColor: primaryColor }}>
+                        <div className="border-l-4 pl-4" style={{ borderColor: headingColor }}>
                           <h2 
                             className="text-2xl font-semibold mb-2"
                             style={{ color: headingColor }}
@@ -864,10 +864,10 @@ export default function CreateProposal() {
                           </ul>
                         </div>
 
-                        <div className="flex items-center gap-4 p-4 rounded-lg" style={{ backgroundColor: `${primaryColor}20` }}>
+                        <div className="flex items-center gap-4 p-4 rounded-lg border-2" style={{ borderColor: headingColor }}>
                           <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
-                            style={{ backgroundColor: primaryColor }}
+                            className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
+                            style={{ backgroundColor: headingColor, color: backgroundColor }}
                           >
                             $
                           </div>
@@ -884,31 +884,24 @@ export default function CreateProposal() {
                        <div className="flex gap-4 mt-8">
                          <div className="flex items-center gap-2">
                            <div 
-                             className="w-6 h-6 rounded border-2 border-white shadow-sm"
-                             style={{ backgroundColor: primaryColor }}
-                           />
-                           <span className="text-xs text-gray-500">Primary</span>
-                         </div>
-                         <div className="flex items-center gap-2">
-                           <div 
-                             className="w-6 h-6 rounded border-2 border-white shadow-sm"
-                             style={{ backgroundColor: secondaryColor }}
-                           />
-                           <span className="text-xs text-gray-500">Secondary</span>
-                         </div>
-                         <div className="flex items-center gap-2">
-                           <div 
                              className="w-6 h-6 rounded border-2 border-gray-300"
                              style={{ backgroundColor: backgroundColor }}
                            />
-                           <span className="text-xs text-gray-500">Background</span>
+                           <span className="text-xs" style={{ color: textColor }}>Background</span>
                          </div>
                          <div className="flex items-center gap-2">
                            <div 
                              className="w-6 h-6 rounded border-2 border-gray-300"
                              style={{ backgroundColor: textColor }}
                            />
-                           <span className="text-xs text-gray-500">Text</span>
+                           <span className="text-xs" style={{ color: textColor }}>Text</span>
+                         </div>
+                         <div className="flex items-center gap-2">
+                           <div 
+                             className="w-6 h-6 rounded border-2 border-gray-300"
+                             style={{ backgroundColor: headingColor }}
+                           />
+                           <span className="text-xs" style={{ color: textColor }}>Heading</span>
                          </div>
                        </div>
                     </div>
