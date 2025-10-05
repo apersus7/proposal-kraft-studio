@@ -137,16 +137,10 @@ export default function Dashboard() {
   };
 
   const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'draft': 
-        return { backgroundColor: '#000000', color: '#ffffff' };
-      case 'shared': 
-        return { backgroundColor: '#22c55e', color: '#000000' };
-      case 'signed': 
-        return { backgroundColor: '#22c55e', color: '#000000' };
-      default: 
-        return { backgroundColor: '#e5e7eb', color: '#000000' };
-    }
+    const s = (status || '').toString().trim().toLowerCase();
+    if (s === 'draft') return { backgroundColor: '#000000', color: '#ffffff' };
+    if (s === 'shared' || s === 'signed') return { backgroundColor: '#22c55e', color: '#000000' };
+    return { backgroundColor: '#e5e7eb', color: '#000000' };
   };
 
   const getDisplayStatus = (proposal: Proposal) => {
