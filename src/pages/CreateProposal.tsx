@@ -823,13 +823,13 @@ export default function CreateProposal() {
                       <div className="text-center">
                         <h1 
                           className="text-4xl font-bold mb-2"
-                          style={{ color: primaryColor }}
+                          style={{ color: headingColor }}
                         >
                           {proposalData.title || 'Your Proposal Title'}
                         </h1>
                         <p 
                           className="text-xl"
-                          style={{ color: secondaryColor }}
+                          style={{ color: textColor }}
                         >
                           Prepared for: {proposalData.client_name || 'Client Name'}
                         </p>
@@ -840,11 +840,11 @@ export default function CreateProposal() {
                         <div className="border-l-4 pl-4" style={{ borderColor: primaryColor }}>
                           <h2 
                             className="text-2xl font-semibold mb-2"
-                            style={{ color: primaryColor }}
+                            style={{ color: headingColor }}
                           >
                             Executive Summary
                           </h2>
-                          <p className="text-gray-700 dark:text-gray-300">
+                          <p style={{ color: textColor }}>
                             This is a sample of how your proposal content will appear with the selected theme. 
                             The colors, fonts, and branding elements will be consistently applied throughout your proposal.
                           </p>
@@ -853,11 +853,11 @@ export default function CreateProposal() {
                         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                           <h3 
                             className="text-lg font-medium mb-2"
-                            style={{ color: secondaryColor }}
+                            style={{ color: headingColor }}
                           >
                             Project Details
                           </h3>
-                          <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                          <ul className="space-y-1 text-sm" style={{ color: textColor }}>
                             <li>• Service: {proposalData.project_name || 'Your service description'}</li>
                             <li>• Value: {proposalData.currency} {proposalData.pricing || '0'}</li>
                             <li>• Client: {proposalData.client_name || 'Client name'}</li>
@@ -872,8 +872,8 @@ export default function CreateProposal() {
                             $
                           </div>
                           <div>
-                            <h4 className="font-medium" style={{ color: primaryColor }}>Investment</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <h4 className="font-medium" style={{ color: headingColor }}>Investment</h4>
+                            <p className="text-sm" style={{ color: textColor }}>
                               Total project value: {proposalData.currency} {proposalData.pricing || '0'}
                             </p>
                           </div>
