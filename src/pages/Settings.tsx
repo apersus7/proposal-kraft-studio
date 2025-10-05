@@ -32,6 +32,7 @@ import { toast } from '@/hooks/use-toast';
 import PaymentIntegration from '@/components/PaymentIntegration';
 import BrandKitManager from '@/components/BrandKitManager';
 import PaymentSettings from '@/components/PaymentSettings';
+import { useSubscription } from '@/hooks/useSubscription';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -54,6 +55,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const { subscription, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     if (!user) {
@@ -62,6 +64,13 @@ export default function Settings() {
     }
     fetchProfile();
   }, [user, navigate]);
+
+  // Subscription gate
+  useEffect(() => {
+    if (!subscriptionLoading && user && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
+    }
+  }, [user, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
   const fetchProfile = async () => {
     if (!user) return;

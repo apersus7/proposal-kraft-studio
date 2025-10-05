@@ -12,6 +12,7 @@ import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 import PaymentLinks from '@/components/PaymentLinks';
 import ProposalSharing from '@/components/ProposalSharing';
 import ExportDialog from '@/components/ProposalEditor/ExportDialog';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface ProposalData {
   id: string;
@@ -32,6 +33,14 @@ export default function ProposalPreview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [signers, setSigners] = useState<any[]>([]);
+  const { subscription, loading: subscriptionLoading } = useSubscription();
+
+  // Subscription gate
+  useEffect(() => {
+    if (!authLoading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
+    }
+  }, [user, authLoading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
   // Extract theme from proposal content
   const getTheme = () => {
