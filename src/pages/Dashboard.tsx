@@ -136,15 +136,16 @@ export default function Dashboard() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'draft': return 'secondary';
-      case 'sent': return 'default';
-      case 'shared': return 'success';
-      case 'signed': return 'default';
-      case 'accepted': return 'destructive';
-      case 'rejected': return 'outline';
-      default: return 'secondary';
+      case 'draft': 
+        return { backgroundColor: '#000000', color: '#ffffff' };
+      case 'shared': 
+        return { backgroundColor: '#22c55e', color: '#000000' };
+      case 'signed': 
+        return { backgroundColor: '#22c55e', color: '#000000' };
+      default: 
+        return { backgroundColor: '#e5e7eb', color: '#000000' };
     }
   };
 
@@ -292,7 +293,7 @@ export default function Dashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg line-clamp-1">{proposal.title}</CardTitle>
-                    <Badge variant={getStatusColor(getDisplayStatus(proposal))}>
+                    <Badge style={getStatusStyle(getDisplayStatus(proposal))}>
                       {getDisplayStatus(proposal)}
                     </Badge>
                   </div>
