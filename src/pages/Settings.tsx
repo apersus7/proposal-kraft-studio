@@ -32,7 +32,6 @@ import { toast } from '@/hooks/use-toast';
 import PaymentIntegration from '@/components/PaymentIntegration';
 import BrandKitManager from '@/components/BrandKitManager';
 import PaymentSettings from '@/components/PaymentSettings';
-import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -52,7 +51,6 @@ interface Profile {
 export default function Settings() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { hasPaid, loading: paymentLoading } = usePaymentStatus();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -383,39 +381,9 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="p-4 border rounded-lg bg-accent/10">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">
-                        Current Status: {hasPaid ? 'Premium Access' : 'No Access'}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {hasPaid
-                          ? 'You have full access to all features'
-                          : 'Complete payment to unlock all features'
-                        }
-                      </p>
-                      {paymentLoading && (
-                        <p className="text-xs text-muted-foreground mt-1">Loading payment status...</p>
-                      )}
-                    </div>
-                    <Badge variant={hasPaid ? "default" : "secondary"}>
-                      {hasPaid ? 'Paid' : 'Unpaid'}
-                    </Badge>
-                  </div>
-                </div>
-
-                {!hasPaid && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Get Full Access</h3>
-                    <p className="text-sm text-muted-foreground">
-                      One-time payment of $28 to unlock all features permanently.
-                    </p>
-                    <Button onClick={() => navigate('/payment')}>
-                      Go to Payment
-                    </Button>
-                  </div>
-                )}
+                <p className="text-sm text-muted-foreground">
+                  Manage your subscription and billing preferences here.
+                </p>
               </CardContent>
             </Card>
 

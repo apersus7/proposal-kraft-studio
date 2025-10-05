@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePaymentStatus } from '@/hooks/usePaymentStatus';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +21,6 @@ const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 export default function CreateProposal() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { hasPaid, loading: paymentLoading } = usePaymentStatus();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<'details' | 'theme' | 'content'>('details');
   const [isEditing, setIsEditing] = useState(false);
@@ -63,12 +61,6 @@ export default function CreateProposal() {
       return;
     }
 
-    // Check payment status
-    if (!paymentLoading && !hasPaid) {
-      navigate('/payment');
-      return;
-    }
-
     // Check if we're editing an existing proposal
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
@@ -77,7 +69,7 @@ export default function CreateProposal() {
       setEditingProposalId(editId);
       loadProposalForEditing(editId);
     }
-  }, [user, navigate, hasPaid, paymentLoading]);
+  }, [user, navigate]);
 
   const loadProposalForEditing = async (proposalId: string) => {
     if (!user) return;
