@@ -14,6 +14,7 @@ const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { ColorThemeSelector } from '@/components/ColorThemeSelector';
 import RichTextEditor from '@/components/RichTextEditor';
+import { useSubscription } from '@/hooks/useSubscription';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -34,6 +35,14 @@ export default function CreateProposal() {
   const [selectedFont, setSelectedFont] = useState<string>('Inter');
   const [logoUrl, setLogoUrl] = useState<string>('');
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
+  const { subscription, loading: subscriptionLoading } = useSubscription();
+
+  // Subscription gate - redirect to pricing if no active subscription
+  useEffect(() => {
+    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
+    }
+  }, [subscriptionLoading, subscription.hasActiveSubscription, navigate]);
   
   const [proposalData, setProposalData] = useState<any>({
     title: '',

@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
+import { useSubscription } from '@/hooks/useSubscription';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
@@ -36,12 +37,20 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const { subscription, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  // Subscription gate - redirect to pricing if no active subscription
+  useEffect(() => {
+    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
+    }
+  }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
 
   useEffect(() => {
@@ -159,7 +168,7 @@ export default function Dashboard() {
     // Don't navigate immediately - let the auth state change handle the redirect
   };
 
-  if (loading || !user) {
+  if (loading || subscriptionLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
