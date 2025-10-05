@@ -287,9 +287,12 @@ export default function Dashboard() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg line-clamp-1">{proposal.title}</CardTitle>
-                    <Badge style={getStatusStyle(getDisplayStatus(proposal))}>
+                    <span 
+                      className="inline-flex items-center rounded-full border-transparent px-2.5 py-0.5 text-xs font-semibold"
+                      style={getStatusStyle(getDisplayStatus(proposal))}
+                    >
                       {getDisplayStatus(proposal)}
-                    </Badge>
+                    </span>
                   </div>
                   <CardDescription>Client: {proposal.client_name}</CardDescription>
                 </CardHeader>
