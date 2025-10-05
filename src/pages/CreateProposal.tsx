@@ -1418,10 +1418,8 @@ export default function CreateProposal() {
                     className="aspect-[8.5/11] border rounded-lg p-4 text-xs overflow-auto max-h-[600px] relative" 
                     style={{ 
                       backgroundColor: backgroundColor || '#ffffff',
-                      color: backgroundColor === '#000000' || backgroundColor === '#ffffff' ? '#000000' : '#ffffff',
-                      fontFamily: selectedFont || 'Inter',
-                      '--selected-primary': primaryColor, 
-                      '--selected-secondary': secondaryColor 
+                      color: textColor || '#000000',
+                      fontFamily: selectedFont || 'Inter'
                     } as React.CSSProperties}
                   >
                     {/* Logo in top-left corner */}
@@ -1440,14 +1438,14 @@ export default function CreateProposal() {
                     )}
                     
                     {/* Cover Page - With applied colors */}
-                    <div className="text-center mb-6 pb-4 pt-16" style={{ borderBottom: `2px solid ${primaryColor}` }}>
-                      <div className="text-xs mb-1" style={{ color: secondaryColor }}>
+                    <div className="text-center mb-6 pb-4 pt-16" style={{ borderBottom: `2px solid ${headingColor}` }}>
+                      <div className="text-xs mb-1" style={{ color: textColor }}>
                         {getContentValue('cover_page', 'company_name') || 'Your Company'}
                       </div>
-                      <h1 className="text-lg font-bold mb-2" style={{ color: primaryColor }}>{proposalData.title}</h1>
-                      <p className="text-sm text-gray-600 mb-1">Project: {proposalData.project_name}</p>
-                      <p className="text-gray-600 text-sm">Prepared for {proposalData.client_name}</p>
-                      <p className="text-gray-500 text-xs mt-2">
+                      <h1 className="text-lg font-bold mb-2" style={{ color: headingColor }}>{proposalData.title}</h1>
+                      <p className="text-sm mb-1" style={{ color: textColor }}>Project: {proposalData.project_name}</p>
+                      <p className="text-sm" style={{ color: textColor }}>Prepared for {proposalData.client_name}</p>
+                      <p className="text-xs mt-2" style={{ color: textColor }}>
                         {getContentValue('cover_page', 'tagline') || `Helping ${proposalData.client_name} achieve success with innovative solutions`}
                       </p>
                     </div>
@@ -1455,10 +1453,10 @@ export default function CreateProposal() {
                     {/* Project Objective - With applied colors */}
                     {getContentValue('objective', 'content') && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                           Project Objective
                         </h2>
-                        <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+                        <div className="text-xs leading-relaxed whitespace-pre-line" style={{ color: textColor }}>
                           {getContentValue('objective', 'content')
                             .split('\n')
                             .map((line: string, lineIndex: number) => {
@@ -1479,11 +1477,11 @@ export default function CreateProposal() {
                     {/* Proposed Solution - With applied colors */}
                     {(getContentValue('proposed_solution', 'content') || getContentValue('proposed_solution', 'why_fits')) && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                           Proposed Solution
                         </h2>
                          {getContentValue('proposed_solution', 'content') && (
-                           <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line mb-2">
+                           <div className="text-xs leading-relaxed whitespace-pre-line mb-2" style={{ color: textColor }}>
                              {getContentValue('proposed_solution', 'content')
                                .split('\n')
                                .map((line: string, lineIndex: number) => {
@@ -1501,8 +1499,8 @@ export default function CreateProposal() {
                          )}
                         {getContentValue('proposed_solution', 'why_fits') && (
                           <>
-                            <div className="text-xs font-medium text-gray-800 mb-1">Why This Solution Fits:</div>
-                            <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line">
+                            <div className="text-xs font-medium mb-1" style={{ color: headingColor }}>Why This Solution Fits:</div>
+                            <div className="text-xs leading-relaxed whitespace-pre-line" style={{ color: textColor }}>
                               {getContentValue('proposed_solution', 'why_fits')
                                 .split('\n')
                                 .map((line: string, lineIndex: number) => {
@@ -1521,8 +1519,8 @@ export default function CreateProposal() {
                         )}
                         {getContentValue('proposed_solution', 'tools')?.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-800 mb-1">Tools & Technologies:</p>
-                            <p className="text-xs text-gray-600">
+                            <p className="text-xs font-medium mb-1" style={{ color: headingColor }}>Tools & Technologies:</p>
+                            <p className="text-xs" style={{ color: textColor }}>
                               {getContentValue('proposed_solution', 'tools').join(', ')}
                             </p>
                           </div>
@@ -1533,11 +1531,11 @@ export default function CreateProposal() {
                     {/* Scope of Work - With applied colors */}
                     {(getContentValue('scope_of_work', 'content') || getContentValue('scope_of_work', 'deliverables')?.length > 0) && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                           Scope of Work
                         </h2>
                         {getContentValue('scope_of_work', 'content') && (
-                          <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line mb-2">
+                          <div className="text-xs leading-relaxed whitespace-pre-line mb-2" style={{ color: textColor }}>
                             {getContentValue('scope_of_work', 'content')
                               .split('\n')
                               .map((line: string, lineIndex: number) => {
@@ -1555,8 +1553,8 @@ export default function CreateProposal() {
                         )}
                         {getContentValue('scope_of_work', 'deliverables')?.length > 0 && (
                           <div className="mb-2">
-                            <p className="text-xs font-medium text-gray-800 mb-1">Key Deliverables:</p>
-                            <ul className="list-disc list-inside text-xs text-gray-700 space-y-0.5">
+                            <p className="text-xs font-medium mb-1" style={{ color: headingColor }}>Key Deliverables:</p>
+                            <ul className="list-disc list-inside text-xs space-y-0.5" style={{ color: textColor }}>
                               {getContentValue('scope_of_work', 'deliverables').map((item: string, idx: number) => (
                                 <li key={idx}>{item}</li>
                               ))}
@@ -1565,10 +1563,10 @@ export default function CreateProposal() {
                         )}
                         {getContentValue('scope_of_work', 'timeline')?.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-800 mb-1">Timeline:</p>
+                            <p className="text-xs font-medium mb-1" style={{ color: headingColor }}>Timeline:</p>
                             <div className="space-y-1">
                               {Array.isArray(getContentValue('scope_of_work', 'timeline')) ? getContentValue('scope_of_work', 'timeline').map((phase: any, idx: number) => (
-                                <div key={idx} className="text-xs text-gray-700">
+                                <div key={idx} className="text-xs" style={{ color: textColor }}>
                                   <span className="font-medium">{phase.phase}:</span> {phase.duration} - {phase.description}
                                 </div>
                               )) : []}
@@ -1580,14 +1578,14 @@ export default function CreateProposal() {
                     
                     {/* Investment - With applied colors */}
                     <section className="mb-4">
-                      <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                      <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                         Investment
                       </h2>
-                      <p className="text-sm font-medium text-gray-800 mb-1">
+                      <p className="text-sm font-medium mb-1" style={{ color: headingColor }}>
                         Total Project Investment: {proposalData.currency === 'EUR' ? '€' : proposalData.currency === 'GBP' ? '£' : '$'}{proposalData.pricing || 'XX,XXX'}
                       </p>
                       {getContentValue('pricing', 'payment_terms') && (
-                        <p className="text-xs text-gray-700">
+                        <p className="text-xs" style={{ color: textColor }}>
                           Payment Terms: {getContentValue('pricing', 'payment_terms')}
                         </p>
                       )}
@@ -1596,25 +1594,26 @@ export default function CreateProposal() {
                     {/* Testimonials - With applied colors */}
                     {getContentValue('value_proposition', 'testimonials')?.length > 0 && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: primaryColor, borderBottom: `1px solid ${primaryColor}20` }}>
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                           Client Testimonials
                         </h2>
                         <div className="space-y-2">
                           {getContentValue('value_proposition', 'testimonials').map((testimonial: any, idx: number) => (
-                            <div key={idx} className="bg-gray-50 p-2 rounded text-xs">
+                            <div key={idx} className="border p-2 rounded text-xs" style={{ borderColor: headingColor }}>
                               {testimonial.content && (
-                                <p className="text-gray-700 mb-1 italic">"{testimonial.content}"</p>
+                                <p className="mb-1 italic" style={{ color: textColor }}>"{testimonial.content}"</p>
                               )}
                               <div className="flex items-center justify-between">
                                 {testimonial.name && (
-                                  <p className="font-medium text-gray-800">- {testimonial.name}</p>
+                                  <p className="font-medium" style={{ color: headingColor }}>- {testimonial.name}</p>
                                 )}
                                 {testimonial.link && (
                                   <a 
                                     href={testimonial.link} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="text-blue-600 hover:text-blue-800 underline"
+                                    className="underline"
+                                    style={{ color: headingColor }}
                                   >
                                     View Profile
                                   </a>
@@ -1629,14 +1628,14 @@ export default function CreateProposal() {
                     {/* Next Steps */}
                     {getContentValue('call_to_action', 'next_steps') && (
                       <section className="mb-4">
-                        <h2 className="text-sm font-semibold mb-2 text-primary border-b border-gray-200 pb-1">
+                        <h2 className="text-sm font-semibold mb-2 pb-1" style={{ color: headingColor, borderBottom: `1px solid ${headingColor}40` }}>
                           Next Steps
                         </h2>
-                        <p className="text-xs text-gray-700 leading-relaxed">
+                        <p className="text-xs leading-relaxed" style={{ color: textColor }}>
                           {getContentValue('call_to_action', 'next_steps')}
                         </p>
                         {getContentValue('call_to_action', 'contact_details') && (
-                          <div className="mt-2 text-xs text-gray-600">
+                          <div className="mt-2 text-xs" style={{ color: textColor }}>
                             {getContentValue('call_to_action', 'contact_details').split('\n').map((line: string, idx: number) => (
                               <div key={idx}>{line}</div>
                             ))}
