@@ -396,19 +396,64 @@ export default function Settings() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <p className="text-sm text-muted-foreground">
-                  Manage your subscription and billing preferences here.
-                </p>
-              </CardContent>
-            </Card>
+                {subscriptionLoading ? (
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                    <div className="h-4 bg-muted rounded w-1/3"></div>
+                  </div>
+                ) : subscription.hasActiveSubscription ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">Current Plan</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {subscription.planType ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Unknown'}
+                        </p>
+                      </div>
+                      <Badge variant="default">
+                        {subscription.status === 'active' ? 'Active' : subscription.status}
+                      </Badge>
+                    </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>🎉 Special Access</CardTitle>
-                <CardDescription>
-                  You currently have complimentary access to all Professional features. Enjoy creating unlimited proposals with full functionality!
-                </CardDescription>
-              </CardHeader>
+                    {subscription.currentPeriodEnd && (
+                      <div>
+                        <h3 className="font-medium">Next Billing Date</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    )}
+
+                    <Separator />
+
+                    <div className="space-y-2">
+                      <h3 className="font-medium">Manage Subscription</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        To update or cancel your subscription, please visit your Whop account.
+                      </p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => window.open('https://whop.com/@me/settings/orders/', '_blank')}
+                      >
+                        Manage on Whop
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      You don't have an active subscription. Subscribe to unlock all features.
+                    </p>
+                    <Button onClick={() => navigate('/pricing')}>
+                      View Plans
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </TabsContent>
 
