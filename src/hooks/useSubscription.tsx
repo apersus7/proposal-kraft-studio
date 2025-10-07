@@ -32,6 +32,16 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
 
+      // First try to get subscription from Whop
+      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access');
+
+      if (!whopError && whopData?.hasActiveSubscription) {
+        setSubscription(whopData);
+        setLoading(false);
+        return;
+      }
+
+      // Fall back to PayPal subscription
       const { data, error: fetchError } = await supabase.functions.invoke('get-subscription-status');
 
       if (fetchError) {

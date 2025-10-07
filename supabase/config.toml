@@ -1,5 +1,14 @@
 project_id = "kmgmjfifunncweqgnbvz"
 
+[functions.create-whop-checkout]
+verify_jwt = false
+
+[functions.whop-webhook]
+verify_jwt = false
+
+[functions.verify-whop-access]
+verify_jwt = false
+
 [functions.get-shared-proposal]
 verify_jwt = false
 

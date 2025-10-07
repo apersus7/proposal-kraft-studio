@@ -77,6 +77,37 @@ const Checkout = () => {
 
   const [paypalPlanIds, setPaypalPlanIds] = useState<any>(null);
   const [paypalEnv, setPaypalEnv] = useState<'live' | 'sandbox'>('live');
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'whop'>('whop');
+  
+  const handleWhopCheckout = async () => {
+    if (!selectedPlan || !user) return;
+    
+    setIsProcessing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-whop-checkout', {
+        body: {
+          planId: planId,
+          userId: user.id,
+          userEmail: user.email,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      console.error('Error creating Whop checkout:', error);
+      toast({
+        title: 'Checkout Error',
+        description: 'Unable to start checkout. Please try again.',
+        variant: 'destructive',
+      });
+      setIsProcessing(false);
+    }
+  };
+
   useEffect(() => {
     // Get PayPal client ID and plan IDs; client token is optional
     const getPayPalCredentials = async () => {
@@ -283,10 +314,10 @@ const Checkout = () => {
   };
   
   useEffect(() => {
-    if (paypalLoaded && selectedPlan && paypalPlanIds) {
+    if (paypalLoaded && selectedPlan && paypalPlanIds && paymentMethod === 'paypal') {
       createPayPalSubscription();
     }
-  }, [paypalLoaded, selectedPlan, paypalPlanIds]);
+  }, [paypalLoaded, selectedPlan, paypalPlanIds, paymentMethod]);
 
   if (!user) {
     return (
@@ -365,44 +396,96 @@ const Checkout = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {paypalLoaded ? (
-                  <div className="space-y-4">
-                    <div className="text-center">
-                      <h3 className="font-semibold mb-2">Complete Your Payment</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Subscribe to {selectedPlan.name} - PayPal accepts all major cards
-                      </p>
-                    </div>
-                    <div id="paypal-button-container"></div>
-                    {isProcessing && (
-                      <div className="text-center p-4 bg-muted rounded-lg">
-                        <p className="text-sm font-medium">Processing your subscription...</p>
-                        <p className="text-xs text-muted-foreground mt-1">Please do not close this window</p>
+                {/* Payment method selector */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Choose Payment Method</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button
+                      variant={paymentMethod === 'whop' ? 'default' : 'outline'}
+                      onClick={() => setPaymentMethod('whop')}
+                      className="h-auto py-4"
+                    >
+                      <div className="text-center">
+                        <div className="font-semibold">Whop</div>
+                        <div className="text-xs mt-1">Fast & Secure</div>
                       </div>
-                    )}
-                  </div>
-                ) : paypalLoadFailed ? (
-                  <div className="p-6 border border-destructive/20 rounded-lg text-center bg-destructive/5">
-                    <h3 className="font-semibold mb-2 text-destructive">Payment System Unavailable</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Unable to load PayPal. Please check your network connection and disable any ad blockers, then refresh the page.
-                    </p>
-                    <Button onClick={() => window.location.reload()} variant="outline">
-                      Refresh Page
+                    </Button>
+                    <Button
+                      variant={paymentMethod === 'paypal' ? 'default' : 'outline'}
+                      onClick={() => setPaymentMethod('paypal')}
+                      className="h-auto py-4"
+                    >
+                      <div className="text-center">
+                        <div className="font-semibold">PayPal</div>
+                        <div className="text-xs mt-1">Cards & PayPal</div>
+                      </div>
                     </Button>
                   </div>
-                ) : (
-                  <div className="p-6 border border-dashed rounded-lg text-center">
-                    <h3 className="font-semibold mb-2">Loading Payment Options...</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Preparing secure checkout with enhanced card support...
-                    </p>
+                </div>
+
+                {/* Whop payment */}
+                {paymentMethod === 'whop' && (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h3 className="font-semibold mb-2">Complete Your Payment with Whop</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Subscribe to {selectedPlan.name} - Secure checkout via Whop
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={handleWhopCheckout}
+                      disabled={isProcessing}
+                      className="w-full h-12"
+                      size="lg"
+                    >
+                      {isProcessing ? 'Processing...' : `Subscribe with Whop - ${selectedPlan.price}`}
+                    </Button>
                   </div>
                 )}
 
+                {/* PayPal payment */}
+                {paymentMethod === 'paypal' && (
+                  <>
+                    {paypalLoaded ? (
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <h3 className="font-semibold mb-2">Complete Your Payment</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Subscribe to {selectedPlan.name} - PayPal accepts all major cards
+                          </p>
+                        </div>
+                        <div id="paypal-button-container"></div>
+                        {isProcessing && (
+                          <div className="text-center p-4 bg-muted rounded-lg">
+                            <p className="text-sm font-medium">Processing your subscription...</p>
+                            <p className="text-xs text-muted-foreground mt-1">Please do not close this window</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : paypalLoadFailed ? (
+                      <div className="p-6 border border-destructive/20 rounded-lg text-center bg-destructive/5">
+                        <h3 className="font-semibold mb-2 text-destructive">Payment System Unavailable</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Unable to load PayPal. Please check your network connection and disable any ad blockers, then refresh the page.
+                        </p>
+                        <Button onClick={() => window.location.reload()} variant="outline">
+                          Refresh Page
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="p-6 border border-dashed rounded-lg text-center">
+                        <h3 className="font-semibold mb-2">Loading Payment Options...</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Preparing secure checkout with enhanced card support...
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+
                 <div className="text-center text-sm text-muted-foreground space-y-2">
-                  <p>🔒 Secure PayPal checkout</p>
-                  <p>💳 PayPal accepts all major cards</p>
+                  <p>🔒 Secure checkout</p>
+                  <p>💳 All major cards accepted</p>
                   <p>📅 Monthly billing cycle</p>
                   <p>❌ Cancel anytime</p>
                 </div>
