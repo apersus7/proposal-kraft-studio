@@ -99,17 +99,23 @@ serve(async (req) => {
     const memberships = await response.json();
     console.log('Whop memberships:', memberships);
 
-    const activeMembership = memberships.data?.find((m: any) => 
-      m.status === 'active' && m.valid_until && new Date(m.valid_until).getTime() > Date.now()
-    );
+    const activeMembership = memberships.data?.find((m: any) => {
+      const periodEndSec = m.renewal_period_end ?? m.expires_at ?? null;
+      const periodEndMs = periodEndSec ? Number(periodEndSec) * 1000 : null;
+      const isValidNow = m.valid === true || (periodEndMs ? periodEndMs > Date.now() : false);
+      return (m.status === 'active' || m.status === 'trialing') && isValidNow;
+    });
 
     if (activeMembership) {
+      const periodEndSec = activeMembership.renewal_period_end ?? activeMembership.expires_at ?? null;
+      const periodEndIso = periodEndSec ? new Date(Number(periodEndSec) * 1000).toISOString() : null;
+      const planKey = activeMembership.plan ?? activeMembership.plan_id;
       return new Response(
         JSON.stringify({
           hasActiveSubscription: true,
-          planType: getPlanTypeFromWhopPlan(activeMembership.plan_id),
-          status: 'active',
-          currentPeriodEnd: activeMembership.valid_until,
+          planType: getPlanTypeFromWhopPlan(planKey),
+          status: activeMembership.status,
+          currentPeriodEnd: periodEndIso,
           whopMembershipId: activeMembership.id,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

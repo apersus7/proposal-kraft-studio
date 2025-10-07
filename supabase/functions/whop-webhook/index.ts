@@ -19,10 +19,10 @@ serve(async (req) => {
     const webhookData = await req.json();
     console.log('Received Whop webhook:', webhookData);
 
-    const eventType = webhookData.type;
+    const action = webhookData.action || webhookData.type;
     const data = webhookData.data;
 
-    switch (eventType) {
+    switch (action) {
       case 'membership.went_valid':
         await handleMembershipValid(supabase, data);
         break;
@@ -33,7 +33,7 @@ serve(async (req) => {
         await handleMembershipRenewed(supabase, data);
         break;
       default:
-        console.log('Unhandled webhook event:', eventType);
+        console.log('Unhandled webhook event:', action);
     }
 
     return new Response(
@@ -70,7 +70,11 @@ async function handleMembershipValid(supabase: any, data: any) {
       status: 'active',
       paypal_subscription_id: membershipId,
       current_period_start: new Date().toISOString(),
-      current_period_end: data.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      current_period_end: data.renewal_period_end
+        ? new Date(Number(data.renewal_period_end) * 1000).toISOString()
+        : (data.expires_at
+            ? new Date(Number(data.expires_at) * 1000).toISOString()
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
     });
 
   if (subError) {
@@ -119,7 +123,11 @@ async function handleMembershipRenewed(supabase: any, data: any) {
   const { error } = await supabase
     .from('subscriptions')
     .update({
-      current_period_end: data.valid_until || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      current_period_end: data.renewal_period_end
+        ? new Date(Number(data.renewal_period_end) * 1000).toISOString()
+        : (data.expires_at
+            ? new Date(Number(data.expires_at) * 1000).toISOString()
+            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
       status: 'active',
     })
     .eq('user_id', userId)
