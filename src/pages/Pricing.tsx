@@ -218,7 +218,7 @@ const Pricing = () => {
               Join thousands of professionals already using ProposalKraft to win more business.
             </p>
             <Link to="/auth">
-              <Button size="lg" className="text-lg px-8 py-3">Start cloing deals</Button>
+              <Button size="lg" className="text-lg px-8 py-3">Start closing deals</Button>
             </Link>
           </div>
         </section>
