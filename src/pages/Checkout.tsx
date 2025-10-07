@@ -108,8 +108,13 @@ const Checkout = () => {
 
       if (error) throw error;
 
+      console.log('Whop checkout response:', data);
+
       if (data?.checkoutUrl) {
+        console.log('Redirecting to:', data.checkoutUrl);
         window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error('No checkout URL received from server');
       }
     } catch (error) {
       console.error('Error creating Whop checkout:', error);

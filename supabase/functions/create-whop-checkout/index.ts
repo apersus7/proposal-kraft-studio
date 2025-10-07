@@ -63,11 +63,22 @@ serve(async (req) => {
     }
 
     const checkoutSession = await response.json();
-    console.log('Whop checkout session created:', checkoutSession.id);
+    console.log('Whop checkout session created:', checkoutSession);
+
+    // Whop may return different field names for the checkout URL
+    const checkoutUrl = checkoutSession.checkout_url || 
+                        checkoutSession.url || 
+                        checkoutSession.checkoutUrl ||
+                        checkoutSession.payment_url;
+
+    if (!checkoutUrl) {
+      console.error('No checkout URL in response:', checkoutSession);
+      throw new Error('Whop did not return a checkout URL. Please check your Whop configuration.');
+    }
 
     return new Response(
       JSON.stringify({ 
-        checkoutUrl: checkoutSession.checkout_url,
+        checkoutUrl: checkoutUrl,
         sessionId: checkoutSession.id 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
