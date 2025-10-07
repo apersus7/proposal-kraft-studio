@@ -14,6 +14,7 @@ import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
 import Solutions from "./pages/Solutions";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 import SharedProposal from "./pages/SharedProposal";
 import ProposalPreview from "./pages/ProposalPreview";
 import NotFound from "./pages/NotFound";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/payment" element={<Payment />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<AboutUs />} />

@@ -1,21 +1,33 @@
 project_id = "kmgmjfifunncweqgnbvz"
 
-[functions.create-whop-checkout]
-verify_jwt = false
-
-[functions.whop-webhook]
-verify_jwt = false
-
-[functions.verify-whop-access]
-verify_jwt = false
-
 [functions.get-shared-proposal]
 verify_jwt = false
 
 [functions.send-proposal-email]
 verify_jwt = false
 
+[functions.create-paypal-subscription]
+verify_jwt = false
+
+[functions.create-paypal-payment]
+verify_jwt = false
+
+[functions.create-payment-link]
+verify_jwt = false
+
+[functions.paypal-webhook]
+verify_jwt = false
+
+[functions.paypal-payment-webhook]
+verify_jwt = false
+
 [functions.get-subscription-status]
+verify_jwt = false
+
+[functions.get-payment-client-id]
+verify_jwt = false
+
+[functions.generate-payment-client-token]
 verify_jwt = false
 
 [functions.send-contact-email]

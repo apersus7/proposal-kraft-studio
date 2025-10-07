@@ -1,0 +1,78 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const paypalClientId = Deno.env.get('PAYPAL_CLIENT_ID');
+    const paypalClientSecret = Deno.env.get('PAYPAL_CLIENT_SECRET');
+    
+    if (!paypalClientId || !paypalClientSecret) {
+      throw new Error('Payment credentials not configured');
+    }
+
+    const paypalEnv = (Deno.env.get('PAYPAL_ENV') || 'live').toLowerCase();
+    const baseUrl = paypalEnv === 'sandbox'
+      ? 'https://api-m.sandbox.paypal.com'
+      : 'https://api-m.paypal.com';
+
+    const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${btoa(`${paypalClientId}:${paypalClientSecret}`)}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
+    });
+
+    if (!authResponse.ok) {
+      const error = await authResponse.text();
+      console.error('Payment auth error:', error);
+      throw new Error('Failed to authenticate with payment provider');
+    }
+
+    const authData = await authResponse.json();
+    const accessToken = authData.access_token;
+
+    const clientTokenResponse = await fetch(`${baseUrl}/v1/identity/generate-token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!clientTokenResponse.ok) {
+      const error = await clientTokenResponse.text();
+      console.error('Payment client token error:', error);
+      throw new Error('Failed to generate client token');
+    }
+
+    const tokenData = await clientTokenResponse.json();
+    
+    console.log('Payment client token generated successfully');
+    
+    return new Response(JSON.stringify({ 
+      clientToken: tokenData.client_token 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('Error generating payment client token:', error);
+    return new Response(JSON.stringify({ 
+      error: (error as Error).message 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});

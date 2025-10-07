@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
+import PaymentLinks from '@/components/PaymentLinks';
 import ProposalSharing from '@/components/ProposalSharing';
 import ExportDialog from '@/components/ProposalEditor/ExportDialog';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -513,6 +514,11 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
                         </Button>
                       }
                     />
+                    <PaymentLinks 
+                      proposalId={proposal.id}
+                      proposalAmount={proposal.worth?.toString()}
+                      proposalCurrency="USD"
+                    />
                   </div>
                   <h1 className="text-3xl font-bold text-foreground mb-2">
                     {proposal.title}
@@ -585,9 +591,12 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
                   <h3 className="text-lg font-semibold text-foreground mb-4">
                     Payment Management
                   </h3>
-                  <p className="text-muted-foreground">
-                    Payment is managed through Whop. Visit your pricing page to manage subscriptions.
-                  </p>
+                  <PaymentLinks 
+                    proposalId={proposal.id}
+                    proposalAmount={proposal.worth?.toString()}
+                    proposalCurrency="USD"
+                    defaultOpen={true}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
