@@ -48,7 +48,7 @@ export default function Dashboard() {
   // Subscription gate - redirect to pricing if no active subscription
   useEffect(() => {
     if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
-      navigate('/checkout?plan=agency');
+      navigate('/pricing');
     }
   }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
@@ -160,7 +160,7 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = () => {
-    navigate('/checkout?plan=agency');
+    navigate('/create-proposal');
   };
 
   const handleSignOut = async () => {

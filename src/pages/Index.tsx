@@ -68,7 +68,7 @@ const Index = () => {
     }
   };
   const handleCreateProposal = () => {
-    navigate('/checkout?plan=agency');
+    navigate('/create-proposal');
   };
   const getStatusBadge = (proposal: Proposal) => {
     if (proposal.payment_status === 'paid') {
