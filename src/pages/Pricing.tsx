@@ -146,7 +146,7 @@ const Pricing = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm">API access</span>
+                      <span className="text-sm">Webhook integeration</span>
                     </div>
                   </div>
                   <div className="pt-6">
