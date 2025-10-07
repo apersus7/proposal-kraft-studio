@@ -20,7 +20,21 @@ serve(async (req) => {
       throw new Error('Whop credentials not configured');
     }
 
-    console.log('Creating Whop checkout session for plan:', planId);
+    // Map internal plan IDs to Whop plan IDs from environment variables
+    const planIdMapping: Record<string, string> = {
+      dealcloser: Deno.env.get('WHOP_PLAN_ID_DEALCLOSER') || '',
+      freelance: Deno.env.get('WHOP_PLAN_ID_FREELANCE') || '',
+      agency: Deno.env.get('WHOP_PLAN_ID_AGENCY') || '',
+      enterprise: Deno.env.get('WHOP_PLAN_ID_ENTERPRISE') || '',
+    };
+
+    const whopPlanId = planIdMapping[planId];
+    
+    if (!whopPlanId) {
+      throw new Error(`Plan ID not configured in Whop: ${planId}. Please add WHOP_PLAN_ID_${planId.toUpperCase()} secret.`);
+    }
+
+    console.log('Creating Whop checkout session for plan:', planId, '-> Whop plan ID:', whopPlanId);
 
     // Create checkout session via Whop API
     const response = await fetch('https://api.whop.com/api/v2/checkout_sessions', {
@@ -31,10 +45,11 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         company_id: whopCompanyId,
-        plan_id: planId,
+        plan_id: whopPlanId,
         customer_email: userEmail,
         metadata: {
           user_id: userId,
+          internal_plan_id: planId,
         },
         success_url: `${req.headers.get('origin')}/dashboard?payment=success`,
         cancel_url: `${req.headers.get('origin')}/checkout?payment=cancelled`,
