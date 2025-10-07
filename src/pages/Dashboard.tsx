@@ -176,7 +176,12 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = () => {
-    navigate('/create-proposal');
+    // Redirect to checkout if no active subscription
+    if (!subscription.hasActiveSubscription) {
+      navigate('/checkout?plan=dealcloser');
+    } else {
+      navigate('/create-proposal');
+    }
   };
 
   const handleSignOut = async () => {
