@@ -63,22 +63,50 @@ serve(async (req) => {
     }
 
     const checkoutSession = await response.json();
-    console.log('Whop checkout session created:', checkoutSession);
+    console.log('Whop checkout session created raw:', checkoutSession);
 
-    // Whop may return different field names for the checkout URL
-    const checkoutUrl = checkoutSession.checkout_url || 
-                        checkoutSession.url || 
-                        checkoutSession.checkoutUrl ||
-                        checkoutSession.payment_url;
+    // Try common fields for checkout URL
+    let checkoutUrl = checkoutSession.checkout_url || 
+                      checkoutSession.url || 
+                      checkoutSession.checkoutUrl ||
+                      checkoutSession.payment_url ||
+                      checkoutSession.hosted_url ||
+                      checkoutSession.redirect_url;
+
+    // If URL missing, fetch session details from Whop
+    if (!checkoutUrl && checkoutSession.id) {
+      try {
+        const detailsRes = await fetch(`https://api.whop.com/api/v2/checkout_sessions/${checkoutSession.id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${whopApiKey}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (detailsRes.ok) {
+          const details = await detailsRes.json();
+          console.log('Whop checkout session details:', details);
+          checkoutUrl = details.checkout_url || details.url || details.payment_url || details.hosted_url || details.redirect_url;
+        } else {
+          console.warn('Failed to fetch checkout session details:', await detailsRes.text());
+        }
+      } catch (e) {
+        console.warn('Error fetching checkout session details:', e);
+      }
+    }
 
     if (!checkoutUrl) {
-      console.error('No checkout URL in response:', checkoutSession);
-      throw new Error('Whop did not return a checkout URL. Please check your Whop configuration.');
+      console.error('No checkout URL in response. Session payload:', checkoutSession);
+      return new Response(
+        JSON.stringify({ error: 'Whop did not return a checkout URL.', sessionId: checkoutSession?.id || null }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     return new Response(
       JSON.stringify({ 
-        checkoutUrl: checkoutUrl,
+        checkoutUrl,
         sessionId: checkoutSession.id 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
