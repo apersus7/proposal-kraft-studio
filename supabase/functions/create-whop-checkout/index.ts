@@ -71,7 +71,8 @@ serve(async (req) => {
                       checkoutSession.checkoutUrl ||
                       checkoutSession.payment_url ||
                       checkoutSession.hosted_url ||
-                      checkoutSession.redirect_url;
+                      checkoutSession.redirect_url ||
+                      checkoutSession.purchase_url;
 
     // If URL missing, fetch session details from Whop
     if (!checkoutUrl && checkoutSession.id) {
@@ -87,7 +88,7 @@ serve(async (req) => {
         if (detailsRes.ok) {
           const details = await detailsRes.json();
           console.log('Whop checkout session details:', details);
-          checkoutUrl = details.checkout_url || details.url || details.payment_url || details.hosted_url || details.redirect_url;
+          checkoutUrl = details.checkout_url || details.url || details.payment_url || details.hosted_url || details.redirect_url || details.purchase_url;
         } else {
           console.warn('Failed to fetch checkout session details:', await detailsRes.text());
         }
