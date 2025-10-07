@@ -51,8 +51,7 @@ serve(async (req) => {
           user_id: userId,
           internal_plan_id: planId,
         },
-        // Ensure Whop redirects back to our app after payment
-        redirect_url: returnUrl || `${req.headers.get('origin')}/dashboard?payment=success`,
+        // Only use explicit success and cancel URLs to avoid false "success" redirects
         success_url: returnUrl || `${req.headers.get('origin')}/dashboard?payment=success`,
         cancel_url: cancelUrl || `${req.headers.get('origin')}/checkout?payment=cancelled`,
       }),

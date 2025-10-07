@@ -28,10 +28,45 @@ serve(async (req) => {
       throw new Error('Invalid user token');
     }
 
+    // First, trust our own database (updated via Whop webhooks)
+    const nowIso = new Date().toISOString();
+    const { data: subs, error: subError } = await supabase
+      .from('subscriptions')
+      .select('plan_type, status, current_period_end')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .gt('current_period_end', nowIso);
+
+    if (subError) {
+      console.warn('Error querying subscriptions table:', subError);
+    }
+
+    if (subs && subs.length > 0) {
+      const sub = subs[0];
+      return new Response(
+        JSON.stringify({
+          hasActiveSubscription: true,
+          planType: sub.plan_type,
+          status: sub.status,
+          currentPeriodEnd: sub.current_period_end,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Fallback: check Whop memberships directly, but require valid_until in the future
     const whopApiKey = Deno.env.get('WHOP_API_KEY');
-    
     if (!whopApiKey) {
-      throw new Error('Whop API key not configured');
+      // If Whop is not configured, default to no subscription
+      return new Response(
+        JSON.stringify({ 
+          hasActiveSubscription: false,
+          planType: null,
+          status: 'none',
+          currentPeriodEnd: null,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Get user's email to check Whop membership
@@ -42,14 +77,10 @@ serve(async (req) => {
       .single();
 
     const userEmail = profile?.email || user.email;
+    console.log('Verifying Whop access (fallback) for:', userEmail);
 
-    console.log('Verifying Whop access for:', userEmail);
-
-    // Check Whop membership via API
     const response = await fetch(`https://api.whop.com/api/v2/memberships?email=${encodeURIComponent(userEmail)}`, {
-      headers: {
-        'Authorization': `Bearer ${whopApiKey}`,
-      },
+      headers: { 'Authorization': `Bearer ${whopApiKey}` },
     });
 
     if (!response.ok) {
@@ -68,8 +99,9 @@ serve(async (req) => {
     const memberships = await response.json();
     console.log('Whop memberships:', memberships);
 
-    // Find active membership
-    const activeMembership = memberships.data?.find((m: any) => m.status === 'active');
+    const activeMembership = memberships.data?.find((m: any) => 
+      m.status === 'active' && m.valid_until && new Date(m.valid_until).getTime() > Date.now()
+    );
 
     if (activeMembership) {
       return new Response(
