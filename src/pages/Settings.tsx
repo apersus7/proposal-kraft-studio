@@ -433,13 +433,45 @@ export default function Settings() {
                     <div className="space-y-2">
                       <h3 className="font-medium">Manage Subscription</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        To update or cancel your subscription, please visit your Whop account.
+                        You can cancel your subscription at any time. You'll retain access until the end of your current billing period.
                       </p>
                       <Button 
-                        variant="outline"
-                        onClick={() => window.open('https://whop.com/@me/settings/orders/', '_blank')}
+                        variant="destructive"
+                        onClick={async () => {
+                          if (!window.confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your current billing period.')) {
+                            return;
+                          }
+                          
+                          try {
+                            setLoading(true);
+                            const { data, error } = await supabase.functions.invoke('cancel-whop-subscription');
+                            
+                            if (error) throw error;
+                            
+                            if (data.success) {
+                              toast({
+                                title: 'Subscription Cancelled',
+                                description: data.message || 'Your subscription has been cancelled and will end at the current billing period.',
+                              });
+                              // Refresh the page to update subscription status
+                              window.location.reload();
+                            } else {
+                              throw new Error(data.error || 'Failed to cancel subscription');
+                            }
+                          } catch (error) {
+                            console.error('Cancellation error:', error);
+                            toast({
+                              title: 'Error',
+                              description: error instanceof Error ? error.message : 'Failed to cancel subscription. Please try again.',
+                              variant: 'destructive',
+                            });
+                          } finally {
+                            setLoading(false);
+                          }
+                        }}
+                        disabled={loading}
                       >
-                        Manage on Whop
+                        Cancel Subscription
                       </Button>
                     </div>
                   </div>
