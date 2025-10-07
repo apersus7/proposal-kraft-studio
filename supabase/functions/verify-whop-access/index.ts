@@ -109,10 +109,8 @@ serve(async (req) => {
 
 function getPlanTypeFromWhopPlan(planId: string): string {
   const planMapping: { [key: string]: string } = {
-    'freelance': 'freelance',
-    'agency': 'agency',
-    'enterprise': 'enterprise',
+    'plan_T62IdYRFuKKYq': 'dealcloser',
   };
 
-  return planMapping[planId] || 'freelance';
+  return planMapping[planId] || 'dealcloser';
 }
