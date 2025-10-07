@@ -123,10 +123,6 @@ const Index = () => {
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/pricing')}>
-                      <Crown className="mr-2 h-4 w-4" />
-                      Upgrade Plan
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="mr-2 h-4 w-4" />
