@@ -7,7 +7,6 @@ export interface SubscriptionStatus {
   planType: string | null;
   status: string;
   currentPeriodEnd: string | null;
-  paypalSubscriptionId: string | null;
 }
 
 export const useSubscription = () => {
@@ -17,7 +16,6 @@ export const useSubscription = () => {
     planType: null,
     status: 'none',
     currentPeriodEnd: null,
-    paypalSubscriptionId: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +30,22 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase.functions.invoke('get-subscription-status');
+      // Get subscription from Whop
+      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access');
 
-      if (fetchError) {
-        console.error('Subscription fetch error:', fetchError);
-        setError(fetchError.message || 'Failed to fetch subscription status');
+      if (whopError) {
+        console.error('Subscription fetch error:', whopError);
+        setError(whopError.message || 'Failed to fetch subscription status');
         return;
       }
 
-      if (data?.error) {
-        console.error('Subscription API error:', data.error);
-        setError(data.error);
+      if (whopData?.error) {
+        console.error('Subscription API error:', whopData.error);
+        setError(whopData.error);
         return;
       }
 
-      setSubscription(data);
+      setSubscription(whopData);
     } catch (err) {
       console.error('Subscription hook error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');

@@ -68,7 +68,7 @@ const Index = () => {
     }
   };
   const handleCreateProposal = () => {
-    navigate('/create-proposal');
+    navigate('/checkout?plan=dealcloser');
   };
   const getStatusBadge = (proposal: Proposal) => {
     if (proposal.payment_status === 'paid') {
