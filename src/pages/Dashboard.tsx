@@ -45,9 +45,24 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  // Subscription gate - redirect to pricing if no active subscription
+  // Subscription gate - redirect to pricing if no active subscription (with delay for webhook processing)
   useEffect(() => {
-    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    
+    // If just returned from payment, give webhooks time to process (5 seconds)
+    if (paymentStatus === 'success' && !subscriptionLoading) {
+      setTimeout(() => {
+        if (!subscription.hasActiveSubscription) {
+          // Refresh subscription status after delay
+          window.location.reload();
+        }
+      }, 5000);
+      return;
+    }
+    
+    // Normal subscription check - only redirect if not just after payment
+    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
       navigate('/pricing');
     }
   }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
@@ -60,23 +75,24 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Check for payment success/failure parameters
+  // Check for payment success/failure parameters and refresh subscription
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const planType = urlParams.get('plan');
     
-    if (paymentStatus === 'success' && planType) {
+    if (paymentStatus === 'success') {
+      const planName = planType || 'Deal Closer';
       toast({
         title: "Payment Successful! 🎉",
-        description: `Your ${planType.charAt(0).toUpperCase() + planType.slice(1)} plan has been activated. Welcome to ProposalKraft Pro!`,
+        description: `Your ${planName.charAt(0).toUpperCase() + planName.slice(1)} plan has been activated. All features are now enabled!`,
       });
       // Clean up URL
       window.history.replaceState({}, document.title, '/dashboard');
-    } else if (paymentStatus === 'failed') {
+    } else if (paymentStatus === 'failed' || paymentStatus === 'cancelled') {
       toast({
-        title: "Payment Failed",
-        description: "Your payment could not be processed. Please try again or contact support.",
+        title: "Payment Cancelled",
+        description: "Your payment was cancelled. You can try again anytime.",
         variant: "destructive"
       });
       // Clean up URL

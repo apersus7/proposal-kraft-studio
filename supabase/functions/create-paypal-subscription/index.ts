@@ -58,8 +58,8 @@ serve(async (req) => {
     // PayPal API setup (live environment)
     const baseUrl = 'https://api-m.paypal.com';
     const origin = req.headers.get('origin') || 'https://lovable.app';
-    const returnUrl = `${origin}/settings?paypal=success`;
-    const cancelUrl = `${origin}/settings?paypal=cancelled`;
+    const returnUrl = `${origin}/dashboard?payment=success&plan=${planId}`;
+    const cancelUrl = `${origin}/checkout?payment=cancelled`;
 
     // Get PayPal access token
     const authResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
