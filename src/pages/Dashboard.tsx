@@ -240,15 +240,11 @@ export default function Dashboard() {
                      </div>
                    </DropdownMenuLabel>
                    <DropdownMenuSeparator />
-                   <DropdownMenuItem onClick={() => navigate('/settings')}>
-                     <Settings className="mr-2 h-4 w-4" />
-                     Settings
-                   </DropdownMenuItem>
-                   <DropdownMenuItem onClick={() => navigate('/payment')}>
-                     <Crown className="mr-2 h-4 w-4" />
-                     Upgrade Plan
-                   </DropdownMenuItem>
-                   <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/settings')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                    <DropdownMenuItem onClick={handleSignOut}>
                      <LogOut className="mr-2 h-4 w-4" />
                      Sign Out

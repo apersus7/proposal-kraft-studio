@@ -11,7 +11,6 @@ import CreateProposal from "./pages/CreateProposal";
 // Removed ProposalEditor - using content editor for editing
 import Settings from "./pages/Settings";
 import Features from "./pages/Features";
-import Pricing from "./pages/Pricing";
 import Solutions from "./pages/Solutions";
 import Checkout from "./pages/Checkout";
 import SharedProposal from "./pages/SharedProposal";
@@ -41,7 +40,6 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Settings />} />
             <Route path="/features" element={<Features />} />
-            <Route path="/pricing" element={<Pricing />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
