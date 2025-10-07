@@ -9,6 +9,29 @@ import { useToast } from '@/hooks/use-toast';
 
 // Plan definitions
 const plans = {
+  dealcloser: {
+    id: 'dealcloser',
+    name: 'The Deal Closer',
+    price: '$28/month',
+    description: 'Everything you need to close more deals',
+    features: [
+      'Unlimited proposals',
+      'Unlimited templates',
+      'Unlimited customisation',
+      'Tracking & Analytics',
+      'E-signature',
+      'Export in various formats',
+      'CRM integration',
+      'Upload custom template',
+      'Payment integration',
+      'Reminders',
+      'Team collaboration',
+      'Priority support',
+      'Custom integrations',
+      'Advanced security features',
+      'API access'
+    ]
+  },
   freelance: {
     id: 'freelance',
     name: 'Freelance',

@@ -158,7 +158,7 @@ const Pricing = () => {
                     <Button 
                       size="lg" 
                       className="w-full"
-                      onClick={() => user ? navigate('/payment?plan=dealcloser') : navigate('/auth')}
+                      onClick={() => user ? navigate('/checkout?plan=dealcloser') : navigate('/auth')}
                     >
                       {user ? 'Get Started' : 'Sign Up to Subscribe'}
                     </Button>
