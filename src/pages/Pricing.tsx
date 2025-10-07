@@ -5,15 +5,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
-
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
-
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+  const {
+    user,
+    loading
+  } = useAuth();
+  return <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,20 +31,16 @@ const Pricing = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              {user ? (
-                <Button onClick={() => navigate('/')}>
+              {user ? <Button onClick={() => navigate('/')}>
                   Dashboard
-                </Button>
-              ) : (
-                <>
+                </Button> : <>
                   <Button variant="ghost" onClick={() => navigate('/auth')}>
                     Sign In
                   </Button>
                   <Button onClick={() => navigate('/auth')}>
                     Get Started
                   </Button>
-                </>
-              )}
+                </>}
             </div>
           </div>
         </div>
@@ -155,11 +150,7 @@ const Pricing = () => {
                     </div>
                   </div>
                   <div className="pt-6">
-                    <Button 
-                      size="lg" 
-                      className="w-full"
-                      onClick={() => user ? navigate('/checkout?plan=dealcloser') : navigate('/auth')}
-                    >
+                    <Button size="lg" className="w-full" onClick={() => user ? navigate('/checkout?plan=dealcloser') : navigate('/auth')}>
                       {user ? 'Get Started' : 'Sign Up to Subscribe'}
                     </Button>
                   </div>
@@ -180,12 +171,7 @@ const Pricing = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="pt-6">
-                    <Button 
-                      size="lg" 
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => navigate('/contact')}
-                    >
+                    <Button size="lg" variant="outline" className="w-full" onClick={() => navigate('/contact')}>
                       Contact Support
                     </Button>
                   </div>
@@ -232,17 +218,13 @@ const Pricing = () => {
               Join thousands of professionals already using ProposalKraft to win more business.
             </p>
             <Link to="/auth">
-              <Button size="lg" className="text-lg px-8 py-3">
-                Start Your Free Trial
-              </Button>
+              <Button size="lg" className="text-lg px-8 py-3">Start cloing deals</Button>
             </Link>
           </div>
         </section>
       </main>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Pricing;
