@@ -193,8 +193,8 @@ const Pricing = () => {
                 <p className="text-muted-foreground">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Is there a free trial?</h3>
-                <p className="text-muted-foreground">Yes, all paid plans come with a 14-day free trial. No credit card required to start.</p>
+                <h3 className="font-semibold text-lg mb-2">How much time it takes to create a proposal?</h3>
+                <p className="text-muted-foreground">Using Proposal Kraft, a user can easily create a proposal withing 5 minutes or even less</p>
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-2">What payment methods do you accept?</h3>
