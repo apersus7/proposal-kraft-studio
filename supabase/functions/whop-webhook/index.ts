@@ -134,12 +134,9 @@ async function handleMembershipRenewed(supabase: any, data: any) {
 
 function getPlanTypeFromWhopPlan(planId: string): string {
   // Map Whop plan IDs to your internal plan types
-  // You'll need to update this mapping based on your actual Whop plans
   const planMapping: { [key: string]: string } = {
-    'freelance': 'freelance',
-    'agency': 'agency',
-    'enterprise': 'enterprise',
+    'plan_T62IdYRFuKKYq': 'dealcloser',
   };
 
-  return planMapping[planId] || 'freelance';
+  return planMapping[planId] || 'dealcloser';
 }
