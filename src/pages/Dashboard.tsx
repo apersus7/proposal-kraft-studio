@@ -45,23 +45,25 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  // Subscription gate - redirect to pricing if no active subscription (with delay for webhook processing)
+  // Subscription gate - redirect to pricing if no active subscription
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     
-    // If just returned from payment, give webhooks time to process (5 seconds)
+    // If just returned from payment with success status, wait briefly for webhook processing
     if (paymentStatus === 'success' && !subscriptionLoading) {
-      setTimeout(() => {
+      // Check if subscription is active after a short delay
+      const timeoutId = setTimeout(() => {
         if (!subscription.hasActiveSubscription) {
-          // Refresh subscription status after delay
-          window.location.reload();
+          console.log('No active subscription found after payment, redirecting to pricing');
+          navigate('/pricing');
         }
-      }, 5000);
-      return;
+      }, 3000);
+      
+      return () => clearTimeout(timeoutId);
     }
     
-    // Normal subscription check - only redirect if not just after payment
+    // Normal subscription check - redirect to pricing if no active subscription
     if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
       navigate('/pricing');
     }
@@ -75,18 +77,21 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  // Check for payment success/failure parameters and refresh subscription
+  // Check for payment success/failure parameters and verify subscription before showing toast
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
     const planType = urlParams.get('plan');
     
     if (paymentStatus === 'success') {
-      const planName = planType || 'Deal Closer';
-      toast({
-        title: "Payment Successful! 🎉",
-        description: `Your ${planName.charAt(0).toUpperCase() + planName.slice(1)} plan has been activated. All features are now enabled!`,
-      });
+      // Only show success if subscription is actually active
+      if (!subscriptionLoading && subscription.hasActiveSubscription) {
+        const planName = planType || subscription.planType || 'Deal Closer';
+        toast({
+          title: "Payment Successful! 🎉",
+          description: `Your ${planName.charAt(0).toUpperCase() + planName.slice(1)} plan has been activated. All features are now enabled!`,
+        });
+      }
       // Clean up URL
       window.history.replaceState({}, document.title, '/dashboard');
     } else if (paymentStatus === 'failed' || paymentStatus === 'cancelled') {
@@ -98,7 +103,7 @@ export default function Dashboard() {
       // Clean up URL
       window.history.replaceState({}, document.title, '/dashboard');
     }
-  }, []);
+  }, [subscriptionLoading, subscription.hasActiveSubscription, subscription.planType]);
 
   useEffect(() => {
     if (searchQuery) {
