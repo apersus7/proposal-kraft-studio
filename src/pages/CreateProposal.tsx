@@ -40,7 +40,7 @@ export default function CreateProposal() {
   // Subscription gate - redirect to pricing if no active subscription
   useEffect(() => {
     if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-      navigate('/pricing');
+      navigate('/checkout?plan=agency');
     }
   }, [subscriptionLoading, subscription.hasActiveSubscription, navigate]);
   
