@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { planId, userId, userEmail } = await req.json();
+    const { planId, userId, userEmail, returnUrl, cancelUrl } = await req.json();
     
     const whopApiKey = Deno.env.get('WHOP_API_KEY');
     const whopCompanyId = Deno.env.get('WHOP_COMPANY_ID');
@@ -51,8 +51,8 @@ serve(async (req) => {
           user_id: userId,
           internal_plan_id: planId,
         },
-        success_url: `${req.headers.get('origin')}/dashboard?payment=success`,
-        cancel_url: `${req.headers.get('origin')}/checkout?payment=cancelled`,
+        success_url: returnUrl || `${req.headers.get('origin')}/dashboard?payment=success`,
+        cancel_url: cancelUrl || `${req.headers.get('origin')}/checkout?payment=cancelled`,
       }),
     });
 

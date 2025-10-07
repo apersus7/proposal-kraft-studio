@@ -98,11 +98,14 @@ const Checkout = () => {
     
     setIsProcessing(true);
     try {
+      const origin = window.location.origin;
       const { data, error } = await supabase.functions.invoke('create-whop-checkout', {
         body: {
           planId: planId,
           userId: user.id,
           userEmail: user.email,
+          returnUrl: `${origin}/dashboard?payment=success`,
+          cancelUrl: `${origin}/checkout?payment=cancelled`,
         },
       });
 
