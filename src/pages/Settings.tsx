@@ -411,7 +411,7 @@ export default function Settings() {
                         </p>
                       </div>
                       <Badge variant="default">
-                        {subscription.status === 'active' ? 'Active' : subscription.status}
+                        {subscription.status === 'active' ? 'Active' : subscription.status === 'trialing' ? 'Trial' : subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
                       </Badge>
                     </div>
 
