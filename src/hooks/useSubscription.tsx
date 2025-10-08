@@ -30,30 +30,47 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
 
-      // Get subscription from Whop
-      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access');
+      // 1) Fast path: check DB directly for user's latest subscription
+      const { data: subRows, error: dbError } = await supabase
+        .from('subscriptions')
+        .select('status, plan_type, current_period_end')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
 
-      if (whopError) {
-        console.error('Subscription fetch error:', whopError);
-        setError(whopError.message || 'Failed to fetch subscription status');
+      if (dbError) {
+        console.error('[useSubscription] DB check error:', dbError);
+      }
+
+      const dbSub = subRows?.[0] as any;
+      const now = Date.now();
+      const endMsDb = dbSub?.current_period_end ? Date.parse(dbSub.current_period_end) : null;
+      const isDbActive = dbSub?.status === 'active' && (!endMsDb || endMsDb > now);
+
+      if (isDbActive) {
+        setSubscription({
+          hasActiveSubscription: true,
+          planType: typeof dbSub?.plan_type === 'string' ? dbSub.plan_type : null,
+          status: dbSub?.status ?? 'active',
+          currentPeriodEnd: typeof dbSub?.current_period_end === 'string' ? dbSub.current_period_end : null,
+        });
         return;
       }
 
-      if (whopData?.error) {
-        console.error('Subscription API error:', whopData.error);
-        setError(whopData.error);
-        return;
+      // 2) Fallback: call Edge function (may consult Whop)
+      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access');
+      if (whopError) {
+        console.warn('[useSubscription] verify-whop-access error:', whopError);
       }
 
       // Normalize and harden the response to avoid false positives/negatives
-      const now = Date.now();
       const endMs = whopData?.currentPeriodEnd ? Date.parse(whopData.currentPeriodEnd) : null;
       const status = typeof whopData?.status === 'string' ? whopData.status : 'none';
       const activeFlag = whopData?.hasActiveSubscription === true;
       const timeOk = endMs ? endMs > now : true; // allow null when provider doesn't return end date
       const isActive = status === 'active' && activeFlag && timeOk;
 
-      console.log('[useSubscription] verify-whop-access response:', {
+      console.log('[useSubscription] normalized status:', {
         source: whopData?.source,
         version: whopData?.version,
         incoming: whopData,
