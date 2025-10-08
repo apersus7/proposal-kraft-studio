@@ -73,7 +73,7 @@ export default function Dashboard() {
       checkedSubRef.current = true;
       (async () => {
         try {
-          const { data } = await supabase.functions.invoke('verify-whop-access');
+          const { data } = await supabase.functions.invoke('verify-whop-access', { body: { email: user?.email } });
           const now = Date.now();
           const endMs = data?.currentPeriodEnd ? Date.parse(data.currentPeriodEnd) : null;
           const status = typeof data?.status === 'string' ? data.status : 'none';
@@ -210,7 +210,7 @@ export default function Dashboard() {
 
     // Force a fresh server verification to avoid stale state
     try {
-      const { data, error } = await supabase.functions.invoke('verify-whop-access');
+      const { data, error } = await supabase.functions.invoke('verify-whop-access', { body: { email: user?.email } });
       if (error) {
         console.warn('verify-whop-access error:', error);
       }

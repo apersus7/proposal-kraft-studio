@@ -12,31 +12,69 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('No authorization header');
-    }
-
+    const url = new URL(req.url);
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    const authHeader = req.headers.get('Authorization');
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      global: { headers: { Authorization: authHeader } }
+      global: authHeader ? { headers: { Authorization: authHeader } } : undefined
     });
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Try to get the user if a token is present, but don't fail hard if it's invalid
+    let user: any = null;
+    if (authHeader) {
+      const { data, error: userError } = await supabase.auth.getUser();
+      if (!userError) user = data.user;
+    }
 
-    if (userError || !user) {
-      throw new Error('Invalid user token');
+    // Allow email as a fallback identifier (from body or query param)
+    let reqEmail: string | null = url.searchParams.get('email');
+    if (!reqEmail) {
+      try {
+        const body = await req.json();
+        if (body && typeof body.email === 'string') reqEmail = body.email;
+      } catch (_) {
+        // ignore JSON parse errors for non-JSON requests
+      }
+    }
+
+    if (!user && !reqEmail) {
+      return new Response(JSON.stringify({
+        error: 'Missing credentials: provide Authorization header or email',
+        hasActiveSubscription: false,
+        status: 'error',
+        source: 'error',
+        version: 'v3.2'
+      }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // First, trust our own database (updated via Whop webhooks)
     const nowIso = new Date().toISOString();
-    const { data: subs, error: subError } = await supabase
-      .from('subscriptions')
-      .select('plan_type, status, current_period_end')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .gt('current_period_end', nowIso);
+
+    // Resolve a user_id for DB lookup even if unauthenticated, using email -> profiles
+    let userIdForDb: string | null = user?.id ?? null;
+    if (!userIdForDb && reqEmail) {
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('email', reqEmail)
+        .single();
+      userIdForDb = prof?.user_id ?? null;
+    }
+
+    let subs: any[] | null = null;
+    let subError: any = null;
+    if (userIdForDb) {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('plan_type, status, current_period_end')
+        .eq('user_id', userIdForDb)
+        .eq('status', 'active')
+        .gt('current_period_end', nowIso);
+      subs = data;
+      subError = error;
+    }
 
     if (subError) {
       console.warn('Error querying subscriptions table:', subError);
@@ -76,14 +114,31 @@ serve(async (req) => {
       );
     }
 
-    // Get user's email to check Whop membership
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('user_id', user.id)
-      .single();
+    // Determine email for Whop membership check
+    let userEmail = reqEmail || null;
+    if (!userEmail && user?.id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('user_id', user.id)
+        .single();
+      userEmail = profile?.email || user?.email || null;
+    }
 
-    const userEmail = profile?.email || user.email;
+    if (!userEmail) {
+      return new Response(
+        JSON.stringify({
+          hasActiveSubscription: false,
+          planType: null,
+          status: 'none',
+          currentPeriodEnd: null,
+          source: 'none',
+          version: 'v3.2'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('Verifying Whop access (fallback) for:', userEmail);
 
     const response = await fetch(`https://api.whop.com/api/v2/memberships?email=${encodeURIComponent(userEmail)}`, {

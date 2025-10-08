@@ -58,7 +58,7 @@ export const useSubscription = () => {
       }
 
       // 2) Fallback: call Edge function (may consult Whop)
-      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access');
+      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access', { body: { email: user.email } });
       if (whopError) {
         console.warn('[useSubscription] verify-whop-access error:', whopError);
       }
