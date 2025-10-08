@@ -35,8 +35,8 @@ export default function SubscriptionGuard({ children }: Props) {
       return;
     }
 
-    // If authenticated but no active subscription, redirect to pricing
-    if (!subscription.hasActiveSubscription) {
+    // If authenticated but subscription is not active, redirect to pricing
+    if (subscription.status !== 'active') {
       navigate('/pricing', { replace: true });
     }
   }, [authLoading, subLoading, user, subscription.hasActiveSubscription, navigate, location.pathname, subscription.status]);
@@ -54,7 +54,7 @@ export default function SubscriptionGuard({ children }: Props) {
   }
 
   // If subscription is not active, navigation effect will run; render nothing here
-  if (!subscription.hasActiveSubscription) return null;
+  if (subscription.status !== 'active') return null;
 
   return <>{children}</>;
 }
