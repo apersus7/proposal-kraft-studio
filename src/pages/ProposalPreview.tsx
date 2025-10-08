@@ -10,6 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 import ProposalSharing from '@/components/ProposalSharing';
+import PaymentLinkGenerator from '@/components/PaymentLinkGenerator';
 import ExportDialog from '@/components/ProposalEditor/ExportDialog';
 import { useSubscription } from '@/hooks/useSubscription';
 
@@ -583,11 +584,15 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">
-                    Payment Management
+                    Client Payment Links
                   </h3>
-                  <p className="text-muted-foreground">
-                    Payment is managed through Whop. Visit your pricing page to manage subscriptions.
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Generate secure Stripe payment links to share with your client
                   </p>
+                  <PaymentLinkGenerator 
+                    proposalId={proposal.id}
+                    proposalWorth={proposal.worth}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
