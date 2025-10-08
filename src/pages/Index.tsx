@@ -10,6 +10,7 @@ import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Sett
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useSubscription } from '@/hooks/useSubscription';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 interface Proposal {
   id: string;
@@ -34,6 +35,13 @@ const Index = () => {
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const { subscription, loading: subscriptionLoading } = useSubscription();
+  useEffect(() => {
+    if (user && !subscriptionLoading && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
+    }
+  }, [user, subscriptionLoading, subscription?.hasActiveSubscription, navigate]);
+  
   useEffect(() => {
     if (user) {
       fetchProposals();
