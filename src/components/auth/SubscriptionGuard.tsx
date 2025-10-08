@@ -19,6 +19,16 @@ export default function SubscriptionGuard({ children }: Props) {
     // Wait for both auth and subscription to finish loading
     if (authLoading || subLoading) return;
 
+    // Debug: log gate inputs
+    console.log('[SubscriptionGuard]', {
+      path: location.pathname,
+      userId: user?.id,
+      authLoading,
+      subLoading,
+      hasActiveSubscription: subscription.hasActiveSubscription,
+      status: subscription.status,
+    });
+
     // If not authenticated, redirect to auth page
     if (!user) {
       navigate('/auth', { replace: true, state: { from: location.pathname } });
@@ -29,7 +39,7 @@ export default function SubscriptionGuard({ children }: Props) {
     if (!subscription.hasActiveSubscription) {
       navigate('/pricing', { replace: true });
     }
-  }, [authLoading, subLoading, user, subscription.hasActiveSubscription, navigate, location.pathname]);
+  }, [authLoading, subLoading, user, subscription.hasActiveSubscription, navigate, location.pathname, subscription.status]);
 
   // Loading or redirecting state
   if (authLoading || subLoading || !user) {

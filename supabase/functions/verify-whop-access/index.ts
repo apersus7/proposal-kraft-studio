@@ -99,21 +99,36 @@ serve(async (req) => {
     const memberships = await response.json();
     console.log('Whop memberships:', memberships);
 
-    const activeMembership = memberships.data?.find((m: any) => {
+    const companyId = Deno.env.get('WHOP_COMPANY_ID');
+    const allowedPlanId = Deno.env.get('WHOP_PLAN_ID_DEALCLOSER');
+
+    // Normalize memberships list
+    const list: any[] = memberships.data ?? memberships ?? [];
+
+    const activeMembership = list.find((m: any) => {
+      // Company/organization/shop id checks (support multiple possible fields)
+      const mCompanyId = m.organization_id || m.company_id || m.shop?.id || m.org?.id || m.organization?.id;
+      if (companyId && mCompanyId && String(mCompanyId) !== String(companyId)) return false;
+
+      // Plan checks
+      const mPlanId = m.plan?.id || m.plan_id || m.plan || m.product?.id;
+      if (allowedPlanId && mPlanId && String(mPlanId) !== String(allowedPlanId)) return false;
+
       const periodEndSec = m.renewal_period_end ?? m.expires_at ?? null;
       const periodEndMs = periodEndSec ? Number(periodEndSec) * 1000 : null;
       const isValidNow = m.valid === true || (periodEndMs ? periodEndMs > Date.now() : false);
-      return (m.status === 'active' || m.status === 'trialing') && isValidNow;
+      const statusOk = (m.status === 'active' || m.status === 'trialing');
+      return statusOk && isValidNow;
     });
 
     if (activeMembership) {
       const periodEndSec = activeMembership.renewal_period_end ?? activeMembership.expires_at ?? null;
       const periodEndIso = periodEndSec ? new Date(Number(periodEndSec) * 1000).toISOString() : null;
-      const planKey = activeMembership.plan ?? activeMembership.plan_id;
+      const planKey = activeMembership.plan?.id ?? activeMembership.plan_id ?? activeMembership.plan;
       return new Response(
         JSON.stringify({
           hasActiveSubscription: true,
-          planType: getPlanTypeFromWhopPlan(planKey),
+          planType: getPlanTypeFromWhopPlan(String(planKey)),
           status: activeMembership.status,
           currentPeriodEnd: periodEndIso,
           whopMembershipId: activeMembership.id,
