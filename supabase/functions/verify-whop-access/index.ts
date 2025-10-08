@@ -49,6 +49,8 @@ serve(async (req) => {
           planType: sub.plan_type,
           status: sub.status,
           currentPeriodEnd: sub.current_period_end,
+          source: 'db',
+          version: 'v3.1'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -66,6 +68,8 @@ serve(async (req) => {
           planType: null,
           status: 'none',
           currentPeriodEnd: null,
+          source: 'none',
+          version: 'v3.1'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -93,6 +97,8 @@ serve(async (req) => {
           planType: null,
           status: 'none',
           currentPeriodEnd: null,
+          source: 'none',
+          version: 'v3.1'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -140,7 +146,7 @@ serve(async (req) => {
       // Only treat paid ACTIVE memberships as valid
       const statusOk = m.status === 'active';
 
-      return statusOk && isValidNow && companyOk && planOk;
+      return statusOk && isValidNow && companyOk;
     });
 
     if (activeMembership) {
@@ -160,6 +166,8 @@ serve(async (req) => {
           status: activeMembership.status,
           currentPeriodEnd: periodEndIso,
           whopMembershipId: activeMembership.id,
+          source: 'whop',
+          version: 'v3.1'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -171,6 +179,8 @@ serve(async (req) => {
         planType: null,
         status: 'none',
         currentPeriodEnd: null,
+        source: 'none',
+        version: 'v3.1'
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -182,6 +192,8 @@ serve(async (req) => {
         hasActiveSubscription: false,
         planType: null,
         status: 'error',
+        source: 'error',
+        version: 'v3.1'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
