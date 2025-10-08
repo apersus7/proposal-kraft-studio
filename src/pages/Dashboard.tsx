@@ -181,9 +181,6 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = () => {
-    // Don't redirect if subscription is still loading
-    if (subscriptionLoading) return;
-    
     // Redirect to checkout if no active subscription
     if (!subscription.hasActiveSubscription) {
       navigate('/checkout?plan=dealcloser');
@@ -220,7 +217,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
              <div className="flex items-center space-x-3">
-             <Button onClick={handleCreateProposal} size="sm" disabled={subscriptionLoading}>
+               <Button onClick={handleCreateProposal} size="sm">
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
@@ -268,7 +265,7 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90" disabled={subscriptionLoading}>
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4 mr-2" />
             Create Proposal
           </Button>
@@ -308,7 +305,7 @@ export default function Dashboard() {
               <p className="text-muted-foreground text-center max-w-sm mb-6">
                 Get started by creating your first proposal. Choose from our professional templates.
               </p>
-              <Button onClick={handleCreateProposal} disabled={subscriptionLoading}>
+              <Button onClick={handleCreateProposal}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Proposal
               </Button>

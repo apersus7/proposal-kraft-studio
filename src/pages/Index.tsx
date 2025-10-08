@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +34,6 @@ const Index = () => {
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingProposals, setLoadingProposals] = useState(false);
-  const { subscription, loading: subscriptionLoading } = useSubscription();
   useEffect(() => {
     if (user) {
       fetchProposals();
@@ -70,15 +68,7 @@ const Index = () => {
     }
   };
   const handleCreateProposal = () => {
-    // Don't redirect if subscription is still loading
-    if (subscriptionLoading) return;
-    
-    // Redirect to checkout if no active subscription
-    if (!subscription.hasActiveSubscription) {
-      navigate('/checkout?plan=dealcloser');
-    } else {
-      navigate('/create-proposal');
-    }
+    navigate('/checkout?plan=dealcloser');
   };
   const getStatusBadge = (proposal: Proposal) => {
     if (proposal.payment_status === 'paid') {
@@ -116,7 +106,7 @@ const Index = () => {
                 <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
               </div>
               <div className="flex items-center space-x-3">
-                <Button onClick={handleCreateProposal} size="sm" disabled={subscriptionLoading}>
+                <Button onClick={handleCreateProposal} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   New Proposal
                 </Button>
@@ -186,7 +176,7 @@ const Index = () => {
                 <p className="text-muted-foreground text-center max-w-sm mb-6">
                   Get started by creating your first proposal. Choose from our professional templates.
                 </p>
-                <Button onClick={handleCreateProposal} disabled={subscriptionLoading}>
+                <Button onClick={handleCreateProposal}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Proposal
                 </Button>
