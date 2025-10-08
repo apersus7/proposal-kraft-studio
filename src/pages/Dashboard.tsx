@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { subscription, loading: subscriptionLoading } = useSubscription();
+  const { subscription, loading: subscriptionLoading, error: subscriptionError } = useSubscription();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -54,7 +54,7 @@ export default function Dashboard() {
     if (paymentStatus === 'success' && !subscriptionLoading) {
       // Check if subscription is active after a short delay
       const timeoutId = setTimeout(() => {
-        if (!subscription.hasActiveSubscription) {
+        if (!subscriptionError && !subscription.hasActiveSubscription) {
           console.log('No active subscription found after payment, redirecting to pricing');
           navigate('/pricing');
         }
@@ -64,10 +64,10 @@ export default function Dashboard() {
     }
     
     // Normal subscription check - redirect to pricing if no active subscription
-    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
+    if (!loading && !subscriptionLoading && user && !subscriptionError && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
       navigate('/pricing');
     }
-  }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
+  }, [user, loading, subscriptionLoading, subscriptionError, subscription.hasActiveSubscription, navigate]);
 
 
   useEffect(() => {

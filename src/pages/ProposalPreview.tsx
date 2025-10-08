@@ -33,14 +33,14 @@ export default function ProposalPreview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [signers, setSigners] = useState<any[]>([]);
-  const { subscription, loading: subscriptionLoading } = useSubscription();
+  const { subscription, loading: subscriptionLoading, error: subscriptionError } = useSubscription();
 
   // Subscription gate
   useEffect(() => {
-    if (!authLoading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+    if (!authLoading && !subscriptionLoading && user && !subscriptionError && !subscription.hasActiveSubscription) {
       navigate('/pricing');
     }
-  }, [user, authLoading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
+  }, [user, authLoading, subscriptionLoading, subscriptionError, subscription.hasActiveSubscription, navigate]);
 
   // Extract theme from proposal content
   const getTheme = () => {
