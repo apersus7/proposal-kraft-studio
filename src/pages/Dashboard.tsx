@@ -180,7 +180,13 @@ export default function Dashboard() {
     return proposal.status;
   };
 
-  const handleCreateProposal = () => {
+  const handleCreateProposal = async () => {
+    // Avoid false redirects while the subscription is still loading
+    if (subscriptionLoading) {
+      toast({ title: 'Checking subscription...', description: 'Please wait a moment.' });
+      return;
+    }
+
     // Redirect to checkout if no active subscription
     if (!subscription.hasActiveSubscription) {
       navigate('/checkout?plan=dealcloser');
@@ -217,7 +223,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
              <div className="flex items-center space-x-3">
-               <Button onClick={handleCreateProposal} size="sm">
+               <Button onClick={handleCreateProposal} size="sm" disabled={subscriptionLoading}>
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
@@ -265,7 +271,7 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90" disabled={subscriptionLoading}>
             <Plus className="h-4 w-4 mr-2" />
             Create Proposal
           </Button>
