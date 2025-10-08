@@ -23,3 +23,9 @@ verify_jwt = false
 
 [functions.send-newsletter-email]
 verify_jwt = false
+
+[functions.create-payment-link]
+verify_jwt = true
+
+[functions.trigger-webhooks]
+verify_jwt = false

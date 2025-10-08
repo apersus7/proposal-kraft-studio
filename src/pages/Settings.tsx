@@ -31,6 +31,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import BrandKitManager from '@/components/BrandKitManager';
 import CRMIntegration from '@/components/CRMIntegration';
+import WebhookIntegration from '@/components/WebhookIntegration';
+import PaymentIntegration from '@/components/PaymentIntegration';
 import { useSubscription } from '@/hooks/useSubscription';
 
 
@@ -500,6 +502,30 @@ export default function Settings() {
               </CardHeader>
               <CardContent>
                 <CRMIntegration />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Webhooks</CardTitle>
+                <CardDescription>
+                  Configure custom webhooks to receive real-time notifications
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <WebhookIntegration />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Client Payments</CardTitle>
+                <CardDescription>
+                  Set up payment integration to send payment links to clients
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PaymentIntegration />
               </CardContent>
             </Card>
           </TabsContent>
