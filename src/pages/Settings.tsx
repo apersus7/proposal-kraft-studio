@@ -30,6 +30,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import BrandKitManager from '@/components/BrandKitManager';
+import CRMIntegration from '@/components/CRMIntegration';
 import { useSubscription } from '@/hooks/useSubscription';
 
 
@@ -245,7 +246,7 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -257,6 +258,10 @@ export default function Settings() {
             <TabsTrigger value="billing" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
               Billing
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Integrations
             </TabsTrigger>
             <TabsTrigger value="preferences" className="flex items-center gap-2">
               <SettingsIcon className="h-4 w-4" />
@@ -485,6 +490,19 @@ export default function Settings() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="integrations" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>CRM Integrations</CardTitle>
+                <CardDescription>
+                  Connect your CRM to sync proposals and client data
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CRMIntegration />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="preferences" className="space-y-6">
             <Card>
