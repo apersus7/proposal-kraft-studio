@@ -54,8 +54,10 @@ serve(async (req) => {
       );
     }
 
-    // Fallback: check Whop memberships directly, but require valid_until in the future
+    // Fallback: check Whop memberships directly, but require validity in the future and correct company/plan
     const whopApiKey = Deno.env.get('WHOP_API_KEY');
+    const whopCompanyId = Deno.env.get('WHOP_COMPANY_ID') || null;
+    const whopPlanId = Deno.env.get('WHOP_PLAN_ID_DEALCLOSER') || null;
     if (!whopApiKey) {
       // If Whop is not configured, default to no subscription
       return new Response(
@@ -96,20 +98,61 @@ serve(async (req) => {
       );
     }
 
-    const memberships = await response.json();
-    console.log('Whop memberships:', memberships);
+    const json = await response.json();
+    const list = Array.isArray(json?.data)
+      ? json.data
+      : Array.isArray(json?.memberships)
+        ? json.memberships
+        : Array.isArray(json)
+          ? json
+          : [];
+    console.log('Whop memberships normalized length:', list.length);
 
-    const activeMembership = memberships.data?.find((m: any) => {
+    const now = Date.now();
+    const activeMembership = list.find((m: any) => {
+      // Time validity
       const periodEndSec = m.renewal_period_end ?? m.expires_at ?? null;
       const periodEndMs = periodEndSec ? Number(periodEndSec) * 1000 : null;
-      const isValidNow = m.valid === true || (periodEndMs ? periodEndMs > Date.now() : false);
-      return (m.status === 'active' || m.status === 'trialing') && isValidNow;
+      const isValidNow = (m.valid === true) || (periodEndMs ? periodEndMs > now : false);
+
+      // Company match (if configured)
+      const companyCandidates = [
+        m.company_id,
+        m.organization_id,
+        m?.shop?.id,
+        m?.org?.id,
+        m?.organization?.id,
+        m?.product?.organization?.id,
+        m?.plan?.organization_id,
+      ].filter(Boolean);
+      const companyOk = whopCompanyId ? companyCandidates.includes(whopCompanyId) : true;
+
+      // Plan match (if configured)
+      const planCandidates = [
+        m?.plan?.id,
+        m.plan_id,
+        m?.product?.id,
+        m?.plan,
+        m?.product_id,
+      ].filter(Boolean);
+      const planOk = whopPlanId ? planCandidates.includes(whopPlanId) : true;
+
+      // Only treat paid ACTIVE memberships as valid
+      const statusOk = m.status === 'active';
+
+      return statusOk && isValidNow && companyOk && planOk;
     });
 
     if (activeMembership) {
       const periodEndSec = activeMembership.renewal_period_end ?? activeMembership.expires_at ?? null;
       const periodEndIso = periodEndSec ? new Date(Number(periodEndSec) * 1000).toISOString() : null;
-      const planKey = activeMembership.plan ?? activeMembership.plan_id;
+      const planKey = activeMembership.plan ?? activeMembership.plan_id ?? activeMembership?.plan?.id ?? activeMembership?.product?.id;
+      console.log('Whop active membership match:', {
+        id: activeMembership.id,
+        status: activeMembership.status,
+        periodEndIso,
+        planKey,
+      });
       return new Response(
         JSON.stringify({
           hasActiveSubscription: true,
