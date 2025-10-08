@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -37,7 +37,8 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { subscription, loading: subscriptionLoading } = useSubscription();
+  const { subscription, loading: subscriptionLoading, refresh } = useSubscription();
+  const checkedSubRef = useRef(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -63,9 +64,29 @@ export default function Dashboard() {
       return () => clearTimeout(timeoutId);
     }
     
-    // Normal subscription check - redirect to pricing if no active subscription
+    // Normal subscription check - double verify server-side once before redirecting
     if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
-      navigate('/pricing');
+      if (checkedSubRef.current) {
+        navigate('/pricing');
+        return;
+      }
+      checkedSubRef.current = true;
+      (async () => {
+        try {
+          const { data } = await supabase.functions.invoke('verify-whop-access');
+          const now = Date.now();
+          const endMs = data?.currentPeriodEnd ? Date.parse(data.currentPeriodEnd) : null;
+          const status = typeof data?.status === 'string' ? data.status : 'none';
+          const activeFlag = data?.hasActiveSubscription === true;
+          const timeOk = endMs ? endMs > now : true;
+          const isActive = status === 'active' && activeFlag && timeOk;
+          if (!isActive) {
+            navigate('/pricing');
+          }
+        } catch (e) {
+          navigate('/pricing');
+        }
+      })();
     }
   }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
@@ -180,12 +201,35 @@ export default function Dashboard() {
     return proposal.status;
   };
 
-  const handleCreateProposal = () => {
-    // Redirect to checkout if no active subscription
-    if (!subscription.hasActiveSubscription) {
-      navigate('/checkout?plan=dealcloser');
-    } else {
-      navigate('/create-proposal');
+  const handleCreateProposal = async () => {
+    // Avoid false redirects while the subscription is still loading
+    if (subscriptionLoading) {
+      toast({ title: 'Checking subscription...', description: 'Please wait a moment.' });
+      return;
+    }
+
+    // Force a fresh server verification to avoid stale state
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-whop-access');
+      if (error) {
+        console.warn('verify-whop-access error:', error);
+      }
+
+      const now = Date.now();
+      const endMs = data?.currentPeriodEnd ? Date.parse(data.currentPeriodEnd) : null;
+      const status = typeof data?.status === 'string' ? data.status : 'none';
+      const activeFlag = data?.hasActiveSubscription === true;
+      const timeOk = endMs ? endMs > now : true;
+      const isActive = status === 'active' && activeFlag && timeOk;
+
+      if (!isActive) {
+        navigate('/checkout?plan=dealcloser');
+      } else {
+        navigate('/create-proposal');
+      }
+    } catch (e) {
+      console.warn('Subscription verification failed', e);
+      navigate('/pricing');
     }
   };
 
@@ -217,7 +261,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
              <div className="flex items-center space-x-3">
-               <Button onClick={handleCreateProposal} size="sm">
+               <Button onClick={handleCreateProposal} size="sm" disabled={subscriptionLoading}>
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
@@ -265,7 +309,7 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90" disabled={subscriptionLoading}>
             <Plus className="h-4 w-4 mr-2" />
             Create Proposal
           </Button>
