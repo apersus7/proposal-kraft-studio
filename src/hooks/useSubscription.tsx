@@ -77,8 +77,9 @@ export const useSubscription = () => {
         normalized: { isActive, status, endMs }
       });
 
+      // For gating, trust only our DB. Do not grant access based on external fallback.
       setSubscription({
-        hasActiveSubscription: isActive,
+        hasActiveSubscription: false,
         planType: typeof whopData?.planType === 'string' ? whopData.planType : null,
         status,
         currentPeriodEnd: typeof whopData?.currentPeriodEnd === 'string' ? whopData.currentPeriodEnd : null,
