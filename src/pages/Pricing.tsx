@@ -5,18 +5,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/hooks/useSubscription';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
-
-  useEffect(() => {
-    if (user && !subscriptionLoading && subscription.hasActiveSubscription) {
-      navigate('/dashboard');
-    }
-  }, [user, subscriptionLoading, subscription?.hasActiveSubscription, navigate]);
+  const {
+    user,
+    loading
+  } = useAuth();
   return <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur">

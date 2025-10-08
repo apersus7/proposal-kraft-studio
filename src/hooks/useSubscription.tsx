@@ -45,27 +45,7 @@ export const useSubscription = () => {
         return;
       }
 
-      // Normalize and harden the response to avoid false positives/negatives
-      const now = Date.now();
-      const endMs = whopData?.currentPeriodEnd ? Date.parse(whopData.currentPeriodEnd) : null;
-      const status = typeof whopData?.status === 'string' ? whopData.status : 'none';
-      const activeFlag = whopData?.hasActiveSubscription === true;
-      const timeOk = endMs ? endMs > now : true; // allow null when provider doesn't return end date
-      const isActive = status === 'active' && activeFlag && timeOk;
-
-      console.log('[useSubscription] verify-whop-access response:', {
-        source: whopData?.source,
-        version: whopData?.version,
-        incoming: whopData,
-        normalized: { isActive, status, endMs }
-      });
-
-      setSubscription({
-        hasActiveSubscription: isActive,
-        planType: typeof whopData?.planType === 'string' ? whopData.planType : null,
-        status,
-        currentPeriodEnd: typeof whopData?.currentPeriodEnd === 'string' ? whopData.currentPeriodEnd : null,
-      });
+      setSubscription(whopData);
     } catch (err) {
       console.error('Subscription hook error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');

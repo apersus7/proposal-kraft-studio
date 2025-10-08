@@ -37,12 +37,12 @@ export default function CreateProposal() {
   const [generatingAI, setGeneratingAI] = useState<string | null>(null);
   const { subscription, loading: subscriptionLoading } = useSubscription();
 
-  // Subscription gate - redirect to checkout if no active subscription (only when user is logged in)
+  // Subscription gate - redirect to checkout if no active subscription
   useEffect(() => {
-    if (user && !subscriptionLoading && !subscription.hasActiveSubscription) {
+    if (!subscriptionLoading && !subscription.hasActiveSubscription) {
       navigate('/checkout?plan=dealcloser');
     }
-  }, [user, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
+  }, [subscriptionLoading, subscription.hasActiveSubscription, navigate]);
   
   const [proposalData, setProposalData] = useState<any>({
     title: '',
