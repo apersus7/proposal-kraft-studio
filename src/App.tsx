@@ -21,6 +21,7 @@ import Contact from "./pages/Contact";
 import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import SubscriptionGuard from "./components/auth/SubscriptionGuard";
 
 const queryClient = new QueryClient();
 
@@ -34,12 +35,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create-proposal" element={<CreateProposal />} />
-            <Route path="/proposal/:id" element={<ProposalPreview />} />
-            <Route path="/preview/:id" element={<ProposalPreview />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/profile" element={<Settings />} />
+            <Route path="/dashboard" element={<SubscriptionGuard><Dashboard /></SubscriptionGuard>} />
+            <Route path="/create-proposal" element={<SubscriptionGuard><CreateProposal /></SubscriptionGuard>} />
+            <Route path="/proposal/:id" element={<SubscriptionGuard><ProposalPreview /></SubscriptionGuard>} />
+            <Route path="/preview/:id" element={<SubscriptionGuard><ProposalPreview /></SubscriptionGuard>} />
+            <Route path="/settings" element={<SubscriptionGuard><Settings /></SubscriptionGuard>} />
+            <Route path="/profile" element={<SubscriptionGuard><Settings /></SubscriptionGuard>} />
             <Route path="/features" element={<Features />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/solutions" element={<Solutions />} />
