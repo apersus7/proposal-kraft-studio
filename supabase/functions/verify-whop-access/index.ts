@@ -146,7 +146,7 @@ serve(async (req) => {
       // Only treat paid ACTIVE memberships as valid
       const statusOk = m.status === 'active';
 
-      return statusOk && isValidNow && companyOk;
+      return statusOk && isValidNow && companyOk && planOk;
     });
 
     if (activeMembership) {
