@@ -21,9 +21,11 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
-  const [isConfigured, setIsConfigured] = useState(false);
+  const [isStripeConfigured, setIsStripeConfigured] = useState(false);
+  const [isPayPalConfigured, setIsPayPalConfigured] = useState(false);
   const [copied, setCopied] = useState(false);
   const [existingLinks, setExistingLinks] = useState<any[]>([]);
+  const [paymentProvider, setPaymentProvider] = useState<'stripe' | 'paypal'>('stripe');
 
   useEffect(() => {
     checkStripeConfiguration();
@@ -34,14 +36,19 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
     try {
       const { data, error } = await supabase
         .from('user_payment_settings')
-        .select('stripe_publishable_key, stripe_secret_key')
-        .single();
+        .select('stripe_publishable_key, stripe_secret_key, paypal_client_id_custom, paypal_merchant_id')
+        .maybeSingle();
 
-      if (!error && data?.stripe_publishable_key && data?.stripe_secret_key) {
-        setIsConfigured(true);
+      if (!error && data) {
+        if (data.stripe_publishable_key && data.stripe_secret_key) {
+          setIsStripeConfigured(true);
+        }
+        if (data.paypal_client_id_custom && data.paypal_merchant_id) {
+          setIsPayPalConfigured(true);
+        }
       }
     } catch (error) {
-      console.error('Error checking Stripe configuration:', error);
+      console.error('Error checking payment configuration:', error);
     }
   };
 
@@ -62,10 +69,12 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
   };
 
   const handleGenerateLink = async () => {
+    const isConfigured = paymentProvider === 'stripe' ? isStripeConfigured : isPayPalConfigured;
+    
     if (!isConfigured) {
       toast({
-        title: 'Stripe Not Configured',
-        description: 'Please configure your Stripe settings in the Settings page first.',
+        title: `${paymentProvider === 'stripe' ? 'Stripe' : 'PayPal'} Not Configured`,
+        description: `Please configure your ${paymentProvider === 'stripe' ? 'Stripe' : 'PayPal'} settings in the Settings page first.`,
         variant: 'destructive',
       });
       return;
@@ -83,7 +92,9 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment-link', {
+      const functionName = paymentProvider === 'stripe' ? 'create-payment-link' : 'create-paypal-payment-link';
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
           amount: numericAmount,
           currency,
@@ -98,7 +109,7 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
         setGeneratedLink(data.payment_link);
         toast({
           title: 'Success',
-          description: 'Payment link generated successfully',
+          description: `${paymentProvider === 'stripe' ? 'Stripe' : 'PayPal'} payment link generated successfully`,
         });
         fetchExistingLinks();
       }
@@ -132,14 +143,14 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
     }
   };
 
-  if (!isConfigured) {
+  if (!isStripeConfigured && !isPayPalConfigured) {
     return (
       <div className="space-y-4">
         <div className="bg-muted/50 p-6 rounded-lg border-2 border-dashed text-center">
           <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <h3 className="font-semibold mb-2">Stripe Not Configured</h3>
+          <h3 className="font-semibold mb-2">Payment Provider Not Configured</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            To generate payment links for your clients, you need to configure Stripe first.
+            To generate payment links for your clients, configure Stripe or PayPal first.
           </p>
           <Button onClick={() => window.open('/settings', '_blank')}>
             Go to Settings
@@ -157,6 +168,27 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
           <p className="text-sm text-muted-foreground">
             Create a secure payment link to share with your client
           </p>
+        </div>
+
+        <div className="flex gap-2 mb-2">
+          {isStripeConfigured && (
+            <Button
+              variant={paymentProvider === 'stripe' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPaymentProvider('stripe')}
+            >
+              Stripe
+            </Button>
+          )}
+          {isPayPalConfigured && (
+            <Button
+              variant={paymentProvider === 'paypal' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setPaymentProvider('paypal')}
+            >
+              PayPal
+            </Button>
+          )}
         </div>
 
         <div className="grid gap-4">
@@ -270,17 +302,25 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
                       Created {new Date(link.created_at).toLocaleDateString()}
                     </p>
                   </div>
-                  {link.stripe_payment_link_id && (
-                    <div className="flex gap-1 ml-2">
+                  <div className="flex gap-1 ml-2">
+                    <Badge variant="outline" className="text-xs">
+                      {link.payment_provider === 'paypal' ? 'PayPal' : 'Stripe'}
+                    </Badge>
+                    {(link.stripe_payment_link_id || link.paypal_order_id) && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleCopyLink(`https://buy.stripe.com/${link.stripe_payment_link_id}`)}
+                        onClick={() => {
+                          const url = link.payment_provider === 'paypal' 
+                            ? `https://www.paypal.com/paypalme/${link.paypal_order_id}/${link.amount}${link.currency.toUpperCase()}`
+                            : `https://buy.stripe.com/${link.stripe_payment_link_id}`;
+                          handleCopyLink(url);
+                        }}
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}

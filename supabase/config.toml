@@ -27,5 +27,8 @@ verify_jwt = false
 [functions.create-payment-link]
 verify_jwt = true
 
+[functions.create-paypal-payment-link]
+verify_jwt = true
+
 [functions.trigger-webhooks]
 verify_jwt = false

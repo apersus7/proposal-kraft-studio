@@ -66,6 +66,8 @@ export type Database = {
           currency: string
           description: string | null
           id: string
+          payment_provider: string
+          paypal_order_id: string | null
           proposal_id: string | null
           status: string
           stripe_payment_link_id: string | null
@@ -78,6 +80,8 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          payment_provider?: string
+          paypal_order_id?: string | null
           proposal_id?: string | null
           status?: string
           stripe_payment_link_id?: string | null
@@ -90,6 +94,8 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          payment_provider?: string
+          paypal_order_id?: string | null
           proposal_id?: string | null
           status?: string
           stripe_payment_link_id?: string | null
@@ -518,8 +524,10 @@ export type Database = {
           created_at: string
           id: string
           paypal_client_id: string | null
+          paypal_client_id_custom: string | null
           paypal_client_secret: string | null
           paypal_environment: string | null
+          paypal_merchant_id: string | null
           stripe_publishable_key: string | null
           stripe_secret_key: string | null
           updated_at: string
@@ -529,8 +537,10 @@ export type Database = {
           created_at?: string
           id?: string
           paypal_client_id?: string | null
+          paypal_client_id_custom?: string | null
           paypal_client_secret?: string | null
           paypal_environment?: string | null
+          paypal_merchant_id?: string | null
           stripe_publishable_key?: string | null
           stripe_secret_key?: string | null
           updated_at?: string
@@ -540,8 +550,10 @@ export type Database = {
           created_at?: string
           id?: string
           paypal_client_id?: string | null
+          paypal_client_id_custom?: string | null
           paypal_client_secret?: string | null
           paypal_environment?: string | null
+          paypal_merchant_id?: string | null
           stripe_publishable_key?: string | null
           stripe_secret_key?: string | null
           updated_at?: string
