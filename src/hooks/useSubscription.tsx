@@ -64,10 +64,10 @@ export const useSubscription = () => {
       }
 
       // Normalize and harden the response to avoid false positives/negatives
-      const endMs = whopData?.currentPeriodEnd ? Date.parse(whopData.currentPeriodEnd) : null;
+      const endMs = typeof whopData?.currentPeriodEnd === 'string' ? Date.parse(whopData.currentPeriodEnd) : null;
       const status = typeof whopData?.status === 'string' ? whopData.status : 'none';
       const activeFlag = whopData?.hasActiveSubscription === true;
-      const timeOk = endMs ? endMs > now : true; // allow null when provider doesn't return end date
+      const timeOk = !!endMs && endMs > now; // require concrete future end date
       const isActive = status === 'active' && activeFlag && timeOk;
 
       console.log('[useSubscription] normalized status:', {
@@ -77,12 +77,42 @@ export const useSubscription = () => {
         normalized: { isActive, status, endMs }
       });
 
-      setSubscription({
-        hasActiveSubscription: isActive,
-        planType: typeof whopData?.planType === 'string' ? whopData.planType : null,
-        status,
-        currentPeriodEnd: typeof whopData?.currentPeriodEnd === 'string' ? whopData.currentPeriodEnd : null,
-      });
+      if (isActive) {
+        // Re-check DB after the edge function may have synced it
+        const { data: subRows2 } = await supabase
+          .from('subscriptions')
+          .select('status, plan_type, current_period_end')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        const dbSub2 = subRows2?.[0] as any;
+        const endMsDb2 = dbSub2?.current_period_end ? Date.parse(dbSub2.current_period_end) : null;
+        const isDbActive2 = dbSub2?.status === 'active' && (endMsDb2 ? endMsDb2 > now : false);
+
+        if (isDbActive2) {
+          setSubscription({
+            hasActiveSubscription: true,
+            planType: typeof dbSub2?.plan_type === 'string' ? dbSub2.plan_type : null,
+            status: dbSub2?.status ?? 'active',
+            currentPeriodEnd: typeof dbSub2?.current_period_end === 'string' ? dbSub2.current_period_end : null,
+          });
+        } else {
+          setSubscription({
+            hasActiveSubscription: false,
+            planType: null,
+            status: 'none',
+            currentPeriodEnd: null,
+          });
+        }
+      } else {
+        setSubscription({
+          hasActiveSubscription: false,
+          planType: null,
+          status,
+          currentPeriodEnd: null,
+        });
+      }
     } catch (err) {
       console.error('Subscription hook error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');

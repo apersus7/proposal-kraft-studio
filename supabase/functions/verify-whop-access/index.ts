@@ -215,6 +215,29 @@ serve(async (req) => {
         periodEndIso,
         planKey,
       });
+
+      // Sync the subscription status into our database so that the DB remains the single source of truth
+      try {
+        if (userIdForDb) {
+          const { error: upsertErr } = await supabase
+            .from('subscriptions')
+            .insert({
+              user_id: userIdForDb,
+              plan_type: getPlanTypeFromWhopPlan(planKey),
+              status: 'active',
+              current_period_end: periodEndIso,
+              current_period_start: new Date().toISOString(),
+            });
+          if (upsertErr) {
+            console.warn('Failed to insert subscription from Whop verification:', upsertErr);
+          }
+        } else {
+          console.warn('No userIdForDb resolved; skipping subscriptions sync.');
+        }
+      } catch (e) {
+        console.error('Error syncing subscription to DB:', e);
+      }
+
       return new Response(
         JSON.stringify({
           hasActiveSubscription: true,
