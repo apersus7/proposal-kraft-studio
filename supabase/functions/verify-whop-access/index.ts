@@ -30,7 +30,11 @@ serve(async (req) => {
 
     // Allow email and strict flags from body or query params
     let reqEmail: string | null = url.searchParams.get('email');
-    let strict = url.searchParams.get('strict') === 'true';
+    // Default to strict revalidation for authenticated requests
+    let strict = !!req.headers.get('Authorization');
+    const strictParam = url.searchParams.get('strict');
+    if (strictParam === 'true') strict = true;
+    if (strictParam === 'false') strict = false;
     if (!reqEmail) {
       try {
         const body = await req.json();
