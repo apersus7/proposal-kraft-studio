@@ -30,16 +30,13 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
 
-      // Only check DB - single source of truth
-      const { data: subRows, error: dbError } = await supabase
-        .from('subscriptions')
-        .select('status, plan_type, current_period_end')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
+      // Whop-only gating: trust edge function result exclusively
+      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access', {
+        body: { email: user.email }
+      });
 
-      if (dbError) {
-        console.error('[useSubscription] DB check error:', dbError);
+      if (whopError) {
+        console.warn('[useSubscription] verify-whop-access error:', whopError);
         setSubscription({
           hasActiveSubscription: false,
           planType: null,
@@ -49,26 +46,25 @@ export const useSubscription = () => {
         return;
       }
 
-      const dbSub = subRows?.[0] as any;
       const now = Date.now();
-      const endMsDb = dbSub?.current_period_end ? Date.parse(dbSub.current_period_end) : null;
-      
-      // Strict check: status must be 'active' AND current_period_end must be in the future
-      const isDbActive = dbSub?.status === 'active' && endMsDb && endMsDb > now;
+      const endMs = typeof whopData?.currentPeriodEnd === 'string' ? Date.parse(whopData.currentPeriodEnd) : null;
+      const status = typeof whopData?.status === 'string' ? whopData.status : 'none';
+      const activeFlag = whopData?.hasActiveSubscription === true;
+      const timeOk = !!endMs && endMs > now; // require a concrete, future end date
+      const isActive = status === 'active' && activeFlag && timeOk;
 
-      console.log('[useSubscription] DB check:', {
-        userId: user.id,
-        dbSub,
-        isDbActive,
-        endMsDb,
-        now
+      console.log('[useSubscription] Whop-only normalized status:', {
+        source: whopData?.source,
+        version: whopData?.version,
+        incoming: whopData,
+        normalized: { isActive, status, endMs }
       });
 
       setSubscription({
-        hasActiveSubscription: isDbActive,
-        planType: isDbActive && typeof dbSub?.plan_type === 'string' ? dbSub.plan_type : null,
-        status: dbSub?.status ?? 'none',
-        currentPeriodEnd: isDbActive && typeof dbSub?.current_period_end === 'string' ? dbSub.current_period_end : null,
+        hasActiveSubscription: isActive,
+        planType: typeof whopData?.planType === 'string' ? whopData.planType : null,
+        status,
+        currentPeriodEnd: typeof whopData?.currentPeriodEnd === 'string' ? whopData.currentPeriodEnd : null,
       });
     } catch (err) {
       console.error('Subscription hook error:', err);
