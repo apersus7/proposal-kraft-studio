@@ -219,17 +219,48 @@ serve(async (req) => {
       // Sync the subscription status into our database so that the DB remains the single source of truth
       try {
         if (userIdForDb) {
-          const { error: upsertErr } = await supabase
+          // First, try to update the most recent subscription for this user
+          const { data: existingSubs } = await supabase
             .from('subscriptions')
-            .insert({
-              user_id: userIdForDb,
-              plan_type: getPlanTypeFromWhopPlan(planKey),
-              status: 'active',
-              current_period_end: periodEndIso,
-              current_period_start: new Date().toISOString(),
-            });
-          if (upsertErr) {
-            console.warn('Failed to insert subscription from Whop verification:', upsertErr);
+            .select('id')
+            .eq('user_id', userIdForDb)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (existingSubs && existingSubs.length > 0) {
+            // Update the existing subscription
+            const { error: updateErr } = await supabase
+              .from('subscriptions')
+              .update({
+                plan_type: getPlanTypeFromWhopPlan(planKey),
+                status: 'active',
+                current_period_end: periodEndIso,
+                current_period_start: new Date().toISOString(),
+              })
+              .eq('id', existingSubs[0].id);
+            
+            if (updateErr) {
+              console.warn('Failed to update subscription from Whop verification:', updateErr);
+            } else {
+              console.log('Successfully updated subscription in DB for user:', userIdForDb);
+            }
+          } else {
+            // Insert a new subscription
+            const { error: insertErr } = await supabase
+              .from('subscriptions')
+              .insert({
+                user_id: userIdForDb,
+                plan_type: getPlanTypeFromWhopPlan(planKey),
+                status: 'active',
+                current_period_end: periodEndIso,
+                current_period_start: new Date().toISOString(),
+              });
+            
+            if (insertErr) {
+              console.warn('Failed to insert subscription from Whop verification:', insertErr);
+            } else {
+              console.log('Successfully inserted new subscription in DB for user:', userIdForDb);
+            }
           }
         } else {
           console.warn('No userIdForDb resolved; skipping subscriptions sync.');
