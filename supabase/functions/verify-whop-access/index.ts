@@ -74,7 +74,7 @@ serve(async (req) => {
     if (userIdForDb) {
       const { data, error } = await supabase
         .from('subscriptions')
-        .select('plan_type, status, current_period_end')
+        .select('id, plan_type, status, current_period_end')
         .eq('user_id', userIdForDb)
         .eq('status', 'active')
         .gt('current_period_end', nowIso);
