@@ -181,14 +181,31 @@ serve(async (req) => {
           : [];
 
     // Filter strictly by the requesting user's email to avoid cross-account matches
-    const normalizedEmail = (userEmail || '').toLowerCase();
+    // Robust email normalization: lower, trim, remove plus tags, handle gmail/googlemail aliasing
+    const norm = (e: string) => {
+      const raw = String(e || '').trim().toLowerCase();
+      const [local, domain] = raw.split('@');
+      if (!local || !domain) return raw;
+      let d = domain === 'googlemail.com' ? 'gmail.com' : domain;
+      let l = local;
+      // Gmail ignores dots and anything after +
+      if (d === 'gmail.com') {
+        l = l.replace(/\./g, '');
+      }
+      l = l.split('+')[0];
+      return `${l}@${d}`;
+    };
+
+    const normalizedEmail = norm(userEmail || '');
     const filteredList = list.filter((m: any) => {
       const candidates = [
         m?.email,
         m?.user?.email,
         m?.member?.email,
         m?.buyer?.email,
-      ].filter(Boolean).map((e: string) => String(e).toLowerCase());
+      ]
+        .filter(Boolean)
+        .map((e: string) => norm(e));
       return normalizedEmail && candidates.includes(normalizedEmail);
     });
 
