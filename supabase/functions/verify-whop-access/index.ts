@@ -179,10 +179,23 @@ serve(async (req) => {
         : Array.isArray(json)
           ? json
           : [];
-    console.log('Whop memberships normalized length:', list.length);
+
+    // Filter strictly by the requesting user's email to avoid cross-account matches
+    const normalizedEmail = (userEmail || '').toLowerCase();
+    const filteredList = list.filter((m: any) => {
+      const candidates = [
+        m?.email,
+        m?.user?.email,
+        m?.member?.email,
+        m?.buyer?.email,
+      ].filter(Boolean).map((e: string) => String(e).toLowerCase());
+      return normalizedEmail && candidates.includes(normalizedEmail);
+    });
+
+    console.log('Whop memberships normalized length:', list.length, 'filteredByEmail:', filteredList.length);
 
     const now = Date.now();
-    const activeMembership = list.find((m: any) => {
+    const activeMembership = filteredList.find((m: any) => {
       // Time validity
       const periodEndSec = m.renewal_period_end ?? m.expires_at ?? null;
       const periodEndMs = periodEndSec ? Number(periodEndSec) * 1000 : null;
