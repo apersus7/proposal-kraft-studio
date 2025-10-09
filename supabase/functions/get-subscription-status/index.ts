@@ -30,13 +30,17 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    // Get user's subscription from database
+    // Get user's subscription from database (must be active and in future)
+    const nowIso = new Date().toISOString();
     const { data: subscription, error } = await supabaseClient
       .from('subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'active')
-      .single();
+      .gt('current_period_end', nowIso)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
       console.error('Database query error:', error);

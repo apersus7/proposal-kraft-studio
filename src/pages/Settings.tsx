@@ -247,9 +247,13 @@ export default function Settings() {
                 <span className="text-xl font-bold text-primary">ProposalKraft</span>
               </div>
             </div>
-            <Badge variant="default">
-              All Features Enabled
-            </Badge>
+            {subscriptionLoading ? (
+              <Badge variant="secondary">Checking access...</Badge>
+            ) : isActiveStrict ? (
+              <Badge variant="default">Active</Badge>
+            ) : (
+              <Badge variant="secondary">No Access</Badge>
+            )}
           </div>
         </div>
       </header>
