@@ -12,6 +12,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { subscription, loading: subLoading } = useSubscription();
   const location = useLocation();
 
+  // Strict active check: must be 'active' and have a future end date
+  const now = Date.now();
+  const endMs = subscription.currentPeriodEnd ? Date.parse(subscription.currentPeriodEnd) : null;
+  const isActiveStrict = subscription.status === 'active' && !!endMs && endMs > now && subscription.hasActiveSubscription;
+
   // Loading state while auth/subscription are resolving
   if (authLoading || subLoading) {
     return (
@@ -29,7 +34,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   // Must have active subscription
-  if (!subscription.hasActiveSubscription) {
+  if (!isActiveStrict) {
     return <Navigate to="/pricing" replace state={{ from: location }} />;
   }
 
