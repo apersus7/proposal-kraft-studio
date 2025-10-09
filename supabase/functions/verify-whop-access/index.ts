@@ -209,43 +209,52 @@ serve(async (req) => {
       const periodEndSec = activeMembership.renewal_period_end ?? activeMembership.expires_at ?? null;
       const periodEndIso = periodEndSec ? new Date(Number(periodEndSec) * 1000).toISOString() : null;
       const planKey = activeMembership.plan ?? activeMembership.plan_id ?? activeMembership?.plan?.id ?? activeMembership?.product?.id;
+      const membershipId = activeMembership.id;
+      
       console.log('Whop active membership match:', {
-        id: activeMembership.id,
+        id: membershipId,
         status: activeMembership.status,
         periodEndIso,
         planKey,
+        userEmail,
       });
 
       // Sync the subscription status into our database so that the DB remains the single source of truth
+      // Only update if the Whop membership data is newer or different from what's in the DB
       try {
         if (userIdForDb) {
-          // First, try to update the most recent subscription for this user
+          // First, check the most recent subscription for this user
           const { data: existingSubs } = await supabase
             .from('subscriptions')
-            .select('id')
+            .select('id, current_period_end, status')
             .eq('user_id', userIdForDb)
             .order('created_at', { ascending: false })
             .limit(1);
 
-          if (existingSubs && existingSubs.length > 0) {
-            // Update the existing subscription
+          const existingSub = existingSubs?.[0];
+          const shouldUpdate = !existingSub || 
+                               existingSub.status !== 'active' || 
+                               (periodEndIso && existingSub.current_period_end !== periodEndIso);
+
+          if (existingSub && shouldUpdate) {
+            // Update only if status changed or period end changed
             const { error: updateErr } = await supabase
               .from('subscriptions')
               .update({
                 plan_type: getPlanTypeFromWhopPlan(planKey),
                 status: 'active',
                 current_period_end: periodEndIso,
-                current_period_start: new Date().toISOString(),
+                current_period_start: existingSub.current_period_end ? existingSub.current_period_end : new Date().toISOString(),
               })
-              .eq('id', existingSubs[0].id);
+              .eq('id', existingSub.id);
             
             if (updateErr) {
               console.warn('Failed to update subscription from Whop verification:', updateErr);
             } else {
-              console.log('Successfully updated subscription in DB for user:', userIdForDb);
+              console.log('Successfully updated subscription in DB for user:', userIdForDb, 'with period end:', periodEndIso);
             }
-          } else {
-            // Insert a new subscription
+          } else if (!existingSub) {
+            // Insert a new subscription only if none exists
             const { error: insertErr } = await supabase
               .from('subscriptions')
               .insert({
@@ -259,8 +268,10 @@ serve(async (req) => {
             if (insertErr) {
               console.warn('Failed to insert subscription from Whop verification:', insertErr);
             } else {
-              console.log('Successfully inserted new subscription in DB for user:', userIdForDb);
+              console.log('Successfully inserted new subscription in DB for user:', userIdForDb, 'with period end:', periodEndIso);
             }
+          } else {
+            console.log('Subscription already up to date for user:', userIdForDb);
           }
         } else {
           console.warn('No userIdForDb resolved; skipping subscriptions sync.');
