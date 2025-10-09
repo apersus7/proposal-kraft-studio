@@ -18,10 +18,26 @@ export default function Auth() {
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect authenticated users to home (which shows dashboard for subscribed users)
+  // After successful authentication, immediately verify subscription and route accordingly
   useEffect(() => {
     if (!loading && user) {
-      navigate('/');
+      (async () => {
+        try {
+          const email = user.email;
+          const { data } = await supabase.functions.invoke('verify-whop-access', {
+            body: { email, strict: true }
+          });
+          // Route based on real-time subscription
+          if (data?.hasActiveSubscription) {
+            navigate('/dashboard');
+          } else {
+            navigate('/pricing');
+          }
+        } catch (e) {
+          console.error('Post-auth subscription verify failed:', e);
+          navigate('/pricing');
+        }
+      })();
     }
   }, [user, loading, navigate]);
 
@@ -36,7 +52,7 @@ export default function Auth() {
     const { error } = await signIn(email, password);
     
     if (!error) {
-      navigate('/');
+      // Navigation handled by post-auth useEffect after strict verification
     }
     
     setIsLoading(false);
