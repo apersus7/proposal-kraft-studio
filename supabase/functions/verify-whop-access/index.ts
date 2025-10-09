@@ -28,12 +28,14 @@ serve(async (req) => {
       if (!userError) user = data.user;
     }
 
-    // Allow email as a fallback identifier (from body or query param)
+    // Allow email and strict flags from body or query params
     let reqEmail: string | null = url.searchParams.get('email');
+    let strict = url.searchParams.get('strict') === 'true';
     if (!reqEmail) {
       try {
         const body = await req.json();
         if (body && typeof body.email === 'string') reqEmail = body.email;
+        if (body && typeof body.strict === 'boolean') strict = body.strict === true;
       } catch (_) {
         // ignore JSON parse errors for non-JSON requests
       }
@@ -80,19 +82,24 @@ serve(async (req) => {
       console.warn('Error querying subscriptions table:', subError);
     }
 
+    // If DB already has an active, future-dated subscription
+    let existingActiveDb: any = null;
     if (subs && subs.length > 0) {
-      const sub = subs[0];
-      return new Response(
-        JSON.stringify({
-          hasActiveSubscription: true,
-          planType: sub.plan_type,
-          status: sub.status,
-          currentPeriodEnd: sub.current_period_end,
-          source: 'db',
-          version: 'v3.1'
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      existingActiveDb = subs[0];
+      if (!strict) {
+        return new Response(
+          JSON.stringify({
+            hasActiveSubscription: true,
+            planType: existingActiveDb.plan_type,
+            status: existingActiveDb.status,
+            currentPeriodEnd: existingActiveDb.current_period_end,
+            source: 'db',
+            version: 'v3.1'
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      // else, continue to Whop revalidation below
     }
 
     // Fallback: check Whop memberships directly, but require validity in the future and correct company/plan
@@ -222,7 +229,7 @@ serve(async (req) => {
       // Sync the subscription status into our database so that the DB remains the single source of truth
       // Only update if the Whop membership data is newer or different from what's in the DB
       try {
-        if (userIdForDb) {
+        if (user && userIdForDb) {
           // First, check the most recent subscription for this user
           const { data: existingSubs } = await supabase
             .from('subscriptions')
@@ -274,7 +281,7 @@ serve(async (req) => {
             console.log('Subscription already up to date for user:', userIdForDb);
           }
         } else {
-          console.warn('No userIdForDb resolved; skipping subscriptions sync.');
+          console.warn('No authenticated user or userIdForDb resolved; skipping subscriptions sync.');
         }
       } catch (e) {
         console.error('Error syncing subscription to DB:', e);
@@ -292,6 +299,23 @@ serve(async (req) => {
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // No active Whop membership found; if strict revalidation requested, downgrade DB if it was active
+    try {
+      if (strict && existingActiveDb && userIdForDb) {
+        const { error: downgradeErr } = await supabase
+          .from('subscriptions')
+          .update({ status: 'cancelled', cancelled_at: nowIso })
+          .eq('id', existingActiveDb.id);
+        if (downgradeErr) {
+          console.warn('Failed to downgrade subscription during strict revalidation:', downgradeErr);
+        } else {
+          console.log('Downgraded subscription to cancelled for user:', userIdForDb);
+        }
+      }
+    } catch (e) {
+      console.error('Error during downgrade step:', e);
     }
 
     return new Response(

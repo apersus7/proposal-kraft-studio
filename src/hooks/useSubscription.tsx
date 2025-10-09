@@ -30,9 +30,8 @@ export const useSubscription = () => {
       setLoading(true);
       setError(null);
 
-      // Call Whop verification (also syncs DB when active)
       const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access', {
-        body: { email: user.email }
+        body: { email: user.email, strict: true }
       });
 
       if (whopError) {
