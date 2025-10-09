@@ -50,43 +50,19 @@ export default function Dashboard() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
-    
-    // If just returned from payment with success status, wait briefly for webhook processing
-    if (paymentStatus === 'success' && !subscriptionLoading) {
-      // Check if subscription is active after a short delay
+
+    // If just returned from payment with success status, delay briefly to allow webhook/edge sync
+    if (paymentStatus === 'success') {
       const timeoutId = setTimeout(() => {
-        if (!subscription.hasActiveSubscription) {
-          console.log('No active subscription found after payment, redirecting to pricing');
+        if (!subscriptionLoading && !subscription.hasActiveSubscription) {
           navigate('/pricing');
         }
       }, 3000);
-      
       return () => clearTimeout(timeoutId);
     }
-    
-    // Normal subscription check - double verify server-side once before redirecting
-    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && paymentStatus !== 'success') {
-      if (checkedSubRef.current) {
-        navigate('/pricing');
-        return;
-      }
-      checkedSubRef.current = true;
-      (async () => {
-        try {
-          const { data } = await supabase.functions.invoke('verify-whop-access', { body: { email: user?.email } });
-          const now = Date.now();
-          const endMs = data?.currentPeriodEnd ? Date.parse(data.currentPeriodEnd) : null;
-          const status = typeof data?.status === 'string' ? data.status : 'none';
-          const activeFlag = data?.hasActiveSubscription === true;
-          const timeOk = endMs ? endMs > now : true;
-          const isActive = status === 'active' && activeFlag && timeOk;
-          if (!isActive) {
-            navigate('/pricing');
-          }
-        } catch (e) {
-          navigate('/pricing');
-        }
-      })();
+
+    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+      navigate('/pricing');
     }
   }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
 
@@ -202,37 +178,18 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = async () => {
-    // Avoid false redirects while the subscription is still loading
     if (subscriptionLoading) {
       toast({ title: 'Checking subscription...', description: 'Please wait a moment.' });
       return;
     }
 
-    // Force a fresh server verification to avoid stale state
-    try {
-      const { data, error } = await supabase.functions.invoke('verify-whop-access', { body: { email: user?.email } });
-      if (error) {
-        console.warn('verify-whop-access error:', error);
-      }
-
-      const now = Date.now();
-      const endMs = data?.currentPeriodEnd ? Date.parse(data.currentPeriodEnd) : null;
-      const status = typeof data?.status === 'string' ? data.status : 'none';
-      const activeFlag = data?.hasActiveSubscription === true;
-      const timeOk = endMs ? endMs > now : true;
-      const isActive = status === 'active' && activeFlag && timeOk;
-
-      if (!isActive) {
-        navigate('/checkout?plan=dealcloser');
-      } else {
-        navigate('/create-proposal');
-      }
-    } catch (e) {
-      console.warn('Subscription verification failed', e);
+    if (!subscription.hasActiveSubscription) {
       navigate('/pricing');
+      return;
     }
-  };
 
+    navigate('/create-proposal');
+  };
   const handleSignOut = async () => {
     await signOut();
     // Don't navigate immediately - let the auth state change handle the redirect
