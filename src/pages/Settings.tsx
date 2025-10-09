@@ -58,6 +58,11 @@ export default function Settings() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const { subscription, loading: subscriptionLoading } = useSubscription();
 
+  // Strict active check aligned with ProtectedRoute
+  const now = Date.now();
+  const endMs = subscription.currentPeriodEnd ? Date.parse(subscription.currentPeriodEnd) : null;
+  const isActiveStrict = subscription.status === 'active' && !!endMs && endMs > now && subscription.hasActiveSubscription;
+
   useEffect(() => {
     if (!user) {
       navigate('/auth');
@@ -68,10 +73,10 @@ export default function Settings() {
 
   // Subscription gate
   useEffect(() => {
-    if (!subscriptionLoading && user && !subscription.hasActiveSubscription) {
+    if (!subscriptionLoading && user && !isActiveStrict) {
       navigate('/pricing');
     }
-  }, [user, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
+  }, [user, subscriptionLoading, isActiveStrict, navigate]);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -215,6 +220,16 @@ export default function Settings() {
       window.history.replaceState({}, document.title, '/settings');
     }
   }, []);
+
+  if (subscriptionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Checking access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
