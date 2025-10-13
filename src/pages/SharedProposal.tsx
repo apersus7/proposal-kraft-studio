@@ -268,6 +268,9 @@ export default function SharedProposal() {
 
         // Call to action section
         if (type === 'call_to_action') {
+          const nextStepsContent = sec.next_steps;
+          const contactDetails = sec.contact_details || sec.contact_info;
+          
           return (
             <div key={idx} className="mb-8">
               <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{heading}</h3>
@@ -275,15 +278,23 @@ export default function SharedProposal() {
                 {text && (
                   <p className="whitespace-pre-wrap mb-4" style={{ color: getTheme().textColor }}>{text}</p>
                 )}
-                {Array.isArray(sec.next_steps) && sec.next_steps.length > 0 && (
-                  <ul className="list-decimal pl-6 mb-4" style={{ color: getTheme().textColor }}>
-                    {sec.next_steps.map((step: any, i: number) => (
-                      <li key={i} className="mb-2">{step}</li>
-                    ))}
-                  </ul>
+                {nextStepsContent && (
+                  Array.isArray(nextStepsContent) ? (
+                    <ul className="list-decimal pl-6 mb-4" style={{ color: getTheme().textColor }}>
+                      {nextStepsContent.map((step: any, i: number) => (
+                        <li key={i} className="mb-2">{step}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mb-4" style={{ color: getTheme().textColor }}>
+                      <strong>Next Steps:</strong> {nextStepsContent}
+                    </p>
+                  )
                 )}
-                {sec.contact_info && (
-                  <p className="font-medium" style={{ color: getTheme().textColor }}>{sec.contact_info}</p>
+                {contactDetails && (
+                  <p className="font-medium" style={{ color: getTheme().textColor }}>
+                    <strong>Contact:</strong> {contactDetails}
+                  </p>
                 )}
               </div>
             </div>
