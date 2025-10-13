@@ -131,10 +131,11 @@ export default function ProposalPreview() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    const locale = currency === 'INR' ? 'en-IN' : currency === 'EUR' ? 'de-DE' : currency === 'GBP' ? 'en-GB' : 'en-US';
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'USD'
+      currency: currency
     }).format(amount);
   };
 
@@ -273,6 +274,19 @@ export default function ProposalPreview() {
                 ) : null;
 
               case 'pricing':
+                const getCurrencySymbol = (currency: string) => {
+                  const symbols: Record<string, string> = {
+                    'USD': '$',
+                    'EUR': '€',
+                    'GBP': '£',
+                    'INR': '₹',
+                    'CAD': '$',
+                    'AUD': '$',
+                    'JPY': '¥'
+                  };
+                  return symbols[currency] || '$';
+                };
+                
                 return (
                   <div key={index} className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
@@ -286,7 +300,7 @@ export default function ProposalPreview() {
                       }}
                     >
                       <p className="text-xl font-bold mb-2" style={{ color: section.highlightColor || primaryColor }}>
-                        Total Project Investment: {content.currency === 'EUR' ? '€' : content.currency === 'GBP' ? '£' : '$'}{content.pricing || proposal?.worth || 'XX,XXX'}
+                        Total Project Investment: {getCurrencySymbol(content.currency || 'USD')}{content.pricing || proposal?.worth || 'XX,XXX'}
                       </p>
                       {section.payment_terms && (
                         <p><strong>Payment Terms:</strong> {section.payment_terms}</p>
@@ -530,7 +544,7 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
                     {proposal.worth > 0 && (
                       <div className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4" />
-                        <span>{formatCurrency(proposal.worth)}</span>
+                        <span>{formatCurrency(proposal.worth, proposal.content?.currency || 'USD')}</span>
                       </div>
                     )}
                   </div>

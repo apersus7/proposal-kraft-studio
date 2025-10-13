@@ -124,10 +124,11 @@ export default function SharedProposal() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (amount: number, currency: string = 'USD') => {
+    const locale = currency === 'INR' ? 'en-IN' : currency === 'EUR' ? 'de-DE' : currency === 'GBP' ? 'en-GB' : 'en-US';
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'USD'
+      currency: currency
     }).format(amount);
   };
 
@@ -338,7 +339,7 @@ export default function SharedProposal() {
                     {proposal.worth > 0 && (
                       <div className="flex items-center gap-1">
                         <DollarSign className="h-4 w-4" />
-                        <span>{formatCurrency(proposal.worth)}</span>
+                        <span>{formatCurrency(proposal.worth, proposal.content?.currency || 'USD')}</span>
                       </div>
                     )}
                   </div>
