@@ -30,15 +30,33 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'
   ];
 
-  const sanitizeColors = useCallback((html: string) => {
+  const cleanHTML = useCallback((html: string) => {
     if (!html) return html;
+    
+    // Create a temporary element to decode HTML entities
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    let cleaned = temp.innerHTML;
+    
     // Strip any inline color declarations to ensure editor shows white text on dark template
-    return html
+    cleaned = cleaned
       .replace(/\sstyle=\"([^\"]*)\"/gi, (match) => match.replace(/color\s*:\s*[^;\"]+;?/gi, ''))
       .replace(/color:\s*[^;\"]+;?/gi, '');
+    
+    // Clean up multiple non-breaking spaces
+    cleaned = cleaned.replace(/(&nbsp;){2,}/g, ' ');
+    
+    // Replace single &nbsp; with regular space when surrounded by text
+    cleaned = cleaned.replace(/([a-zA-Z0-9])&nbsp;([a-zA-Z0-9])/g, '$1 $2');
+    
+    // Clean up empty divs and unnecessary wrapper divs
+    cleaned = cleaned.replace(/<div>\s*<\/div>/gi, '<br>');
+    cleaned = cleaned.replace(/<div><br><\/div>/gi, '<br>');
+    
+    return cleaned;
   }, []);
 
-  const sanitizedValue = useMemo(() => sanitizeColors(value), [value, sanitizeColors]);
+  const sanitizedValue = useMemo(() => cleanHTML(value), [value, cleanHTML]);
 
   // Only update the editor content when value changes externally (not from typing)
   useEffect(() => {
@@ -55,9 +73,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     document.execCommand(command, false, val);
     if (editorRef.current) {
       isInternalUpdate.current = true;
-      onChange(sanitizeColors(editorRef.current.innerHTML));
+      onChange(cleanHTML(editorRef.current.innerHTML));
     }
-  }, [onChange, sanitizeColors]);
+  }, [onChange, cleanHTML]);
 
   const applyColor = useCallback((color: string) => {
     execCommand('foreColor', color);
@@ -66,9 +84,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const handleInput = useCallback(() => {
     if (editorRef.current) {
       isInternalUpdate.current = true;
-      onChange(sanitizeColors(editorRef.current.innerHTML));
+      onChange(cleanHTML(editorRef.current.innerHTML));
     }
-  }, [onChange, sanitizeColors]);
+  }, [onChange, cleanHTML]);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     e.preventDefault();
