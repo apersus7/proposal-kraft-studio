@@ -405,7 +405,6 @@ export default function SharedProposal() {
                     </div>
                     {proposal.worth > 0 && (
                       <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4" />
                         <span>{formatCurrency(proposal.worth, proposal.content?.currency || 'USD')}</span>
                       </div>
                     )}
