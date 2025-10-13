@@ -236,14 +236,28 @@ export default function SharedProposal() {
         const heading = sec.title || titleByType[type] || `Section ${idx + 1}`;
         const text = typeof sec.content === 'string' ? sec.content : sec.content?.text;
 
+        // Hide empty Value Proposition section
+        if (type === 'value_proposition') {
+          const hasVPContent = (
+            (typeof text === 'string' && text.trim().length > 0) ||
+            (Array.isArray(sec.advantages) && sec.advantages.length > 0) ||
+            (Array.isArray(sec.case_studies) && sec.case_studies.length > 0) ||
+            (Array.isArray(sec.testimonials) && sec.testimonials.length > 0) ||
+            (Array.isArray(sec.team) && sec.team.length > 0)
+          );
+          if (!hasVPContent) return null;
+        }
+
         // Pricing section
         if (type === 'pricing') {
+          const amount = Number(sec.total || content.pricing || proposal?.worth || 0);
+          const currency = (content && (content as any).currency) || 'USD';
           return (
             <div key={idx} className="mb-8">
               <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{heading}</h3>
-              <div className="bg-gradient-to-br from-primary/5 to-secondary/5 p-6 rounded-lg border" style={{ borderColor: `${getTheme().primaryColor}20` }}>
+              <div className="p-6 rounded-lg border" style={{ borderColor: `${getTheme().primaryColor}33`, backgroundColor: `${getTheme().primaryColor}0d` }}>
                 <p className="text-xl font-bold mb-2" style={{ color: getTheme().primaryColor }}>
-                  Total Project Investment: {getCurrencySymbol(rawContent.currency || 'USD')}{rawContent.pricing || proposal?.worth || 'XX,XXX'}
+                  Total Project Investment: {formatCurrency(amount, currency)}
                 </p>
                 {sec.payment_terms && (
                   <p className="mb-2" style={{ color: getTheme().textColor }}><strong>Payment Terms:</strong> {sec.payment_terms}</p>
@@ -256,7 +270,7 @@ export default function SharedProposal() {
                     <h4 className="font-medium mb-2" style={{ color: getTheme().headingColor }}>Payment Milestones</h4>
                     <ul className="list-disc pl-6" style={{ color: getTheme().textColor }}>
                       {sec.milestones.map((m: any, i: number) => (
-                        <li key={i}>{m?.milestone ? `${m.milestone} — ${getCurrencySymbol(rawContent.currency || 'USD')}${m.amount || ''}` : ''}</li>
+                        <li key={i}>{m?.milestone ? `${m.milestone} — ${formatCurrency(Number(m.amount || 0), currency)}` : ''}</li>
                       ))}
                     </ul>
                   </div>
@@ -274,7 +288,7 @@ export default function SharedProposal() {
           return (
             <div key={idx} className="mb-8">
               <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{heading}</h3>
-              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-6 rounded-lg border-2" style={{ borderColor: getTheme().primaryColor }}>
+              <div className="p-6 rounded-lg border" style={{ borderColor: `${getTheme().primaryColor}33`, backgroundColor: `${getTheme().primaryColor}0d` }}>
                 {text && (
                   <p className="whitespace-pre-wrap mb-4" style={{ color: getTheme().textColor }}>{text}</p>
                 )}
