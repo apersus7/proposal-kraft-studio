@@ -55,11 +55,22 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       // Fetch current proposal content to snapshot it
       const { data: proposalData, error: proposalError } = await supabase
         .from('proposals')
-        .select('content')
+        .select('title, client_name, client_email, content, worth, created_at, status')
         .eq('id', proposalId)
         .single();
 
       if (proposalError) throw proposalError;
+
+      // Create a complete snapshot including all proposal data
+      const completeSnapshot: any = {
+        ...(typeof proposalData.content === 'object' && proposalData.content !== null ? proposalData.content : {}),
+        title: proposalData.title,
+        client_name: proposalData.client_name,
+        client_email: proposalData.client_email,
+        worth: proposalData.worth,
+        created_at: proposalData.created_at,
+        status: proposalData.status
+      };
 
       const { data, error } = await supabase
         .from('secure_proposal_shares')
@@ -67,7 +78,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
           proposal_id: proposalId,
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
-          content_snapshot: proposalData.content, // Freeze content at share time
+          content_snapshot: completeSnapshot, // Freeze complete content at share time
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
@@ -115,11 +126,22 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       // Fetch current proposal content to snapshot it
       const { data: proposalData, error: proposalError } = await supabase
         .from('proposals')
-        .select('content')
+        .select('title, client_name, client_email, content, worth, created_at, status')
         .eq('id', proposalId)
         .single();
 
       if (proposalError) throw proposalError;
+
+      // Create a complete snapshot including all proposal data
+      const completeSnapshot: any = {
+        ...(typeof proposalData.content === 'object' && proposalData.content !== null ? proposalData.content : {}),
+        title: proposalData.title,
+        client_name: proposalData.client_name,
+        client_email: proposalData.client_email,
+        worth: proposalData.worth,
+        created_at: proposalData.created_at,
+        status: proposalData.status
+      };
 
       // Create a secure share token first (like the generate secure link does)
       const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -130,7 +152,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
           proposal_id: proposalId,
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
-          content_snapshot: proposalData.content, // Freeze content at share time
+          content_snapshot: completeSnapshot, // Freeze complete content at share time
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
