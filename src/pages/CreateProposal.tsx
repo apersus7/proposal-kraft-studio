@@ -501,10 +501,11 @@ export default function CreateProposal() {
                       <SelectTrigger className="w-[120px]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-popover z-50">
                         <SelectItem value="USD">USD ($)</SelectItem>
                         <SelectItem value="EUR">EUR (€)</SelectItem>
                         <SelectItem value="GBP">GBP (£)</SelectItem>
+                        <SelectItem value="INR">INR (₹)</SelectItem>
                         <SelectItem value="CAD">CAD ($)</SelectItem>
                         <SelectItem value="AUD">AUD ($)</SelectItem>
                         <SelectItem value="JPY">JPY (¥)</SelectItem>
