@@ -206,6 +206,19 @@ export default function SharedProposal() {
 
     // New structured format with `sections`
     if (normalizedSections) {
+      const getCurrencySymbol = (currency: string) => {
+        const symbols: Record<string, string> = {
+          'USD': '$',
+          'EUR': '€',
+          'GBP': '£',
+          'INR': '₹',
+          'CAD': '$',
+          'AUD': '$',
+          'JPY': '¥'
+        };
+        return symbols[currency] || '$';
+      };
+
       return normalizedSections.map((sec, idx) => {
         if (!sec || typeof sec !== 'object') return null;
         const type = (sec.type || '').toString();
@@ -222,6 +235,60 @@ export default function SharedProposal() {
 
         const heading = sec.title || titleByType[type] || `Section ${idx + 1}`;
         const text = typeof sec.content === 'string' ? sec.content : sec.content?.text;
+
+        // Pricing section
+        if (type === 'pricing') {
+          return (
+            <div key={idx} className="mb-8">
+              <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{heading}</h3>
+              <div className="bg-gradient-to-br from-primary/5 to-secondary/5 p-6 rounded-lg border" style={{ borderColor: `${getTheme().primaryColor}20` }}>
+                <p className="text-xl font-bold mb-2" style={{ color: getTheme().primaryColor }}>
+                  Total Project Investment: {getCurrencySymbol(rawContent.currency || 'USD')}{rawContent.pricing || proposal?.worth || 'XX,XXX'}
+                </p>
+                {sec.payment_terms && (
+                  <p className="mb-2" style={{ color: getTheme().textColor }}><strong>Payment Terms:</strong> {sec.payment_terms}</p>
+                )}
+                {sec.breakdown && (
+                  <p className="mb-2" style={{ color: getTheme().textColor }}><strong>Breakdown:</strong> {sec.breakdown}</p>
+                )}
+                {Array.isArray(sec.milestones) && sec.milestones.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-2" style={{ color: getTheme().headingColor }}>Payment Milestones</h4>
+                    <ul className="list-disc pl-6" style={{ color: getTheme().textColor }}>
+                      {sec.milestones.map((m: any, i: number) => (
+                        <li key={i}>{m?.milestone ? `${m.milestone} — ${getCurrencySymbol(rawContent.currency || 'USD')}${m.amount || ''}` : ''}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // Call to action section
+        if (type === 'call_to_action') {
+          return (
+            <div key={idx} className="mb-8">
+              <h3 className="text-lg font-semibold mb-4" style={{ color: getTheme().headingColor }}>{heading}</h3>
+              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-6 rounded-lg border-2" style={{ borderColor: getTheme().primaryColor }}>
+                {text && (
+                  <p className="whitespace-pre-wrap mb-4" style={{ color: getTheme().textColor }}>{text}</p>
+                )}
+                {Array.isArray(sec.next_steps) && sec.next_steps.length > 0 && (
+                  <ul className="list-decimal pl-6 mb-4" style={{ color: getTheme().textColor }}>
+                    {sec.next_steps.map((step: any, i: number) => (
+                      <li key={i} className="mb-2">{step}</li>
+                    ))}
+                  </ul>
+                )}
+                {sec.contact_info && (
+                  <p className="font-medium" style={{ color: getTheme().textColor }}>{sec.contact_info}</p>
+                )}
+              </div>
+            </div>
+          );
+        }
 
         return (
           <div key={idx} className="mb-8">
