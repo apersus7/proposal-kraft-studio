@@ -53,34 +53,87 @@ async function handleMembershipValid(supabase: any, data: any) {
   const userId = data.metadata?.user_id;
   const membershipId = data.id;
   const planId = data.plan_id;
+  const userEmail = data.email;
 
-  if (!userId) {
-    console.error('No user_id in membership metadata');
+  console.log('Processing membership.went_valid:', { userId, userEmail, membershipId, planId });
+
+  if (!userId && !userEmail) {
+    console.error('No user_id or email in membership data');
     return;
   }
 
-  console.log('Activating subscription for user:', userId);
+  // Resolve user_id from email if not in metadata
+  let finalUserId = userId;
+  if (!finalUserId && userEmail) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('email', userEmail)
+      .single();
+    finalUserId = profile?.user_id;
+    console.log('Resolved user_id from email:', finalUserId);
+  }
 
-  // Create or update subscription
-  const { error: subError } = await supabase
+  if (!finalUserId) {
+    console.error('Could not resolve user_id');
+    return;
+  }
+
+  const currentPeriodEnd = data.renewal_period_end
+    ? new Date(Number(data.renewal_period_end) * 1000).toISOString()
+    : (data.expires_at
+        ? new Date(Number(data.expires_at) * 1000).toISOString()
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString());
+
+  console.log('Activating subscription:', { finalUserId, planType: getPlanTypeFromWhopPlan(planId), currentPeriodEnd });
+
+  // First, try to update existing subscription for this user
+  const { data: existing } = await supabase
     .from('subscriptions')
-    .upsert({
-      user_id: userId,
-      plan_type: getPlanTypeFromWhopPlan(planId),
-      status: 'active',
-      paypal_subscription_id: membershipId,
-      current_period_start: new Date().toISOString(),
-      current_period_end: data.renewal_period_end
-        ? new Date(Number(data.renewal_period_end) * 1000).toISOString()
-        : (data.expires_at
-            ? new Date(Number(data.expires_at) * 1000).toISOString()
-            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()),
-    });
+    .select('id')
+    .eq('user_id', finalUserId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
 
-  if (subError) {
-    console.error('Error updating subscription:', subError);
+  if (existing) {
+    // Update existing
+    const { error: updateError } = await supabase
+      .from('subscriptions')
+      .update({
+        plan_type: getPlanTypeFromWhopPlan(planId),
+        status: 'active',
+        paypal_subscription_id: membershipId,
+        current_period_start: new Date().toISOString(),
+        current_period_end: currentPeriodEnd,
+        cancelled_at: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existing.id);
+
+    if (updateError) {
+      console.error('Error updating subscription:', updateError);
+    } else {
+      console.log('Subscription updated successfully');
+    }
   } else {
-    console.log('Subscription activated successfully');
+    // Insert new
+    const { error: insertError } = await supabase
+      .from('subscriptions')
+      .insert({
+        user_id: finalUserId,
+        plan_type: getPlanTypeFromWhopPlan(planId),
+        status: 'active',
+        paypal_subscription_id: membershipId,
+        current_period_start: new Date().toISOString(),
+        current_period_end: currentPeriodEnd,
+      });
+
+    if (insertError) {
+      console.error('Error inserting subscription:', insertError);
+    } else {
+      console.log('Subscription inserted successfully');
+    }
   }
 }
 

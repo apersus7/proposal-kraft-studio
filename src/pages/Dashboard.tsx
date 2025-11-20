@@ -51,20 +51,43 @@ export default function Dashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentStatus = urlParams.get('payment');
 
-    // If just returned from payment with success status, delay briefly to allow webhook/edge sync
-    if (paymentStatus === 'success') {
-      const timeoutId = setTimeout(() => {
-        if (!subscriptionLoading && !subscription.hasActiveSubscription) {
-          navigate('/pricing');
+    // If just returned from payment with success status, actively refresh subscription
+    if (paymentStatus === 'success' && !checkedSubRef.current) {
+      checkedSubRef.current = true;
+      
+      // Immediately refresh subscription status
+      refresh();
+      
+      // Poll for subscription activation (retry up to 5 times over 10 seconds)
+      let attempts = 0;
+      const maxAttempts = 5;
+      const pollInterval = setInterval(() => {
+        attempts++;
+        refresh();
+        
+        if (attempts >= maxAttempts) {
+          clearInterval(pollInterval);
+          // After polling, if still no subscription, redirect to pricing
+          setTimeout(() => {
+            if (!subscription.hasActiveSubscription) {
+              toast({
+                title: "Subscription Not Activated",
+                description: "Your payment may still be processing. Please refresh the page in a moment or contact support.",
+                variant: "destructive"
+              });
+              navigate('/pricing');
+            }
+          }, 1000);
         }
-      }, 3000);
-      return () => clearTimeout(timeoutId);
+      }, 2000);
+      
+      return () => clearInterval(pollInterval);
     }
 
-    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription) {
+    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && !checkedSubRef.current) {
       navigate('/pricing');
     }
-  }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate]);
+  }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate, refresh]);
 
 
   useEffect(() => {
