@@ -17,23 +17,26 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const webhookData = await req.json();
-    console.log('Received Whop webhook:', webhookData);
+    console.log('🎯 WEBHOOK RECEIVED:', JSON.stringify(webhookData, null, 2));
 
     const action = webhookData.action || webhookData.type;
     const data = webhookData.data;
 
     switch (action) {
       case 'membership.went_valid':
+        console.log('✅ Processing: membership.went_valid');
         await handleMembershipValid(supabase, data);
         break;
       case 'membership.went_invalid':
+        console.log('❌ Processing: membership.went_invalid');
         await handleMembershipInvalid(supabase, data);
         break;
       case 'membership.renewed':
+        console.log('🔄 Processing: membership.renewed');
         await handleMembershipRenewed(supabase, data);
         break;
       default:
-        console.log('Unhandled webhook event:', action);
+        console.log('⚠️ Unhandled webhook event:', action);
     }
 
     return new Response(
