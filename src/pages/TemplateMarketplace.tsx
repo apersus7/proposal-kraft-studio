@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowLeft, Search, FileText, Star, Zap, Building2, Briefcase, TrendingUp, Users, Sparkles } from 'lucide-react';
+import { ArrowLeft, Search, FileText, Star, Zap, Building2, Briefcase, TrendingUp, Users, Sparkles, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -229,12 +229,19 @@ export default function TemplateMarketplace() {
         {loading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
+              <Card key={i} className="animate-pulse overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-primary/20 to-accent/20"></div>
                 <CardHeader>
-                  <div className="h-32 bg-muted rounded-lg mb-4"></div>
-                  <div className="h-5 bg-muted rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-full"></div>
+                  <div className="h-6 bg-muted rounded w-3/4 mb-3"></div>
+                  <div className="h-4 bg-muted rounded w-full mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
                 </CardHeader>
+                <CardContent>
+                  <div className="flex gap-2">
+                    <div className="h-9 bg-muted rounded flex-1"></div>
+                    <div className="h-9 bg-muted rounded flex-1"></div>
+                  </div>
+                </CardContent>
               </Card>
             ))}
           </div>
@@ -263,45 +270,66 @@ export default function TemplateMarketplace() {
             {filteredTemplates.map((template) => (
               <Card
                 key={template.id}
-                className="group hover:shadow-lg transition-all duration-200 cursor-pointer overflow-hidden"
+                className="group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border-2 hover:border-primary/50"
               >
                 <div
-                  className={`h-32 bg-gradient-to-br ${template.preview_color || 'from-primary/20 to-accent/20'} flex items-center justify-center`}
+                  className={`relative h-48 bg-gradient-to-br ${template.preview_color || 'from-primary/20 to-accent/20'} flex items-center justify-center overflow-hidden`}
                   onClick={() => handlePreview(template)}
                 >
                   {template.preview_image_url ? (
                     <img
                       src={template.preview_image_url}
                       alt={template.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <FileText className="h-12 w-12 text-primary/50" />
+                    <div className="relative w-full h-full flex items-center justify-center p-6">
+                      <div className="absolute inset-0 bg-black/5"></div>
+                      <div className="relative z-10 text-center space-y-2">
+                        <FileText className="h-16 w-16 mx-auto text-white/90 drop-shadow-lg" />
+                        <div className="text-white/90 font-bold text-lg drop-shadow-md">
+                          {template.name}
+                        </div>
+                        <div className="text-white/70 text-sm font-medium drop-shadow">
+                          {template.industry}
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    </div>
                   )}
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-white/90 text-primary">
+                      {template.category}
+                    </Badge>
+                  </div>
                 </div>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                    <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors font-bold">
                       {template.name}
                     </CardTitle>
-                    <Badge variant="secondary" className="shrink-0">
-                      {template.industry}
-                    </Badge>
                   </div>
-                  <CardDescription className="line-clamp-2">
+                  <CardDescription className="line-clamp-3 text-base">
                     {template.description || 'Professional proposal template'}
                   </CardDescription>
                   {template.tags && template.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {template.tags.slice(0, 3).map((tag, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {tag}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {template.tags.slice(0, 4).map((tag, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs font-medium">
+                          #{tag}
                         </Badge>
                       ))}
                     </div>
                   )}
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Badge variant="secondary" className="font-medium">
+                      {template.industry}
+                    </Badge>
+                    <span>•</span>
+                    <span className="font-medium">{template.category}</span>
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -309,13 +337,15 @@ export default function TemplateMarketplace() {
                       className="flex-1"
                       onClick={() => handlePreview(template)}
                     >
+                      <Eye className="h-4 w-4 mr-1" />
                       Preview
                     </Button>
                     <Button
                       size="sm"
-                      className="flex-1"
+                      className="flex-1 bg-primary hover:bg-primary/90"
                       onClick={() => handleUseTemplate(template)}
                     >
+                      <Zap className="h-4 w-4 mr-1" />
                       Use Template
                     </Button>
                   </div>
