@@ -64,12 +64,66 @@ export default function CreateProposal() {
     // Check if we're editing an existing proposal
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('edit');
+    const templateId = urlParams.get('template');
+    
     if (editId) {
       setIsEditing(true);
       setEditingProposalId(editId);
       loadProposalForEditing(editId);
+    } else if (templateId) {
+      loadTemplateData(templateId);
     }
   }, [user, navigate]);
+
+  const loadTemplateData = async (templateId: string) => {
+    try {
+      const { data, error } = await sb
+        .from('templates')
+        .select('*')
+        .eq('id', templateId)
+        .eq('is_public', true)
+        .single();
+
+      if (error) {
+        console.error('Error loading template:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load template',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (data) {
+        // Populate form with template data
+        setProposalData({
+          ...proposalData,
+          content: data.template_data,
+        });
+
+        // Load theme if available
+        if (data.template_data?.primaryColor) setPrimaryColor(data.template_data.primaryColor);
+        if (data.template_data?.secondaryColor) setSecondaryColor(data.template_data.secondaryColor);
+        if (data.template_data?.backgroundColor) setBackgroundColor(data.template_data.backgroundColor);
+        if (data.template_data?.textColor) setTextColor(data.template_data.textColor);
+        if (data.template_data?.headingColor) setHeadingColor(data.template_data.headingColor);
+        if (data.template_data?.selectedFont) setSelectedFont(data.template_data.selectedFont);
+        if (data.template_data?.logoUrl) setLogoUrl(data.template_data.logoUrl);
+
+        toast({
+          title: 'Template Loaded',
+          description: `Using "${data.name}" template. Fill in your details to customize it.`,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading template:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load template',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const loadProposalForEditing = async (proposalId: string) => {
     if (!user) return;
