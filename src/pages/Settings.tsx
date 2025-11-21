@@ -33,7 +33,6 @@ import BrandKitManager from '@/components/BrandKitManager';
 import CRMIntegration from '@/components/CRMIntegration';
 import WebhookIntegration from '@/components/WebhookIntegration';
 import PaymentIntegration from '@/components/PaymentIntegration';
-import { useSubscription } from '@/hooks/useSubscription';
 
 
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
@@ -56,12 +55,6 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const { subscription, loading: subscriptionLoading } = useSubscription();
-
-  // Strict active check aligned with ProtectedRoute
-  const now = Date.now();
-  const endMs = subscription.currentPeriodEnd ? Date.parse(subscription.currentPeriodEnd) : null;
-  const isActiveStrict = subscription.status === 'active' && !!endMs && endMs > now && subscription.hasActiveSubscription;
 
   useEffect(() => {
     if (!user) {
@@ -70,13 +63,6 @@ export default function Settings() {
     }
     fetchProfile();
   }, [user, navigate]);
-
-  // Subscription gate
-  useEffect(() => {
-    if (!subscriptionLoading && user && !isActiveStrict) {
-      navigate('/pricing');
-    }
-  }, [user, subscriptionLoading, isActiveStrict, navigate]);
 
   const fetchProfile = async () => {
     if (!user) return;
@@ -221,16 +207,6 @@ export default function Settings() {
     }
   }, []);
 
-  if (subscriptionLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">Checking access...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -244,16 +220,9 @@ export default function Settings() {
               </Button>
               <div className="flex items-center space-x-3">
                 <img src={logo} alt="ProposalKraft" className="h-8" />
-                <span className="text-xl font-bold text-primary">ProposalKraft</span>
-              </div>
+              <span className="text-xl font-bold text-primary">ProposalKraft</span>
             </div>
-            {subscriptionLoading ? (
-              <Badge variant="secondary">Checking access...</Badge>
-            ) : isActiveStrict ? (
-              <Badge variant="default">Active</Badge>
-            ) : (
-              <Badge variant="secondary">No Access</Badge>
-            )}
+          </div>
           </div>
         </div>
       </header>
@@ -417,111 +386,13 @@ export default function Settings() {
                   Manage your subscription and payment methods
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                {subscriptionLoading ? (
-                  <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-muted rounded w-1/2"></div>
-                    <div className="h-4 bg-muted rounded w-1/3"></div>
-                  </div>
-                ) : subscription.hasActiveSubscription ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium">Current Plan</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {subscription.planType ? subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1) : 'Unknown'}
-                        </p>
-                      </div>
-                      <Badge variant="default">
-                        {(subscription.status === 'active' || subscription.status === 'trialing') ? 'Active' : subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-                      </Badge>
-                    </div>
-
-                    {subscription.currentPeriodEnd && (
-                      <div>
-                        <h3 className="font-medium">Next Billing Date</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(subscription.currentPeriodEnd).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                    )}
-
-                    <Separator />
-
-                    <div className="space-y-2">
-                      <h3 className="font-medium">Manage Subscription</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        You can cancel your subscription at any time. You'll retain access until the end of your current billing period.
-                      </p>
-                      <Button 
-                        variant="destructive"
-                        onClick={async () => {
-                          if (!window.confirm('Are you sure you want to cancel your subscription? You will retain access until the end of your current billing period.')) {
-                            return;
-                          }
-                          
-                          try {
-                            setLoading(true);
-                            const { data, error } = await supabase.functions.invoke('cancel-whop-subscription');
-                            
-                            if (error) throw error;
-                            
-                            if (data.success) {
-                              toast({
-                                title: 'Subscription Cancelled',
-                                description: data.message || 'Your subscription has been cancelled and will end at the current billing period.',
-                              });
-                              // Refresh the page to update subscription status
-                              window.location.reload();
-                            } else {
-                              throw new Error(data.error || 'Failed to cancel subscription');
-                            }
-                          } catch (error) {
-                            console.error('Cancellation error:', error);
-                            toast({
-                              title: 'Error',
-                              description: error instanceof Error ? error.message : 'Failed to cancel subscription. Please try again.',
-                              variant: 'destructive',
-                            });
-                          } finally {
-                            setLoading(false);
-                          }
-                        }}
-                        disabled={loading}
-                      >
-                        Cancel Subscription
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-muted-foreground">
-                      You don't have an active subscription. Subscribe to unlock all features.
-                    </p>
-                    <Button onClick={() => navigate('/pricing')}>
-                      View Plans
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="integrations" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>CRM Integrations</CardTitle>
-                <CardDescription>
-                  Connect your CRM to sync proposals and client data
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <CRMIntegration />
-              </CardContent>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <p className="text-muted-foreground">
+                  ProposalKraft is now completely free! All features are unlocked for authenticated users.
+                </p>
+              </div>
+            </CardContent>
             </Card>
 
             <Card>

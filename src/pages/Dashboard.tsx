@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
-import { useSubscription } from '@/hooks/useSubscription';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 interface Proposal {
@@ -37,8 +36,6 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const { subscription, loading: subscriptionLoading, refresh } = useSubscription();
-  const checkedSubRef = useRef(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -53,34 +50,6 @@ export default function Dashboard() {
       fetchProfile();
     }
   }, [user]);
-
-  // Check for payment success/failure parameters and verify subscription before showing toast
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-    const planType = urlParams.get('plan');
-    
-    if (paymentStatus === 'success') {
-      // Only show success if subscription is actually active
-      if (!subscriptionLoading && subscription.hasActiveSubscription) {
-        const planName = planType || subscription.planType || 'Deal Closer';
-        toast({
-          title: "Payment Successful! 🎉",
-          description: `Your ${planName.charAt(0).toUpperCase() + planName.slice(1)} plan has been activated. All features are now enabled!`,
-        });
-      }
-      // Clean up URL
-      window.history.replaceState({}, document.title, '/dashboard');
-    } else if (paymentStatus === 'failed' || paymentStatus === 'cancelled') {
-      toast({
-        title: "Payment Cancelled",
-        description: "Your payment was cancelled. You can try again anytime.",
-        variant: "destructive"
-      });
-      // Clean up URL
-      window.history.replaceState({}, document.title, '/dashboard');
-    }
-  }, [subscriptionLoading, subscription.hasActiveSubscription, subscription.planType]);
 
   useEffect(() => {
     if (searchQuery) {
