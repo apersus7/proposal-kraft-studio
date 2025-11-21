@@ -90,9 +90,6 @@ const Solutions = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              <Link to="/templates">
-                <Button variant="ghost">Templates</Button>
-              </Link>
               <Link to="/auth">
                 <Button variant="ghost">Sign In</Button>
               </Link>

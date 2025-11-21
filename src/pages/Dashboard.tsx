@@ -205,16 +205,10 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/templates')}>
-              <FileText className="h-4 w-4 mr-2" />
-              Browse Templates
-            </Button>
-            <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Proposal
-            </Button>
-          </div>
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Proposal
+          </Button>
         </div>
 
         {/* Search Bar */}

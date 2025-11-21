@@ -245,9 +245,6 @@ const Index = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              <Link to="/templates">
-                <Button variant="ghost">Templates</Button>
-              </Link>
               <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
                 Request Demo
               </Button>
@@ -270,9 +267,6 @@ const Index = () => {
                   </Link>
                   <Link to="/solutions" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Solutions</Button>
-                  </Link>
-                  <Link to="/templates" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">Templates</Button>
                   </Link>
                   <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
                     Request Demo
