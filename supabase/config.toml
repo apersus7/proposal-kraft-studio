@@ -32,3 +32,12 @@ verify_jwt = true
 
 [functions.trigger-webhooks]
 verify_jwt = false
+
+[functions.seed-templates]
+verify_jwt = false
+
+[functions.cancel-whop-subscription]
+verify_jwt = true
+
+[functions.generate-proposal-content]
+verify_jwt = true
