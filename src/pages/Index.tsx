@@ -242,9 +242,6 @@ const Index = () => {
               <Link to="/features">
                 <Button variant="ghost">Features</Button>
               </Link>
-              <Link to="/pricing">
-                <Button variant="ghost">Pricing</Button>
-              </Link>
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
@@ -267,9 +264,6 @@ const Index = () => {
                 <nav className="flex flex-col space-y-4 mt-8">
                   <Link to="/features" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Features</Button>
-                  </Link>
-                  <Link to="/pricing" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">Pricing</Button>
                   </Link>
                   <Link to="/solutions" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Solutions</Button>

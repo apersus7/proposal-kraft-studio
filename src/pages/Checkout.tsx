@@ -149,16 +149,16 @@ const Checkout = () => {
   }
 
   if (!selectedPlan) {
-    return <Navigate to="/pricing" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link to="/pricing">
+        <Link to="/">
           <Button variant="ghost" className="mb-8">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Pricing
+            Back to Home
           </Button>
         </Link>
 

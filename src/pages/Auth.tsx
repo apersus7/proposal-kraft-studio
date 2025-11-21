@@ -28,15 +28,11 @@ export default function Auth() {
             body: { email, strict: true }
           });
           // Route based on real-time subscription
-          if (data?.hasActiveSubscription) {
-            navigate('/dashboard');
-          } else {
-            navigate('/pricing');
-          }
-        } catch (e) {
-          console.error('Post-auth subscription verify failed:', e);
-          navigate('/pricing');
-        }
+        navigate('/dashboard');
+      } catch (e) {
+        console.error('Post-auth navigation failed:', e);
+        navigate('/dashboard');
+      }
       })();
     }
   }, [user, loading, navigate]);

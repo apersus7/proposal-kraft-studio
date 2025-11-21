@@ -87,9 +87,6 @@ const Solutions = () => {
               <Link to="/features">
                 <Button variant="ghost">Features</Button>
               </Link>
-              <Link to="/pricing">
-                <Button variant="ghost">Pricing</Button>
-              </Link>
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
@@ -221,14 +218,9 @@ const Solutions = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">
                 <Button size="lg" className="text-lg px-8 py-3">
-                  Start Free Trial
-                </Button>
-              </Link>
-              <Link to="/pricing">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-3">
-                  View Pricing
-                </Button>
-              </Link>
+                Start Free Trial
+              </Button>
+            </Link>
             </div>
           </div>
         </section>
