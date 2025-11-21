@@ -46,49 +46,6 @@ export default function Dashboard() {
     }
   }, [user, loading, navigate]);
 
-  // Subscription gate - redirect to pricing if no active subscription
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-
-    // If just returned from payment with success status, actively refresh subscription
-    if (paymentStatus === 'success' && !checkedSubRef.current) {
-      checkedSubRef.current = true;
-      
-      // Immediately refresh subscription status
-      refresh();
-      
-      // Poll for subscription activation (retry up to 5 times over 10 seconds)
-      let attempts = 0;
-      const maxAttempts = 5;
-      const pollInterval = setInterval(() => {
-        attempts++;
-        refresh();
-        
-        if (attempts >= maxAttempts) {
-          clearInterval(pollInterval);
-          // After polling, if still no subscription, redirect to pricing
-          setTimeout(() => {
-            if (!subscription.hasActiveSubscription) {
-              toast({
-                title: "Subscription Not Activated",
-                description: "Your payment may still be processing. Please refresh the page in a moment or contact support.",
-                variant: "destructive"
-              });
-              navigate('/pricing');
-            }
-          }, 1000);
-        }
-      }, 2000);
-      
-      return () => clearInterval(pollInterval);
-    }
-
-    if (!loading && !subscriptionLoading && user && !subscription.hasActiveSubscription && !checkedSubRef.current) {
-      navigate('/pricing');
-    }
-  }, [user, loading, subscriptionLoading, subscription.hasActiveSubscription, navigate, refresh]);
-
 
   useEffect(() => {
     if (user) {
@@ -201,16 +158,6 @@ export default function Dashboard() {
   };
 
   const handleCreateProposal = async () => {
-    if (subscriptionLoading) {
-      toast({ title: 'Checking subscription...', description: 'Please wait a moment.' });
-      return;
-    }
-
-    if (!subscription.hasActiveSubscription) {
-      navigate('/pricing');
-      return;
-    }
-
     navigate('/create-proposal');
   };
   const handleSignOut = async () => {
@@ -218,7 +165,7 @@ export default function Dashboard() {
     // Don't navigate immediately - let the auth state change handle the redirect
   };
 
-  if (loading || subscriptionLoading || !user) {
+  if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -241,7 +188,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
             </div>
              <div className="flex items-center space-x-3">
-               <Button onClick={handleCreateProposal} size="sm" disabled={subscriptionLoading}>
+               <Button onClick={handleCreateProposal} size="sm">
                  <Plus className="h-4 w-4 mr-2" />
                  New Proposal
                </Button>
@@ -289,7 +236,7 @@ export default function Dashboard() {
               Create and manage professional business proposals
             </p>
           </div>
-          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90" disabled={subscriptionLoading}>
+          <Button onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4 mr-2" />
             Create Proposal
           </Button>
