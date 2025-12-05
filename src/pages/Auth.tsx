@@ -18,22 +18,10 @@ export default function Auth() {
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // After successful authentication, immediately verify subscription and route accordingly
+  // After successful authentication, redirect to dashboard
   useEffect(() => {
     if (!loading && user) {
-      (async () => {
-        try {
-          const email = user.email;
-          const { data } = await supabase.functions.invoke('verify-whop-access', {
-            body: { email, strict: true }
-          });
-          // Route based on real-time subscription
-        navigate('/dashboard');
-      } catch (e) {
-        console.error('Post-auth navigation failed:', e);
-        navigate('/dashboard');
-      }
-      })();
+      navigate('/dashboard');
     }
   }, [user, loading, navigate]);
 
