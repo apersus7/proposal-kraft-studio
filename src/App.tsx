@@ -12,7 +12,6 @@ import CreateProposal from "./pages/CreateProposal";
 import Settings from "./pages/Settings";
 import Features from "./pages/Features";
 import Solutions from "./pages/Solutions";
-import Checkout from "./pages/Checkout";
 import SharedProposal from "./pages/SharedProposal";
 import ProposalPreview from "./pages/ProposalPreview";
 import NotFound from "./pages/NotFound";
@@ -42,7 +41,6 @@ const App = () => (
             <Route path="/profile" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/features" element={<Features />} />
             <Route path="/solutions" element={<Solutions />} />
-            <Route path="/checkout" element={<Checkout />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<AboutUs />} />
