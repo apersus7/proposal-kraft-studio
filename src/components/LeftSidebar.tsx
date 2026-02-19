@@ -7,9 +7,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   Plus, FileText, Building2, Plug2, LogOut, ChevronDown, ChevronRight,
-  Sun, Moon, Upload, Save, Key, CreditCard, PanelLeftClose, PanelLeft
+  Upload, Save, Key, CreditCard, PanelLeftClose, PanelLeft
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { CompanyProfile, Proposal } from './AppLayout';
 import { User } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
@@ -33,7 +32,6 @@ export default function LeftSidebar({
   proposals, profile, loadingProposals, onNewChat, onOpenProposal,
   onSaveProfile, onSignOut, activeProposalId, user, mobile
 }: Props) {
-  const { theme, setTheme } = useTheme();
   const [openSection, setOpenSection] = useState<Section>('proposals');
   const [editProfile, setEditProfile] = useState<CompanyProfile>(profile);
   const [saving, setSaving] = useState(false);
@@ -84,15 +82,6 @@ export default function LeftSidebar({
           <Plus className="h-4 w-4" />
         </Button>
         <Separator className="bg-sidebar-border w-6" />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          title="Toggle theme"
-        >
-          {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-        </Button>
         <div className="flex-1" />
         <Button
           variant="ghost"
@@ -121,14 +110,6 @@ export default function LeftSidebar({
           <span className="font-bold text-sm text-sidebar-foreground">Craft Proposal</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-sidebar-foreground hover:bg-sidebar-accent"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          >
-            {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          </Button>
           {!mobile && (
             <Button
               variant="ghost"
