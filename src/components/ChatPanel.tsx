@@ -214,11 +214,9 @@ export default function ChatPanel({
     >
       {/* Chat Header */}
       <div className="border-b bg-card px-6 py-3 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-          <Bot className="w-4 h-4 text-primary" />
-        </div>
+        <img src="/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png" alt="Craft Proposal" className="w-8 h-8 rounded-full object-contain" />
         <div>
-          <p className="text-sm font-semibold">Proposal Assistant</p>
+          <p className="text-sm font-semibold">Craft Proposal</p>
           <p className="text-xs text-muted-foreground">AI-powered • Always ready</p>
         </div>
       </div>
@@ -240,7 +238,7 @@ export default function ChatPanel({
               )}>
                 {msg.role === 'user'
                   ? <User className="w-3.5 h-3.5 text-primary-foreground" />
-                  : <Bot className="w-3.5 h-3.5 text-muted-foreground" />}
+                  : <img src="/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png" alt="CP" className="w-3.5 h-3.5 object-contain" />}
               </div>
               <div
                 className={cn(
@@ -257,7 +255,7 @@ export default function ChatPanel({
           {loading && (
             <div className="flex gap-3">
               <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0">
-                <Bot className="w-3.5 h-3.5 text-muted-foreground" />
+                <img src="/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png" alt="CP" className="w-3.5 h-3.5 object-contain" />
               </div>
               <div className="bg-card border rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm">
                 <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />

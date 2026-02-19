@@ -95,9 +95,7 @@ export default function LeftSidebar({
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <FileText className="w-4 h-4 text-primary-foreground" />
-          </div>
+          <img src="/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png" alt="Craft Proposal" className="w-7 h-7 rounded-lg shrink-0 object-contain" />
           <span className="font-bold text-sm text-sidebar-foreground">Craft Proposal</span>
         </div>
         {!mobile && (
