@@ -52,7 +52,8 @@ export const useSubscription = () => {
       });
 
       // Always use DB as final gate (synced by the edge function/webhooks)
-      const { data: subRows, error: dbError } = await supabase
+      const sb = supabase as any;
+      const { data: subRows, error: dbError } = await sb
         .from('subscriptions')
         .select('status, plan_type, current_period_end')
         .eq('user_id', user.id)

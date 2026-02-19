@@ -72,7 +72,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         status: proposalData.status
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
@@ -146,7 +146,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       // Create a secure share token first (like the generate secure link does)
       const expirationDate = shareSettings.expiresAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       
-      const { data: secureShare, error: secureError } = await supabase
+      const { data: secureShare, error: secureError } = await sb
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,

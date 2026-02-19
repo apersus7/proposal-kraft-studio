@@ -44,7 +44,7 @@ export default function ProposalAnalytics({ proposalId, proposalTitle }: Proposa
     setLoading(true);
     try {
       // Fetch proposal analytics
-      const { data: analyticsData, error } = await supabase
+      const { data: analyticsData, error } = await sb
         .from('proposal_analytics')
         .select('*')
         .eq('proposal_id', proposalId)

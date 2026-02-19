@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { CreditCard, Link as LinkIcon, Copy, Check, ExternalLink } from 'lucide-react';
 
 interface PaymentLinkGeneratorProps {
@@ -34,7 +35,7 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
 
   const checkStripeConfiguration = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('user_payment_settings')
         .select('stripe_publishable_key, stripe_secret_key, paypal_client_id_custom, paypal_merchant_id')
         .maybeSingle();
@@ -54,7 +55,7 @@ export default function PaymentLinkGenerator({ proposalId, proposalWorth }: Paym
 
   const fetchExistingLinks = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('payment_links')
         .select('*')
         .eq('proposal_id', proposalId)
