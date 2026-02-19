@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, CheckCircle2, CreditCard, Key, ExternalLink, Save, Plus, Trash2, Globe, Webhook, KeyRound } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -198,15 +199,16 @@ export default function Integrations() {
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Type</Label>
-                  <select
-                    value={newCustom.type}
-                    onChange={e => setNewCustom(prev => ({ ...prev, type: e.target.value as CustomIntegration['type'] }))}
-                    className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <option value="webhook">Webhook URL</option>
-                    <option value="api_key">API Key</option>
-                    <option value="payment_gateway">Payment Gateway</option>
-                  </select>
+                  <Select value={newCustom.type} onValueChange={(val) => setNewCustom(prev => ({ ...prev, type: val as CustomIntegration['type'] }))}>
+                    <SelectTrigger className="mt-1 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="webhook">Webhook URL</SelectItem>
+                      <SelectItem value="api_key">API Key</SelectItem>
+                      <SelectItem value="payment_gateway">Payment Gateway</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div>
