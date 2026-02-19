@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AppLayout from "./components/AppLayout";
 import CreateProposal from "./pages/CreateProposal";
-// Removed ProposalEditor - using content editor for editing
 import Settings from "./pages/Settings";
 import Features from "./pages/Features";
 import Solutions from "./pages/Solutions";
@@ -20,6 +19,8 @@ import AboutUs from "./pages/AboutUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Integrations from "./pages/Integrations";
+import CompanyProfile from "./pages/CompanyProfile";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,8 @@ const App = () => (
             <Route path="/preview/:id" element={<ProtectedRoute><ProposalPreview /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
+            <Route path="/company-profile" element={<ProtectedRoute><CompanyProfile /></ProtectedRoute>} />
             <Route path="/features" element={<Features />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
