@@ -14,7 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          bio: string | null
+          case_studies: string | null
+          company_name: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          onboarded: boolean | null
+          paypal_key: string | null
+          phone: string | null
+          razorpay_key: string | null
+          services: string | null
+          stripe_key: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          case_studies?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          onboarded?: boolean | null
+          paypal_key?: string | null
+          phone?: string | null
+          razorpay_key?: string | null
+          services?: string | null
+          stripe_key?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          case_studies?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          onboarded?: boolean | null
+          paypal_key?: string | null
+          phone?: string | null
+          razorpay_key?: string | null
+          services?: string | null
+          stripe_key?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      proposals: {
+        Row: {
+          client_email: string | null
+          client_name: string
+          content: Json | null
+          created_at: string
+          id: string
+          last_viewed_at: string | null
+          payment_status: string | null
+          status: string
+          template_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          view_count: number | null
+          worth: number | null
+        }
+        Insert: {
+          client_email?: string | null
+          client_name?: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          last_viewed_at?: string | null
+          payment_status?: string | null
+          status?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id: string
+          view_count?: number | null
+          worth?: number | null
+        }
+        Update: {
+          client_email?: string | null
+          client_name?: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          last_viewed_at?: string | null
+          payment_status?: string | null
+          status?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          view_count?: number | null
+          worth?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

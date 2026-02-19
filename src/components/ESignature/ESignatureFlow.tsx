@@ -12,6 +12,7 @@ import {
   Download, Eye, AlertCircle, Trash2, Plus, Copy 
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 
 interface Signer {
@@ -60,7 +61,7 @@ export default function ESignatureFlow({
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('proposal_signatures')
         .select('*')
         .eq('proposal_id', proposalId)
@@ -91,7 +92,7 @@ export default function ESignatureFlow({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('proposal_signatures')
         .insert({
           proposal_id: proposalId,
