@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import AppLayout from "./components/AppLayout";
 import CreateProposal from "./pages/CreateProposal";
 // Removed ProposalEditor - using content editor for editing
 import Settings from "./pages/Settings";
@@ -33,7 +33,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
             <Route path="/create-proposal" element={<ProtectedRoute><CreateProposal /></ProtectedRoute>} />
             <Route path="/proposal/:id" element={<ProtectedRoute><ProposalPreview /></ProtectedRoute>} />
             <Route path="/preview/:id" element={<ProtectedRoute><ProposalPreview /></ProtectedRoute>} />
