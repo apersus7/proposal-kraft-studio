@@ -18,7 +18,7 @@ const getPublicBaseUrl = () => {
   try {
     const host = window.location.hostname;
     if (host.endsWith('lovableproject.com')) {
-      return 'https://proposalkraft.com';
+      return 'https://craftproposal.com';
     }
     return window.location.origin;
   } catch {

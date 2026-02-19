@@ -103,8 +103,8 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-3">
-                <img src={logo} alt="ProposalKraft" className="h-8" />
-                <h1 className="text-xl font-bold text-primary">ProposalKraft</h1>
+                <img src={logo} alt="Craft Proposal" className="h-8" />
+                <h1 className="text-xl font-bold text-primary">Craft Proposal</h1>
               </div>
               <div className="flex items-center space-x-3">
                 <Button onClick={handleCreateProposal} size="sm">
@@ -233,8 +233,8 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="ProposalKraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">ProposalKraft</span>
+              <img src={logo} alt="Craft Proposal" className="h-8" />
+              <span className="text-xl font-bold text-primary">Craft Proposal</span>
             </Link>
             
             {/* Desktop Navigation */}
@@ -245,7 +245,7 @@ const Index = () => {
               <Link to="/solutions">
                 <Button variant="ghost">Solutions</Button>
               </Link>
-              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/craftproposal/demo', '_blank')}>
                 Request Demo
               </Button>
               <Button onClick={() => navigate('/auth')}>
@@ -268,7 +268,7 @@ const Index = () => {
                   <Link to="/solutions" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">Solutions</Button>
                   </Link>
-                  <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>
+                  <Button className="w-full justify-start bg-green-600 hover:bg-green-700 text-white" onClick={() => window.open('https://calendly.com/craftproposal/demo', '_blank')}>
                     Request Demo
                   </Button>
                   <Button className="w-full" onClick={() => navigate('/auth')}>
@@ -285,7 +285,7 @@ const Index = () => {
       <section className="py-12 sm:py-20 lg:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="mb-6 sm:mb-8">
-            <img src={logo} alt="ProposalKraft" className="h-16 sm:h-20 mx-auto mb-4 sm:mb-6" />
+            <img src={logo} alt="Craft Proposal" className="h-16 sm:h-20 mx-auto mb-4 sm:mb-6" />
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold tracking-tight mb-4 sm:mb-6">
             Craft Professional
@@ -294,7 +294,7 @@ const Index = () => {
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 px-4">Create stunning, professional proposals that win clients. AI-Proposal generator, customise with your branding, and send proposals that make an impact.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
             <Button size="lg" onClick={() => navigate('/auth')} className="text-base sm:text-lg px-6 sm:px-8 py-3">Start closing deals</Button>
-            <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3" onClick={() => window.open('https://calendly.com/proposalkraft/demo', '_blank')}>Request Demo</Button>
+            <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3" onClick={() => window.open('https://calendly.com/craftproposal/demo', '_blank')}>Request Demo</Button>
           </div>
         </div>
       </section>
@@ -366,7 +366,7 @@ const Index = () => {
             Ready to Create Your First Proposal?
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10">
-            Join thousands of businesses creating winning proposals with ProposalKraft.
+            Join thousands of businesses creating winning proposals with Craft Proposal.
           </p>
           <Button size="lg" onClick={() => navigate('/auth')} className="text-base sm:text-lg px-6 sm:px-8 py-3">
             Get Started Today

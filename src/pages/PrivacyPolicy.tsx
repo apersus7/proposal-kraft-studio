@@ -41,7 +41,7 @@ const PrivacyPolicy = () => {
               We use the information we collect to provide, maintain, and improve our services:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-              <li>To provide and maintain ProposalKraft services</li>
+              <li>To provide and maintain Craft Proposal services</li>
               <li>To process transactions and send related information</li>
               <li>To send technical notices and support messages</li>
               <li>To improve our services and develop new features</li>
@@ -60,8 +60,8 @@ const PrivacyPolicy = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">Contact Us</h2>
             <p className="text-muted-foreground">
               If you have any questions about this Privacy Policy, please contact us at{' '}
-              <a href="mailto:privacy@proposalkraft.com" className="text-primary hover:underline">
-                privacy@proposalkraft.com
+              <a href="mailto:privacy@craftproposal.com" className="text-primary hover:underline">
+                privacy@craftproposal.com
               </a>
             </p>
           </section>

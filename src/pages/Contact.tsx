@@ -104,7 +104,7 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">support@proposalkraft.com</p>
+                <p className="text-muted-foreground">support@craftproposal.com</p>
                 <p className="text-sm text-muted-foreground mt-1">We typically respond within 24 hours</p>
               </CardContent>
             </Card>

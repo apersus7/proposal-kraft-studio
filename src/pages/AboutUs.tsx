@@ -20,7 +20,7 @@ const AboutUs = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-foreground mb-6">About ProposalKraft</h1>
+          <h1 className="text-5xl font-bold text-foreground mb-6">About Craft Proposal</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             We're on a mission to revolutionize how businesses create, share, and manage proposals. 
             Our platform empowers professionals to craft compelling proposals that win more deals.
@@ -83,7 +83,7 @@ const AboutUs = () => {
           <h2 className="text-3xl font-bold text-foreground mb-6 text-center">Our Story</h2>
           <div className="max-w-4xl mx-auto text-muted-foreground space-y-4">
             <p>
-              ProposalKraft was born from a simple observation: businesses were spending countless hours 
+              Craft Proposal was born from a simple observation: businesses were spending countless hours 
               creating proposals in outdated tools, often losing deals due to unprofessional presentation 
               or slow turnaround times.
             </p>
@@ -93,7 +93,7 @@ const AboutUs = () => {
               where any business, regardless of size, could create stunning, professional proposals quickly and efficiently.
             </p>
             <p>
-              Today, ProposalKraft serves thousands of businesses worldwide, helping them win more deals 
+              Today, Craft Proposal serves thousands of businesses worldwide, helping them win more deals 
               and grow their revenue through better proposal management.
             </p>
           </div>
@@ -103,7 +103,7 @@ const AboutUs = () => {
         <div className="text-center">
           <h2 className="text-3xl font-bold text-foreground mb-4">Ready to Transform Your Proposals?</h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that have already revolutionized their proposal process with ProposalKraft.
+            Join thousands of businesses that have already revolutionized their proposal process with Craft Proposal.
           </p>
           <div className="space-x-4">
             <Link to="/auth">

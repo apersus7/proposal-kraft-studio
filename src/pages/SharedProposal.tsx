@@ -483,7 +483,7 @@ export default function SharedProposal() {
 
           {/* Footer */}
           <div className="mt-8 text-center text-muted-foreground">
-            <p>This proposal was shared securely via ProposalKraft</p>
+            <p>This proposal was shared securely via Craft Proposal</p>
             {shareData?.expires_at && (
               <p className="text-sm mt-1">
                 Link expires on {formatDate(shareData.expires_at)}

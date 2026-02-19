@@ -24,7 +24,7 @@ const TermsOfService = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Acceptance of Terms</h2>
             <p className="text-muted-foreground mb-4">
-              By accessing and using ProposalKraft, you accept and agree to be bound by the terms 
+              By accessing and using Craft Proposal, you accept and agree to be bound by the terms 
               and provision of this agreement.
             </p>
           </section>
@@ -32,13 +32,13 @@ const TermsOfService = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Use License</h2>
             <p className="text-muted-foreground mb-4">
-              Permission is granted to temporarily use ProposalKraft for personal or commercial use. 
+              Permission is granted to temporarily use Craft Proposal for personal or commercial use. 
               This is the grant of a license, not a transfer of title, and under this license you may not:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Modify or copy the materials</li>
               <li>Use the materials for any commercial purpose without authorization</li>
-              <li>Attempt to reverse engineer any software contained in ProposalKraft</li>
+              <li>Attempt to reverse engineer any software contained in Craft Proposal</li>
               <li>Remove any copyright or proprietary notations from the materials</li>
             </ul>
           </section>
@@ -62,8 +62,8 @@ const TermsOfService = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Limitation of Liability</h2>
             <p className="text-muted-foreground mb-4">
-              In no event shall ProposalKraft or its suppliers be liable for any damages arising 
-              out of the use or inability to use ProposalKraft.
+              In no event shall Craft Proposal or its suppliers be liable for any damages arising 
+              out of the use or inability to use Craft Proposal.
             </p>
           </section>
 
@@ -71,8 +71,8 @@ const TermsOfService = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">Contact Information</h2>
             <p className="text-muted-foreground">
               If you have any questions about these Terms of Service, please contact us at{' '}
-              <a href="mailto:legal@proposalkraft.com" className="text-primary hover:underline">
-                legal@proposalkraft.com
+              <a href="mailto:legal@craftproposal.com" className="text-primary hover:underline">
+                legal@craftproposal.com
               </a>
             </p>
           </section>
