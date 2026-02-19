@@ -7,8 +7,7 @@ import ProposalPanel from './ProposalPanel';
 import OnboardingScreen from './OnboardingScreen';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Menu } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export interface CompanyProfile {
@@ -58,7 +57,6 @@ const defaultProfile: CompanyProfile = {
 
 export default function AppLayout() {
   const { user, signOut } = useAuth();
-  const { theme, setTheme } = useTheme();
 
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [profile, setProfile] = useState<CompanyProfile>(defaultProfile);
@@ -235,14 +233,8 @@ export default function AppLayout() {
               />
             </SheetContent>
           </Sheet>
-          <span className="font-bold text-primary text-sm">ProposalKraft</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
+          <span className="font-bold text-primary text-sm">Craft Proposal</span>
+          <div className="w-9" />
         </div>
 
         {/* Chat + Proposal panels */}
