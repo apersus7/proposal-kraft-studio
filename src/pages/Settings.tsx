@@ -219,8 +219,8 @@ export default function Settings() {
                 Back to Dashboard
               </Button>
               <div className="flex items-center space-x-3">
-                <img src={logo} alt="ProposalKraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">ProposalKraft</span>
+                <img src={logo} alt="Craft Proposal" className="h-8" />
+              <span className="text-xl font-bold text-primary">Craft Proposal</span>
             </div>
           </div>
           </div>
@@ -389,7 +389,7 @@ export default function Settings() {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <p className="text-muted-foreground">
-                  ProposalKraft is now completely free! All features are unlocked for authenticated users.
+                  Craft Proposal is now completely free! All features are unlocked for authenticated users.
                 </p>
               </div>
             </CardContent>

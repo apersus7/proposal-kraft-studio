@@ -53,8 +53,8 @@ const Features = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-3">
-              <img src={logo} alt="ProposalKraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">ProposalKraft</span>
+              <img src={logo} alt="Craft Proposal" className="h-8" />
+              <span className="text-xl font-bold text-primary">Craft Proposal</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/features">
@@ -130,7 +130,7 @@ const Features = () => {
               Ready to Experience All Features?
             </h2>
             <p className="text-xl text-muted-foreground mb-10">
-              Start your free trial today and see why thousands of professionals choose ProposalKraft.
+              Start your free trial today and see why thousands of professionals choose Craft Proposal.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">

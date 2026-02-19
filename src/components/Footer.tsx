@@ -56,15 +56,15 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <img src={logo} alt="ProposalKraft" className="h-8" />
-              <span className="text-xl font-bold text-primary">ProposalKraft</span>
+              <img src={logo} alt="Craft Proposal" className="h-8" />
+              <span className="text-xl font-bold text-primary">Craft Proposal</span>
             </div>
             <p className="text-muted-foreground">
               Create stunning, professional proposals that win clients. The ultimate tool for business growth.
             </p>
             <div className="flex items-center space-x-2 text-muted-foreground">
               <Mail className="h-4 w-4" />
-              <span>support@Proposalkraft.com</span>
+              <span>support@craftproposal.com</span>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t mt-12 pt-8 text-center text-muted-foreground">
-          <p>© 2025 ProposalKraft. All rights reserved.</p>
+          <p>© 2025 Craft Proposal. All rights reserved.</p>
         </div>
       </div>
     </footer>;
