@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Palette, Plus, Trash2, Star, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 
 interface BrandKit {
@@ -60,14 +61,14 @@ export default function BrandKitManager({ onBrandKitSelect, selectedBrandKit, em
   const fetchBrandKits = async () => {
     if (!user) return;
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('brand_kits')
         .select('*')
         .eq('user_id', user.id)
         .order('is_default', { ascending: false });
 
       if (error) throw error;
-      setBrandKits(data || []);
+      setBrandKits((data || []) as BrandKit[]);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -79,7 +80,7 @@ export default function BrandKitManager({ onBrandKitSelect, selectedBrandKit, em
     if (!user || !formData.name.trim()) return;
     setCreating(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('brand_kits')
         .insert({
           user_id: user.id,
@@ -95,7 +96,7 @@ export default function BrandKitManager({ onBrandKitSelect, selectedBrandKit, em
         .single();
 
       if (error) throw error;
-      setBrandKits(prev => [data, ...prev]);
+      setBrandKits((prev: BrandKit[]) => [data as BrandKit, ...prev]);
       setFormData({
         name: '',
         primary_color: '#22c55e',

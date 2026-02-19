@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { CreditCard, Eye, EyeOff, Check } from 'lucide-react';
 
 interface PaymentSettings {
@@ -35,7 +36,7 @@ export default function PaymentIntegration() {
 
   const fetchPaymentSettings = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('user_payment_settings')
         .select('stripe_publishable_key, stripe_secret_key, paypal_client_id_custom, paypal_merchant_id')
         .maybeSingle();
@@ -93,7 +94,7 @@ export default function PaymentIntegration() {
         updateData.paypal_merchant_id = settings.paypal_merchant_id;
       }
 
-      const { error } = await supabase
+      const { error } = await sb
         .from('user_payment_settings')
         .upsert(updateData);
 

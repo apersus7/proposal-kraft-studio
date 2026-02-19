@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 
 interface Webhook {
@@ -44,13 +45,13 @@ export default function WebhookIntegration() {
 
   const fetchWebhooks = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from('webhook_configurations')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setWebhooks(data || []);
+      setWebhooks((data || []) as Webhook[]);
     } catch (error) {
       console.error('Error fetching webhooks:', error);
       toast({
@@ -76,7 +77,7 @@ export default function WebhookIntegration() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      const { error } = await sb
         .from('webhook_configurations')
         .insert({
           user_id: user.id,
@@ -110,7 +111,7 @@ export default function WebhookIntegration() {
 
   const handleToggleWebhook = async (id: string, isActive: boolean) => {
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('webhook_configurations')
         .update({ is_active: !isActive })
         .eq('id', id);
@@ -137,7 +138,7 @@ export default function WebhookIntegration() {
     if (!confirm('Are you sure you want to delete this webhook?')) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('webhook_configurations')
         .delete()
         .eq('id', id);
