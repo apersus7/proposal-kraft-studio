@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_links: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          link_url: string
+          proposal_id: string | null
+          provider: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          link_url: string
+          proposal_id?: string | null
+          provider: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          link_url?: string
+          proposal_id?: string | null
+          provider?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -80,6 +119,102 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          proposal_id: string
+          section_viewed: string | null
+          time_spent: number | null
+          viewer_ip: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proposal_id: string
+          section_viewed?: string | null
+          time_spent?: number | null
+          viewer_ip?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          section_viewed?: string | null
+          time_spent?: number | null
+          viewer_ip?: string | null
+        }
+        Relationships: []
+      }
+      proposal_shares: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          permissions: string | null
+          proposal_id: string
+          shared_with_email: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          permissions?: string | null
+          proposal_id: string
+          shared_with_email?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          permissions?: string | null
+          proposal_id?: string
+          shared_with_email?: string | null
+        }
+        Relationships: []
+      }
+      proposal_signatures: {
+        Row: {
+          created_at: string
+          id: string
+          order_index: number | null
+          proposal_id: string
+          signature_data: string | null
+          signed_at: string | null
+          signer_email: string | null
+          signer_name: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_index?: number | null
+          proposal_id: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string | null
+          signer_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_index?: number | null
+          proposal_id?: string
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string | null
+          signer_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       proposals: {
         Row: {
           client_email: string | null
@@ -128,6 +263,111 @@ export type Database = {
           user_id?: string
           view_count?: number | null
           worth?: number | null
+        }
+        Relationships: []
+      }
+      secure_proposal_shares: {
+        Row: {
+          content_snapshot: Json | null
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          permissions: Json | null
+          proposal_id: string
+          share_token: string
+        }
+        Insert: {
+          content_snapshot?: Json | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          permissions?: Json | null
+          proposal_id: string
+          share_token?: string
+        }
+        Update: {
+          content_snapshot?: Json | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          permissions?: Json | null
+          proposal_id?: string
+          share_token?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan_type: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          whop_membership_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_type?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          whop_membership_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_type?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          whop_membership_id?: string | null
+        }
+        Relationships: []
+      }
+      user_payment_settings: {
+        Row: {
+          created_at: string
+          id: string
+          paypal_client_id_custom: string | null
+          paypal_merchant_id: string | null
+          razorpay_key_id: string | null
+          razorpay_key_secret: string | null
+          stripe_publishable_key: string | null
+          stripe_secret_key: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paypal_client_id_custom?: string | null
+          paypal_merchant_id?: string | null
+          razorpay_key_id?: string | null
+          razorpay_key_secret?: string | null
+          stripe_publishable_key?: string | null
+          stripe_secret_key?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paypal_client_id_custom?: string | null
+          paypal_merchant_id?: string | null
+          razorpay_key_id?: string | null
+          razorpay_key_secret?: string | null
+          stripe_publishable_key?: string | null
+          stripe_secret_key?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

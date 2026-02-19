@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, Edit, ArrowLeft, Share2, PenTool, Download, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
@@ -104,7 +105,7 @@ export default function ProposalPreview() {
       setProposal(proposalData);
 
       // Fetch signers for this proposal
-      const { data: signersData } = await supabase
+      const { data: signersData } = await sb
         .from('proposal_signatures')
         .select('*')
         .eq('proposal_id', id)

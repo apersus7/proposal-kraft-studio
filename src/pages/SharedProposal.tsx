@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
 import ESignatureFlow from '@/components/ESignature/ESignatureFlow';
 
@@ -107,7 +108,7 @@ export default function SharedProposal() {
       try {
         const permissions = typeof data.share.permissions === 'string' ? JSON.parse(data.share.permissions) : data.share.permissions;
         if (permissions?.trackViews) {
-          await supabase.from('proposal_analytics').insert({
+          await sb.from('proposal_analytics').insert({
             proposal_id: data.share.proposal_id,
             viewer_ip: 'shared-link',
             section_viewed: 'full-proposal',

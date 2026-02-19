@@ -64,6 +64,7 @@ export default function Dashboard() {
   }, [searchQuery, proposals]);
 
   const fetchProposals = async () => {
+    const sb = supabase as any;
     try {
       const { data, error } = await supabase
         .from('proposals')
@@ -75,7 +76,7 @@ export default function Dashboard() {
       // Check signature status for each proposal
       const proposalsWithSignatures = await Promise.all(
         (data || []).map(async (proposal) => {
-          const { data: signatures } = await supabase
+          const { data: signatures } = await sb
             .from('proposal_signatures')
             .select('status')
             .eq('proposal_id', proposal.id);
@@ -83,7 +84,7 @@ export default function Dashboard() {
           const allSignaturesSigned = 
             signatures && 
             signatures.length > 0 && 
-            signatures.every(sig => sig.status === 'signed');
+            signatures.every((sig: any) => sig.status === 'signed');
           
           return { ...proposal, allSignaturesSigned };
         })

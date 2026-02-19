@@ -135,7 +135,7 @@ export default function ESignatureFlow({
   const removeSigner = async (signerId: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('proposal_signatures')
         .delete()
         .eq('id', signerId);
@@ -257,7 +257,7 @@ export default function ESignatureFlow({
         updateData.signer_email = signerEmail.trim();
       }
 
-      const { error } = await supabaseClient
+      const { error } = await sb
         .from('proposal_signatures')
         .update(updateData)
         .eq('id', signerId);
