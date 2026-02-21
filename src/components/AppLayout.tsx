@@ -68,7 +68,7 @@ export default function AppLayout() {
     {
       id: '1',
       role: 'assistant',
-      content: "Hi! 👋 Tell me who you're creating a proposal for — for example, *\"proposal for John for web design\"* — and I'll guide you through it step by step.",
+      content: "Hi! 👋 I'm your AI assistant. I can help you:\n\n• **Create proposals** — just tell me the client and project\n• **Write your About Us** — I'll study your business and craft it\n• **Generate case studies** — based on your services and work\n\nJust tell me what you need!",
       timestamp: new Date(),
     }
   ]);
@@ -173,7 +173,7 @@ export default function AppLayout() {
     setMessages([{
       id: Date.now().toString(),
       role: 'assistant',
-      content: "Hi! 👋 Tell me who you're creating a proposal for — for example, *\"proposal for John for web design\"* — and I'll guide you through it step by step.",
+      content: "Hi! 👋 I'm your AI assistant. I can help you:\n\n• **Create proposals** — just tell me the client and project\n• **Write your About Us** — I'll study your business and craft it\n• **Generate case studies** — based on your services and work\n\nJust tell me what you need!",
       timestamp: new Date(),
     }]);
     setActiveProposalId(null);
