@@ -142,10 +142,12 @@ export default function ChatPanel({
     }));
     recentMessages.push({ role: 'user', content: userMessage });
 
+    // Exclude logo_url from profile to avoid huge base64 payloads
+    const { logo_url, ...profileForAI } = profile;
     const { data, error } = await supabase.functions.invoke('chat-assistant', {
       body: {
         messages: recentMessages,
-        companyProfile: profile,
+        companyProfile: profileForAI,
       }
     });
 
