@@ -14,6 +14,13 @@ import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 const sb = supabase as any;
 
+const generateShortToken = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const arr = new Uint8Array(8);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => chars[b % chars.length]).join('');
+};
+
 const getPublicBaseUrl = () => {
   try {
     const host = window.location.hostname;
@@ -74,12 +81,13 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
       };
 
       const { data, error } = await sb
-        .from('secure_proposal_shares')
+       .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
+          share_token: generateShortToken(),
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
-          content_snapshot: completeSnapshot, // Freeze complete content at share time
+          content_snapshot: completeSnapshot,
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
@@ -91,7 +99,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       if (error) throw error;
 
-      const shareUrl = `${getPublicBaseUrl()}/shared/${encodeURIComponent(data.share_token)}`;
+      const shareUrl = `${getPublicBaseUrl()}/shared/${data.share_token}`;
       
       // Update proposal status to "shared"
       await sb
@@ -151,9 +159,10 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .from('secure_proposal_shares')
         .insert({
           proposal_id: proposalId,
+          share_token: generateShortToken(),
           created_by: (await sb.auth.getUser()).data.user?.id,
           expires_at: expirationDate.toISOString(),
-          content_snapshot: completeSnapshot, // Freeze complete content at share time
+          content_snapshot: completeSnapshot,
           permissions: JSON.stringify({
             allowComments: shareSettings.allowComments,
             trackViews: shareSettings.trackViews,
@@ -189,7 +198,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .single();
       
       // Use the secure share URL that doesn't require authentication
-      const shareUrl = `${getPublicBaseUrl()}/shared/${encodeURIComponent(secureShare.share_token)}`;
+      const shareUrl = `${getPublicBaseUrl()}/shared/${secureShare.share_token}`;
       
       // Update proposal status to "shared"
       await sb
@@ -427,7 +436,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            const url = `${getPublicBaseUrl()}/shared/${encodeURIComponent(share.share_token)}`;
+                            const url = `${getPublicBaseUrl()}/shared/${share.share_token}`;
                             navigator.clipboard.writeText(url);
                             toast({ title: "Copied", description: "Link copied to clipboard" });
                           }}
