@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, CheckCircle } from 'lucide-react';
+import { Loader2, FileText, Calendar, DollarSign, Building2, Eye, CreditCard, CheckCircle, Download } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { supabase } from '@/integrations/supabase/client';
 const sb = supabase as any;
 import { toast } from '@/hooks/use-toast';
@@ -130,6 +132,42 @@ export default function SharedProposal() {
       setError('Failed to load proposal. Please check the link and try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const downloadPdf = async () => {
+    const element = document.getElementById('proposal-content');
+    if (!element) return;
+    setDownloadingPdf(true);
+    try {
+      const canvas = await html2canvas(element, { scale: 2, useCORS: true, logging: false });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      let heightLeft = pdfHeight;
+      let position = 0;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft > 0) {
+        position = -(pdfHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save(`${proposal?.title || 'proposal'}.pdf`);
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      toast({ title: 'Error', description: 'Failed to generate PDF', variant: 'destructive' });
+    } finally {
+      setDownloadingPdf(false);
     }
   };
 
@@ -419,7 +457,7 @@ export default function SharedProposal() {
       }}
     >
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div id="proposal-content" className="max-w-4xl mx-auto">
           {/* Header */}
           <Card className="mb-8">
             <CardContent className="p-8">
@@ -444,14 +482,25 @@ export default function SharedProposal() {
                     )}
                   </div>
                 </div>
-                <Badge variant={allSigned ? "default" : "secondary"} className="ml-4">
-                  {allSigned ? (
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                  ) : (
-                    <Eye className="h-3 w-3 mr-1" />
-                  )}
-                  {allSigned ? 'Signed' : 'Shared Proposal'}
-                </Badge>
+                <div className="flex items-center gap-2 ml-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadPdf}
+                    disabled={downloadingPdf}
+                  >
+                    {downloadingPdf ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Download className="h-4 w-4 mr-1" />}
+                    Download PDF
+                  </Button>
+                  <Badge variant={allSigned ? "default" : "secondary"}>
+                    {allSigned ? (
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                    ) : (
+                      <Eye className="h-3 w-3 mr-1" />
+                    )}
+                    {allSigned ? 'Signed' : 'Shared Proposal'}
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>

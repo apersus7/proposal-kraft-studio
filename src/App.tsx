@@ -46,6 +46,10 @@ const App = () => (
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
             <Route path="/p/:token" element={<SharedProposal />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
