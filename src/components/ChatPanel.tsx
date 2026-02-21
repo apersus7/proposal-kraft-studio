@@ -32,10 +32,17 @@ interface ExtractedProposalInfo {
 
 function detectProposalRequest(msg: string): ExtractedProposalInfo | null {
   const lower = msg.toLowerCase();
+  
+  // Check for proposal-like words (handles typos like "proosal", "proposl", "propasal")
+  const hasProposalIntent = /prop\w*s\w*l|proposal/i.test(lower) || 
+    lower.includes('proposal') || lower.includes('proosal') || lower.includes('proposl') || lower.includes('propasal');
+  
+  if (!hasProposalIntent) return null;
+
   const patterns = [
-    /proposal\s+for\s+([a-zA-Z\s]+?)(?:\s+for\s+(.+))?$/i,
-    /create\s+(?:a\s+)?proposal\s+for\s+([a-zA-Z\s]+?)(?:\s+(?:for|about|on)\s+(.+))?$/i,
-    /(?:make|write|draft)\s+(?:a\s+)?proposal\s+for\s+([a-zA-Z\s]+?)(?:\s+(?:for|about|on)\s+(.+))?$/i,
+    /(?:create|make|write|draft|generate|build|prepare)?\s*(?:a\s+)?(?:prop\w*s?\w*l?)\s+for\s+([a-zA-Z\s]+?)\s+(?:for|about|on|regarding)\s+(.+)$/i,
+    /(?:prop\w*s?\w*l?)\s+for\s+([a-zA-Z\s]+?)\s+(?:for|about|on|regarding)\s+(.+)$/i,
+    /(?:prop\w*s?\w*l?)\s+for\s+([a-zA-Z\s]+?)$/i,
   ];
 
   for (const pat of patterns) {
@@ -49,15 +56,12 @@ function detectProposalRequest(msg: string): ExtractedProposalInfo | null {
     }
   }
 
-  if (lower.includes('proposal')) {
-    return {
-      clientName: 'Client',
-      projectType: 'project',
-      rawMessage: msg,
-    };
-  }
-
-  return null;
+  // Fallback: detected proposal intent but couldn't parse details
+  return {
+    clientName: 'Client',
+    projectType: 'project',
+    rawMessage: msg,
+  };
 }
 
 function renderMarkdown(text: string) {
