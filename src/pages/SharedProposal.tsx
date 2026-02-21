@@ -72,11 +72,8 @@ export default function SharedProposal() {
     if (!token) return;
     try {
       setLoading(true);
-      // Robust token normalization: decode, fix spaces/URL-safe chars, and restore padding
-      let normalizedToken = decodeURIComponent(token);
-      normalizedToken = normalizedToken.replace(/\s/g, '+').replace(/-/g, '+').replace(/_/g, '/');
-      const pad = normalizedToken.length % 4;
-      if (pad) normalizedToken = normalizedToken + '='.repeat(4 - pad);
+      // The token is a hex-encoded string, just decode URI component
+      const normalizedToken = decodeURIComponent(token);
       const { data, error } = await supabase.functions.invoke('get-shared-proposal', {
         body: { token: normalizedToken },
       });

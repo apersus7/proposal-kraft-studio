@@ -27,15 +27,10 @@ serve(async (req) => {
       );
     }
 
-    // Normalize token for safety (handle URL decoding, spaces-as-plus, base64url, and padding)
-    let normalizedToken = token;
+    // The token is hex-encoded, just trim whitespace
+    let normalizedToken = token.trim();
     try { normalizedToken = decodeURIComponent(normalizedToken); } catch {}
-    normalizedToken = normalizedToken
-      .replace(/\s/g, '+') // spaces back to plus
-      .replace(/-/g, '+')   // base64url to base64
-      .replace(/_/g, '/');  // base64url to base64
-    const pad = normalizedToken.length % 4;
-    if (pad) normalizedToken = normalizedToken + '='.repeat(4 - pad);
+    normalizedToken = normalizedToken.trim();
 
     console.log("get-shared-proposal: normalized token", normalizedToken);
 

@@ -17,8 +17,9 @@ const sb = supabase as any;
 const getPublicBaseUrl = () => {
   try {
     const host = window.location.hostname;
-    if (host.endsWith('lovableproject.com')) {
-      return 'https://craftproposal.com';
+    // Use custom domain if available, otherwise use published lovable.app URL
+    if (host.endsWith('lovableproject.com') || host.endsWith('lovable.app') || host.includes('preview')) {
+      return 'https://proposal-kraft-studio.lovable.app';
     }
     return window.location.origin;
   } catch {
