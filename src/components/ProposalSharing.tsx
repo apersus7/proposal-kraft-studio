@@ -24,13 +24,14 @@ const generateShortToken = () => {
 const getPublicBaseUrl = () => {
   try {
     const host = window.location.hostname;
-    // Use custom domain if available, otherwise use published lovable.app URL
-    if (host.endsWith('lovableproject.com') || host.endsWith('lovable.app') || host.includes('preview')) {
-      return 'https://proposal-kraft-studio.lovable.app';
+    // Always use custom domain for share links
+    if (host === 'www.craftproposal.com' || host === 'craftproposal.com') {
+      return window.location.origin;
     }
-    return window.location.origin;
+    // From preview/staging, use the custom domain
+    return 'https://www.craftproposal.com';
   } catch {
-    return window.location.origin;
+    return 'https://www.craftproposal.com';
   }
 };
 

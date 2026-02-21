@@ -72,20 +72,31 @@ export default function SharedProposal() {
     if (!token) return;
     try {
       setLoading(true);
-      // The token is a hex-encoded string, just decode URI component
       const normalizedToken = decodeURIComponent(token);
-      const { data, error } = await supabase.functions.invoke('get-shared-proposal', {
-        body: { token: normalizedToken },
+      
+      // Use direct fetch instead of supabase.functions.invoke so it works without auth
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const response = await fetch(`${supabaseUrl}/functions/v1/get-shared-proposal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({ token: normalizedToken }),
       });
-
-      if (error) {
-        const status = (error as any)?.context?.status;
-        console.error('get-shared-proposal error:', { status, error });
+      
+      if (!response.ok) {
+        const status = response.status;
+        console.error('get-shared-proposal error:', { status });
         if (status === 404) setError('This share link is invalid. Please ask the sender for a new link.');
         else if (status === 410) setError('This share link has expired. Please ask the sender to generate a new one.');
         else setError('Unable to load shared proposal. Please try again.');
         return;
       }
+      
+      const data = await response.json();
+
 
       if (!data) {
         setError('Unable to load shared proposal.');
