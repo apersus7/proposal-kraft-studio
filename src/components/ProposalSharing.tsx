@@ -100,7 +100,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
 
       if (error) throw error;
 
-      const shareUrl = `${getPublicBaseUrl()}/shared/${data.share_token}`;
+      const shareUrl = `${getPublicBaseUrl()}/p/${data.share_token}`;
       
       // Update proposal status to "shared"
       await sb
@@ -199,7 +199,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
         .single();
       
       // Use the secure share URL that doesn't require authentication
-      const shareUrl = `${getPublicBaseUrl()}/shared/${secureShare.share_token}`;
+      const shareUrl = `${getPublicBaseUrl()}/p/${secureShare.share_token}`;
       
       // Update proposal status to "shared"
       await sb
@@ -437,7 +437,7 @@ export default function ProposalSharing({ proposalId, proposalTitle }: ProposalS
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            const url = `${getPublicBaseUrl()}/shared/${share.share_token}`;
+                            const url = `${getPublicBaseUrl()}/p/${share.share_token}`;
                             navigator.clipboard.writeText(url);
                             toast({ title: "Copied", description: "Link copied to clipboard" });
                           }}
