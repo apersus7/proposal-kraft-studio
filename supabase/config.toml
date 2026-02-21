@@ -1,1 +1,4 @@
 project_id = "uvctuukpfzobzawjcgqh"
+
+[functions.get-shared-proposal]
+verify_jwt = false
