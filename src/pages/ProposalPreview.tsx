@@ -34,21 +34,7 @@ export default function ProposalPreview() {
   const [error, setError] = useState<string | null>(null);
   const [signers, setSigners] = useState<any[]>([]);
 
-  // Extract theme from proposal content
-  const getTheme = () => {
-    const content = proposal?.content || {};
-    return {
-      backgroundColor: content.backgroundColor || '#ffffff',
-      textColor: content.textColor || '#000000',
-      headingColor: content.headingColor || '#000000',
-      primaryColor: content.primaryColor || '#3B82F6',
-      secondaryColor: content.secondaryColor || '#6B7280',
-      selectedFont: content.selectedFont || 'Inter',
-    };
-  };
-
   useEffect(() => {
-    // Redirect to auth if not logged in
     if (!user && !loading) {
       navigate('/auth');
       toast({
@@ -68,10 +54,10 @@ export default function ProposalPreview() {
   useEffect(() => {
     const font = proposal?.content?.selectedFont;
     if (font && font !== 'Inter') {
-      const id = `gf-${font.replace(/\s+/g, '-')}`;
-      if (!document.getElementById(id)) {
+      const fid = `gf-${font.replace(/\s+/g, '-')}`;
+      if (!document.getElementById(fid)) {
         const link = document.createElement('link');
-        link.id = id;
+        link.id = fid;
         link.rel = 'stylesheet';
         link.href = `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;500;600;700&display=swap`;
         document.head.appendChild(link);
@@ -84,18 +70,13 @@ export default function ProposalPreview() {
     
     try {
       setLoading(true);
-      console.log('Fetching proposal:', id);
       
-      // Fetch the proposal data
       const { data: proposalData, error: proposalError } = await supabase
         .from('proposals')
         .select('id, title, client_name, client_email, content, worth, created_at, status')
         .eq('id', id)
         .eq('user_id', user.id)
         .single();
-
-      console.log('Proposal data:', proposalData);
-      console.log('Proposal error:', proposalError);
 
       if (proposalError || !proposalData) {
         setError('Proposal not found or you do not have permission to view it.');
@@ -104,7 +85,6 @@ export default function ProposalPreview() {
 
       setProposal(proposalData);
 
-      // Fetch signers for this proposal
       const { data: signersData } = await sb
         .from('proposal_signatures')
         .select('*')
@@ -139,84 +119,79 @@ export default function ProposalPreview() {
     });
   };
 
+  // Use app green as accent
+  const accentColor = 'hsl(151, 100%, 37%)';
+  const accentColorFaded = 'hsla(151, 100%, 37%, 0.15)';
+
   const renderContent = (content: any) => {
     if (!content || typeof content !== 'object') {
       return <p className="text-muted-foreground">No content available.</p>;
     }
 
-    const primaryColor = content.primaryColor || '#3b82f6';
-    const secondaryColor = content.secondaryColor || '#1e40af';
-    const backgroundColor = content.backgroundColor || '#ffffff';
-    const textColor = content.textColor || '#000000';
-    const headingColor = content.headingColor || '#000000';
     const selectedFont = content.selectedFont || 'Inter';
+    const logoUrl = content.logoUrl || content.company_logo || null;
 
-    // Check if content has sections array (new format)
+    // Sections array format
     if (content.sections && Array.isArray(content.sections)) {
       return (
-        <div style={{ fontFamily: selectedFont, backgroundColor: backgroundColor, color: textColor }} className="p-6 rounded-lg">
+        <div style={{ fontFamily: selectedFont }} className="space-y-8">
           {content.sections.map((section: any, index: number) => {
             if (!section || typeof section !== 'object') return null;
 
-            // Handle different section types
             switch (section.type) {
               case 'cover_page':
                 return (
-                  <div key={index} className="text-center mb-12 p-8 rounded-lg border-2" style={{ borderColor: `${primaryColor}20` }}>
-                    {content.logoUrl && (
-                      <div className="mb-6">
-                        <img src={content.logoUrl} alt="Company Logo" className="h-16 w-auto mx-auto" />
+                  <div key={index} className="text-center py-10 px-6 rounded-xl border border-border" style={{ background: `linear-gradient(135deg, ${accentColorFaded}, transparent)` }}>
+                    {logoUrl && (
+                      <div className="mb-5">
+                        <img src={logoUrl} alt="Company Logo" className="h-14 w-auto mx-auto rounded" />
                       </div>
                     )}
-                    <div className="text-sm mb-2" style={{ color: secondaryColor }}>
-                      {section.company_name || 'Your Company'}
-                    </div>
-                    <h1 className="text-4xl font-bold mb-4" style={{ color: headingColor }}>
+                    <p className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: accentColor }}>
+                      {section.company_name || content.company_name || 'Your Company'}
+                    </p>
+                    <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                       {proposal?.title}
                     </h1>
-                    <p className="text-xl mb-2">Project: {content.project_name}</p>
-                    <p className="text-lg mb-4">Prepared for {proposal?.client_name}</p>
+                    {content.project_name && (
+                      <p className="text-base text-muted-foreground mb-1">Project: {content.project_name}</p>
+                    )}
+                    <p className="text-base text-muted-foreground">Prepared for {proposal?.client_name}</p>
                     {section.tagline && (
-                      <p className="text-lg italic" style={{ color: secondaryColor }}>
-                        {section.tagline}
-                      </p>
+                      <p className="text-sm italic mt-3 text-muted-foreground">{section.tagline}</p>
                     )}
                   </div>
                 );
 
               case 'objective':
                 return section.content ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Project Objective
                     </h2>
-                    <div className="prose max-w-none">
-                      <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
-                    </div>
+                    <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{section.content}</p>
                   </div>
                 ) : null;
 
               case 'proposed_solution':
                 return (section.content || section.why_fits || section.tools?.length > 0) ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Proposed Solution
                     </h2>
                     {section.content && (
-                      <div className="mb-4">
-                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
-                      </div>
+                      <p className="whitespace-pre-line leading-relaxed text-muted-foreground mb-4">{section.content}</p>
                     )}
                     {section.why_fits && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-medium mb-2">Why This Solution Fits:</h3>
-                        <p className="whitespace-pre-line leading-relaxed">{section.why_fits}</p>
+                        <h3 className="text-base font-medium text-foreground mb-1">Why This Solution Fits:</h3>
+                        <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{section.why_fits}</p>
                       </div>
                     )}
                     {section.tools?.length > 0 && (
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Tools & Technologies:</h3>
-                        <p>{section.tools.join(', ')}</p>
+                        <h3 className="text-base font-medium text-foreground mb-1">Tools & Technologies:</h3>
+                        <p className="text-muted-foreground">{section.tools.join(', ')}</p>
                       </div>
                     )}
                   </div>
@@ -224,39 +199,43 @@ export default function ProposalPreview() {
 
               case 'scope_of_work':
                 return (section.content || section.deliverables?.length > 0 || section.timeline?.length > 0) ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Scope of Work
                     </h2>
                     {section.content && (
-                      <div className="mb-4">
-                        <p className="whitespace-pre-line leading-relaxed">{section.content}</p>
-                      </div>
+                      <p className="whitespace-pre-line leading-relaxed text-muted-foreground mb-4">{section.content}</p>
                     )}
                     {section.deliverables?.length > 0 && (
                       <div className="mb-4">
-                        <h3 className="text-lg font-medium mb-2">Key Deliverables:</h3>
-                        <ul className="list-disc list-inside space-y-1">
+                        <h3 className="text-base font-medium text-foreground mb-2">Key Deliverables:</h3>
+                        <ul className="space-y-1.5 ml-1">
                           {section.deliverables.map((item: string, idx: number) => (
-                            <li key={idx}>{item}</li>
+                            <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+                              <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
+                              {item}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     )}
                     {section.timeline?.length > 0 && (
                       <div>
-                        <h3 className="text-lg font-medium mb-2">Timeline:</h3>
-                        <div className="space-y-2">
+                        <h3 className="text-base font-medium text-foreground mb-3">Timeline:</h3>
+                        <div className="relative pl-6 space-y-4">
+                          {/* Vertical line */}
+                          <div className="absolute left-[7px] top-2 bottom-2 w-0.5 rounded" style={{ backgroundColor: accentColor, opacity: 0.3 }} />
                           {section.timeline.map((phase: any, idx: number) => (
-                            <div 
-                              key={idx} 
-                              className="p-3 rounded border-l-4" 
-                              style={{ 
-                                backgroundColor: section.timelineColor ? `${section.timelineColor}10` : '#f9fafb',
-                                borderLeftColor: section.timelineColor || primaryColor
-                              }}
-                            >
-                              <span className="font-black">{idx + 1})</span> <span className="font-medium">{phase.phase}:</span> {phase.duration}{phase.description ? ` - ${phase.description}` : ''}
+                            <div key={idx} className="relative flex items-start gap-3">
+                              {/* Dot */}
+                              <div className="absolute -left-6 top-1.5 h-3 w-3 rounded-full border-2 bg-background" style={{ borderColor: accentColor }} />
+                              <div className="flex-1 rounded-lg p-3 border border-border" style={{ backgroundColor: accentColorFaded }}>
+                                <span className="font-semibold text-foreground">{phase.phase}</span>
+                                <span className="text-muted-foreground ml-2">— {phase.duration}</span>
+                                {phase.description && (
+                                  <p className="text-sm text-muted-foreground mt-1">{phase.description}</p>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -265,78 +244,60 @@ export default function ProposalPreview() {
                   </div>
                 ) : null;
 
-              case 'pricing':
+              case 'pricing': {
                 const getCurrencySymbol = (currency: string) => {
-                  const symbols: Record<string, string> = {
-                    'USD': '$',
-                    'EUR': '€',
-                    'GBP': '£',
-                    'INR': '₹',
-                    'CAD': '$',
-                    'AUD': '$',
-                    'JPY': '¥'
-                  };
+                  const symbols: Record<string, string> = { 'USD': '$', 'EUR': '€', 'GBP': '£', 'INR': '₹', 'CAD': '$', 'AUD': '$', 'JPY': '¥' };
                   return symbols[currency] || '$';
                 };
                 
+                // Get the raw pricing value from content
+                const rawPricing = content.pricing || proposal?.worth || 'XX,XXX';
+                // Format: if it starts with $ already, don't add another
+                const pricingDisplay = typeof rawPricing === 'string' && rawPricing.startsWith('$')
+                  ? rawPricing
+                  : `${getCurrencySymbol(content.currency || 'USD')}${rawPricing}`;
+
                 return (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Investment
                     </h2>
-                    <div 
-                      className="p-6 rounded-lg border-2" 
-                      style={{ 
-                        backgroundColor: section.highlightColor ? `${section.highlightColor}10` : '#f9fafb',
-                        borderColor: section.highlightColor || primaryColor
-                      }}
-                    >
-                      <p className="text-xl font-bold mb-2" style={{ color: section.highlightColor || primaryColor }}>
-                        Total Project Investment: {getCurrencySymbol(content.currency || 'USD')}{content.pricing || proposal?.worth || 'XX,XXX'}
+                    <div className="p-5 rounded-xl border border-border" style={{ backgroundColor: accentColorFaded }}>
+                      <p className="text-lg font-bold mb-2" style={{ color: accentColor }}>
+                        Total Project Investment: {pricingDisplay}
                       </p>
                       {section.payment_terms && (
-                        <p><strong>Payment Terms:</strong> {section.payment_terms}</p>
+                        <p className="text-muted-foreground"><strong className="text-foreground">Payment Terms:</strong> {section.payment_terms}</p>
                       )}
                       {section.breakdown && (
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-2">Value Breakdown:</h4>
-                          <p className="whitespace-pre-line">{section.breakdown}</p>
+                        <div className="mt-3">
+                          <h4 className="font-medium text-foreground mb-1">Value Breakdown:</h4>
+                          <p className="whitespace-pre-line text-muted-foreground">{section.breakdown}</p>
                         </div>
                       )}
                     </div>
                   </div>
                 );
+              }
 
               case 'value_proposition':
                 return section.testimonials?.length > 0 ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Client Testimonials
                     </h2>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {section.testimonials.map((testimonial: any, idx: number) => (
-                        <div 
-                          key={idx} 
-                          className="p-4 rounded-lg border-l-4" 
-                          style={{ 
-                            backgroundColor: section.testimonialColor ? `${section.testimonialColor}10` : '#f9fafb',
-                            borderLeftColor: section.testimonialColor || primaryColor
-                          }}
-                        >
+                        <div key={idx} className="p-4 rounded-lg border-l-4" style={{ backgroundColor: accentColorFaded, borderLeftColor: accentColor }}>
                           {testimonial.content && (
-                            <p className="italic mb-2">"{testimonial.content}"</p>
+                            <p className="italic text-muted-foreground mb-2">"{testimonial.content}"</p>
                           )}
                           <div className="flex items-center justify-between">
                             {testimonial.name && (
-                              <p className="font-medium"><span className="font-black">•</span> {testimonial.name}</p>
+                              <p className="font-medium text-foreground">— {testimonial.name}</p>
                             )}
                             {testimonial.link && (
-                              <a 
-                                href={testimonial.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 hover:underline"
-                              >
+                              <a href={testimonial.link} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline" style={{ color: accentColor }}>
                                 View Profile
                               </a>
                             )}
@@ -349,15 +310,15 @@ export default function ProposalPreview() {
 
               case 'call_to_action':
                 return section.next_steps ? (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
                       Next Steps
                     </h2>
-                    <p className="whitespace-pre-line leading-relaxed mb-4">{section.next_steps}</p>
+                    <p className="whitespace-pre-line leading-relaxed text-muted-foreground mb-4">{section.next_steps}</p>
                     {section.contact_details && (
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-medium mb-2">Contact Information:</h4>
-                        <div className="whitespace-pre-line">{section.contact_details}</div>
+                      <div className="p-4 rounded-lg border border-border bg-card">
+                        <h4 className="font-medium text-foreground mb-2">Contact Information:</h4>
+                        <div className="whitespace-pre-line text-muted-foreground">{section.contact_details}</div>
                       </div>
                     )}
                   </div>
@@ -365,21 +326,14 @@ export default function ProposalPreview() {
 
               case 'payment_link':
                 return (
-                  <div key={index} className="mb-8">
-                    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-lg border">
-                      <h3 className="text-xl font-semibold mb-2 text-center">{section.title}</h3>
-                      <p className="text-muted-foreground mb-4 text-center">{section.content?.text}</p>
+                  <div key={index}>
+                    <div className="p-6 rounded-xl border border-border" style={{ backgroundColor: accentColorFaded }}>
+                      <h3 className="text-lg font-semibold text-foreground mb-2 text-center">{section.title}</h3>
+                      <p className="text-muted-foreground mb-4 text-center text-sm">{section.content?.text}</p>
                       {section.content?.paymentUrl ? (
                         <div className="text-center">
-                          <Button 
-                            asChild 
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <a 
-                              href={section.content.paymentUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                            >
+                          <Button asChild style={{ backgroundColor: accentColor }}>
+                            <a href={section.content.paymentUrl} target="_blank" rel="noopener noreferrer">
                               <CreditCard className="h-4 w-4 mr-2" />
                               {section.content?.buttonText || 'Pay Now'} 
                               {section.content?.amount && ` - $${section.content.amount}`}
@@ -395,62 +349,196 @@ export default function ProposalPreview() {
                   </div>
                 );
 
-              default:
-                return (
-                  <div key={index} className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 pb-2 border-b-2" style={{ color: headingColor, borderColor: `${primaryColor}20` }}>
-                      {section.title || section.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </h2>
-                    <div className="prose max-w-none">
-                      <p className="whitespace-pre-wrap">
-                        {section.content?.text || section.content || 'No content available.'}
-                      </p>
+              default: {
+                const sectionContent = typeof section.content === 'string' ? section.content : section.content?.text || '';
+                const sectionLabel = section.title || section.type.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+
+                // Deliverables with bullet list
+                if (section.type === 'deliverables' && typeof sectionContent === 'string' && sectionContent.includes('\n')) {
+                  const items = sectionContent.split('\n').map((l: string) => l.replace(/^[\-\•]\s*/, '').trim()).filter(Boolean);
+                  return (
+                    <div key={index}>
+                      <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{sectionLabel}</h2>
+                      <ul className="space-y-1.5 ml-1">
+                        {items.map((item: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+                            <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
+                  );
+                }
+
+                // Timeline with visual
+                if (section.type === 'timeline' && sectionContent) {
+                  return (
+                    <div key={index}>
+                      <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{sectionLabel}</h2>
+                      <div className="relative pl-6">
+                        <div className="absolute left-[7px] top-2 bottom-2 w-0.5 rounded" style={{ backgroundColor: accentColor, opacity: 0.3 }} />
+                        <div className="relative flex items-start gap-3">
+                          <div className="absolute -left-6 top-1.5 h-3 w-3 rounded-full border-2 bg-background" style={{ borderColor: accentColor }} />
+                          <div className="flex-1 rounded-lg p-3 border border-border" style={{ backgroundColor: accentColorFaded }}>
+                            <span className="font-semibold text-foreground">Project Duration</span>
+                            <span className="text-muted-foreground ml-2">— {sectionContent}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Pricing
+                if (section.type === 'pricing' && sectionContent) {
+                  const pricingDisplay = typeof sectionContent === 'string' && sectionContent.startsWith('$')
+                    ? sectionContent
+                    : `$${sectionContent}`;
+                  return (
+                    <div key={index}>
+                      <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">Investment</h2>
+                      <div className="p-5 rounded-xl border border-border" style={{ backgroundColor: accentColorFaded }}>
+                        <p className="text-lg font-bold" style={{ color: accentColor }}>
+                          Total Project Investment: {pricingDisplay}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Generic section
+                return (
+                  <div key={index}>
+                    <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">
+                      {sectionLabel}
+                    </h2>
+                    <p className="whitespace-pre-wrap leading-relaxed text-muted-foreground">
+                      {sectionContent || 'No content available.'}
+                    </p>
                   </div>
                 );
+              }
             }
           })}
         </div>
       );
     }
 
-    // Legacy content format support
-    return Object.entries(content).map(([section, data]: [string, any]) => {
-      if (!data || typeof data !== 'object') return null;
+    // Legacy flat-key content format (summary, deliverables, timeline, etc.)
+    const legacyFields = [
+      { key: 'summary', label: 'Executive Summary' },
+      { key: 'deliverables', label: 'Deliverables' },
+      { key: 'timeline', label: 'Timeline' },
+      { key: 'pricing', label: 'Investment' },
+      { key: 'payment_terms', label: 'Payment Terms' },
+      { key: 'company_bio', label: 'About' },
+      { key: 'next_steps', label: 'Next Steps' },
+    ];
 
-      const sectionTitle = section.split('_').map(word => 
-        word.charAt(0).toUpperCase() + word.slice(1)
-      ).join(' ');
+    const logoUrl2 = content.logoUrl || content.company_logo || null;
 
-      return (
-        <div key={section} className="mb-8">
-          <h3 className="text-lg font-semibold mb-4 text-primary">
-            {sectionTitle}
-          </h3>
-          <div className="space-y-3">
-            {Object.entries(data).map(([key, value]: [string, any]) => {
-              if (!value) return null;
-              
-              const fieldName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-              
+    return (
+      <div className="space-y-8">
+        {/* Cover */}
+        <div className="text-center py-10 px-6 rounded-xl border border-border" style={{ background: `linear-gradient(135deg, ${accentColorFaded}, transparent)` }}>
+          {logoUrl2 && (
+            <div className="mb-5">
+              <img src={logoUrl2} alt="Company Logo" className="h-14 w-auto mx-auto rounded" />
+            </div>
+          )}
+          {content.company_name && (
+            <p className="text-sm font-medium tracking-widest uppercase mb-3" style={{ color: accentColor }}>
+              {content.company_name}
+            </p>
+          )}
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+            {proposal?.title}
+          </h1>
+          <p className="text-base text-muted-foreground">Prepared for {proposal?.client_name}</p>
+        </div>
+
+        {/* Sections */}
+        {legacyFields.map(({ key, label }) => {
+          const value = content[key];
+          if (!value) return null;
+
+          // Timeline special rendering
+          if (key === 'timeline') {
+            // If it's a simple string like "3 Months"
+            if (typeof value === 'string') {
               return (
-                <div key={key} className="border-l-2 border-primary/20 pl-4">
-                  <h4 className="font-medium text-foreground mb-1">{fieldName}</h4>
-                  <p className="text-muted-foreground">{value.toString()}</p>
+                <div key={key}>
+                  <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{label}</h2>
+                  <div className="relative pl-6">
+                    <div className="absolute left-[7px] top-2 bottom-2 w-0.5 rounded" style={{ backgroundColor: accentColor, opacity: 0.3 }} />
+                    <div className="relative flex items-start gap-3">
+                      <div className="absolute -left-6 top-1.5 h-3 w-3 rounded-full border-2 bg-background" style={{ borderColor: accentColor }} />
+                      <div className="flex-1 rounded-lg p-3 border border-border" style={{ backgroundColor: accentColorFaded }}>
+                        <span className="font-semibold text-foreground">Project Duration</span>
+                        <span className="text-muted-foreground ml-2">— {value}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
-            })}
-          </div>
-        </div>
-      );
-    });
+            }
+            return null;
+          }
+
+          // Pricing special rendering
+          if (key === 'pricing') {
+            const rawPricing = value;
+            const pricingDisplay = typeof rawPricing === 'string' && rawPricing.startsWith('$')
+              ? rawPricing
+              : `$${rawPricing}`;
+
+            return (
+              <div key={key}>
+                <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{label}</h2>
+                <div className="p-5 rounded-xl border border-border" style={{ backgroundColor: accentColorFaded }}>
+                  <p className="text-lg font-bold" style={{ color: accentColor }}>
+                    Total Project Investment: {pricingDisplay}
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          // Deliverables: parse dash-separated list
+          if (key === 'deliverables' && typeof value === 'string') {
+            const items = value.split('\n').map((l: string) => l.replace(/^[\-\•]\s*/, '').trim()).filter(Boolean);
+            return (
+              <div key={key}>
+                <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{label}</h2>
+                <ul className="space-y-1.5 ml-1">
+                  {items.map((item: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          }
+
+          return (
+            <div key={key}>
+              <h2 className="text-xl font-semibold text-foreground mb-3 pb-2 border-b border-border">{label}</h2>
+              <p className="whitespace-pre-line leading-relaxed text-muted-foreground">{typeof value === 'string' ? value : JSON.stringify(value)}</p>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
           <p className="text-muted-foreground">Loading proposal...</p>
         </div>
       </div>
@@ -459,11 +547,11 @@ export default function ProposalPreview() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
             <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-xl font-semibold mb-2">Unable to Load Proposal</h2>
+            <h2 className="text-xl font-semibold mb-2 text-foreground">Unable to Load Proposal</h2>
             <p className="text-muted-foreground mb-4">{error}</p>
             <Button onClick={() => window.location.reload()} variant="outline">
               Try Again
@@ -478,17 +566,13 @@ export default function ProposalPreview() {
     return null;
   }
 
-const theme = getTheme();
-const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed');
+  const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed');
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: '#000000', color: theme.textColor, fontFamily: `'${theme.selectedFont}', sans-serif` }}
-    >
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Header with Action Buttons */}
+          {/* Header */}
           <Card className="mb-8">
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-6">
@@ -502,7 +586,6 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
                       variant="default" 
                       size="sm" 
                       onClick={() => navigate(`/create-proposal?edit=${id}`)}
-                      className="bg-primary hover:bg-primary/90"
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Edit Proposal
@@ -552,7 +635,7 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
             </CardContent>
           </Card>
 
-          {/* Main Content with Tabs */}
+          {/* Tabs */}
           <Tabs defaultValue="preview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="preview">
@@ -572,15 +655,7 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
             <TabsContent value="preview">
               <Card>
                 <CardContent className="p-8">
-                  <div id="proposal-preview-content" className="prose max-w-none" style={{
-                    ['--tw-prose-body' as any]: theme.textColor,
-                    ['--tw-prose-headings' as any]: theme.headingColor,
-                    ['--tw-prose-links' as any]: theme.primaryColor,
-                    ['--tw-prose-bold' as any]: theme.headingColor,
-                    ['--tw-prose-quotes' as any]: theme.textColor,
-                  }}>
-                    {renderContent(proposal.content)}
-                  </div>
+                  {renderContent(proposal.content)}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -592,7 +667,7 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
                     Client Payment Links
                   </h3>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Generate secure Stripe payment links to share with your client
+                    Generate secure payment links to share with your client
                   </p>
                   <PaymentLinkGenerator 
                     proposalId={proposal.id}
@@ -620,8 +695,8 @@ const allSigned = signers.length > 0 && signers.every(s => s.status === 'signed'
           </Tabs>
 
           {/* Footer */}
-          <div className="mt-8 text-center text-muted-foreground">
-            <p>Powered by ProposalKraft</p>
+          <div className="mt-8 text-center text-muted-foreground text-sm">
+            <p>Powered by Craft Proposal</p>
           </div>
         </div>
       </div>
