@@ -241,7 +241,7 @@ export default function ProposalPanel({ open, onClose, proposalData, profile, on
       {/* Cover Preview */}
       <div
         className="mx-3 mt-3 rounded-xl p-4 text-white shrink-0"
-        style={{ background: 'linear-gradient(135deg, hsl(217,91%,55%), hsl(217,91%,40%))' }}
+        style={{ background: 'linear-gradient(135deg, hsl(151,100%,37%), hsl(151,80%,25%))' }}
       >
         <div className="flex items-start justify-between">
           <div className="min-w-0">
