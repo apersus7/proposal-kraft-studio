@@ -170,12 +170,14 @@ export default function LeftSidebar({
                     </button>
                   ))}
                   {proposals.length > 5 && (
-                    <button
-                      onClick={() => navigate('/proposals')}
-                      className="w-full text-center px-2 py-2 rounded-md text-xs font-medium text-primary hover:bg-sidebar-accent transition-colors"
-                    >
-                      View All ({proposals.length})
-                    </button>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => navigate('/proposals')}
+                        className="px-3 py-1.5 rounded-md text-xs font-medium text-primary hover:bg-sidebar-accent transition-colors"
+                      >
+                        View All ({proposals.length})
+                      </button>
+                    </div>
                   )}
                 </>
               )}
