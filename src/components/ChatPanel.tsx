@@ -20,8 +20,7 @@ interface Props {
 
 type ConversationState =
   | 'idle'
-  | 'awaiting_timeline'
-  | 'awaiting_pricing'
+  | 'awaiting_details'
   | 'generating';
 
 interface PendingProposal {
@@ -43,7 +42,6 @@ export default function ChatPanel({
   const [loading, setLoading] = useState(false);
   const [convState, setConvState] = useState<ConversationState>('idle');
   const [pendingProposal, setPendingProposal] = useState<PendingProposal | null>(null);
-  const [pendingTimeline, setPendingTimeline] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,10 +57,21 @@ export default function ChatPanel({
     }]);
   };
 
-  const generateProposal = async (info: PendingProposal, timeline: string, pricing: string) => {
+  const parseDetailsFromMessage = (msg: string) => {
+    // Extract timeline and pricing from a combined message
+    const priceMatch = msg.match(/[\$€£₹]\s?[\d,]+(?:\.\d+)?/);
+    const pricing = priceMatch ? priceMatch[0] : msg;
+    // Everything else is timeline context
+    const timeline = msg.replace(priceMatch?.[0] || '', '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
+    return { timeline, pricing };
+  };
+
+  const generateProposal = async (info: PendingProposal, details: string) => {
     if (!user) return;
     setConvState('generating');
-    addMessage('assistant', '✨ Generating your proposal now... This will just take a moment!');
+    addMessage('assistant', '✨ Generating your proposal now... This will take a moment!');
+
+    const { timeline, pricing } = parseDetailsFromMessage(details);
 
     try {
       const { data } = await supabase.functions.invoke('generate-proposal-content', {
@@ -125,7 +134,6 @@ export default function ChatPanel({
       onProposalCreated(savedProposal);
       setConvState('idle');
       setPendingProposal(null);
-      setPendingTimeline('');
     } catch (err: any) {
       console.error('Error generating proposal:', err);
       addMessage('assistant', 'Sorry, I had trouble generating the proposal. Please try again!');
@@ -161,8 +169,8 @@ export default function ChatPanel({
           clientName: client_name || 'Client',
           projectType: project_type || 'project',
         });
-        setConvState('awaiting_timeline');
-        addMessage('assistant', response || `Great! I'll create a proposal for **${client_name}** for **${project_type}**.\n\nWhat's the **timeline** for this project? *(e.g., "2 weeks", "1 month")*`);
+        setConvState('awaiting_details');
+        addMessage('assistant', response || `Great! I'll create a proposal for **${client_name}** for **${project_type}**.\n\nPlease share the **timeline** and **pricing** for this project (e.g., "2 weeks, $2,500").`);
         break;
 
       case 'write_about_us':
@@ -205,13 +213,9 @@ export default function ChatPanel({
     setLoading(true);
 
     try {
-      if (convState === 'awaiting_timeline') {
-        setPendingTimeline(trimmed);
-        setConvState('awaiting_pricing');
-        addMessage('assistant', `Got it — **${trimmed}** timeline.\n\nNow, what's the **pricing** for this project? *(e.g., "$2,500", "€5,000")*`);
-      } else if (convState === 'awaiting_pricing') {
+      if (convState === 'awaiting_details') {
         if (pendingProposal) {
-          await generateProposal(pendingProposal, pendingTimeline, trimmed);
+          await generateProposal(pendingProposal, trimmed);
         }
       } else {
         // Use AI to understand user intent
@@ -303,10 +307,8 @@ export default function ChatPanel({
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                convState === 'awaiting_timeline'
-                  ? "Enter project timeline (e.g. 2 weeks, 1 month)..."
-                  : convState === 'awaiting_pricing'
-                  ? "Enter pricing (e.g. $2,500, €5,000)..."
+                convState === 'awaiting_details'
+                  ? "Enter timeline and pricing (e.g. 2 weeks, $2,500)..."
                   : "Ask me anything — create proposals, write About Us, generate case studies..."
               }
               className="min-h-[44px] max-h-[120px] resize-none text-sm"
