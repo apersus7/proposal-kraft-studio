@@ -11,18 +11,51 @@ const SYSTEM_PROMPT = `You are Craft Proposal's AI assistant. You help freelance
 
 You have these capabilities:
 1. CREATE PROPOSALS - When users want to create a proposal for a client
-2. WRITE ABOUT US - Generate professional "About Us" content based on the company's services, industry, and values
-3. WRITE CASE STUDIES - Generate compelling case study content based on the company's work and achievements
+2. WRITE ABOUT US - Generate professional "About Us" content based on the company's website content and profile
+3. WRITE CASE STUDIES - Generate compelling case study content based on the company's website content and achievements
 4. GENERAL CHAT - Answer questions about proposals, business, freelancing
 
 IMPORTANT RULES FOR TOOL CALLING:
 - When the user wants to create a proposal, call the "handle_intent" tool with intent "create_proposal". Extract the client name and project type from their message. In the "response" field, confirm what you understood and ask them to provide BOTH the timeline and pricing together in their next message. Example response: "I'll create a Web Design proposal for John! Please share the **timeline** and **pricing** for this project (e.g., '2 weeks, $2,500')."
-- When they want help writing an About Us section, call "handle_intent" with intent "write_about_us". Use the company profile context to generate a compelling, professional About Us section in the "generated_content" field. Make it rich, specific to their services, and engaging.
-- When they want help writing case studies, call "handle_intent" with intent "write_case_study". Use the company profile context to generate a detailed, results-driven case study in the "generated_content" field. Include challenges, solutions, and outcomes.
+- When they want help writing an About Us section, call "handle_intent" with intent "write_about_us". Use the WEBSITE CONTENT and company profile context to generate a compelling, professional About Us section in the "generated_content" field. Base it heavily on the actual website content — extract real services, values, team info, mission statements, and unique selling points from the website. Make it authentic and specific to their actual business.
+- When they want help writing case studies, call "handle_intent" with intent "write_case_study". Use the WEBSITE CONTENT and company profile context to generate a detailed, results-driven case study in the "generated_content" field. Look for real projects, testimonials, client logos, or portfolio items from the website content. Include challenges, solutions, and outcomes.
 - For general conversation, call "handle_intent" with intent "general_chat" and put your helpful response in the "response" field
 - ALWAYS use the tool call, never respond with plain text
+- If website content is provided, you MUST use it as the primary source of truth for generating About Us and Case Study content.
 
 Be friendly, professional, and concise. Use emojis sparingly.`;
+
+async function fetchWebsiteContent(url: string): Promise<string> {
+  try {
+    let formattedUrl = url.trim();
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = `https://${formattedUrl}`;
+    }
+    console.log('Fetching website:', formattedUrl);
+    const res = await fetch(formattedUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; CraftProposal/1.0)' },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return '';
+    const html = await res.text();
+    // Strip HTML tags, scripts, styles to get text content
+    const text = html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/<nav[\s\S]*?<\/nav>/gi, '')
+      .replace(/<footer[\s\S]*?<\/footer>/gi, '')
+      .replace(/<header[\s\S]*?<\/header>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&[a-z]+;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    // Limit to ~3000 chars to keep token usage reasonable
+    return text.slice(0, 3000);
+  } catch (err) {
+    console.error('Failed to fetch website:', err);
+    return '';
+  }
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -38,6 +71,18 @@ serve(async (req) => {
       });
     }
 
+    // Check if this is a content generation request - fetch website if so
+    const lastMessage = messages?.[messages.length - 1]?.content?.toLowerCase() || '';
+    const needsWebsite = lastMessage.includes('about us') || lastMessage.includes('about section') ||
+      lastMessage.includes('case study') || lastMessage.includes('case studies') ||
+      lastMessage.includes('write about') || lastMessage.includes('generate about') ||
+      lastMessage.includes('write case') || lastMessage.includes('generate case');
+
+    let websiteContent = '';
+    if (needsWebsite && companyProfile?.website) {
+      websiteContent = await fetchWebsiteContent(companyProfile.website);
+    }
+
     // Build context about the company
     let companyContext = '';
     if (companyProfile) {
@@ -48,6 +93,10 @@ serve(async (req) => {
 - Services: ${p.services || 'Not set'}
 - Website: ${p.website || 'Not set'}
 - Case Studies: ${p.case_studies || 'Not set'}`;
+    }
+
+    if (websiteContent) {
+      companyContext += `\n\nWEBSITE CONTENT (scraped from ${companyProfile.website}):\n${websiteContent}`;
     }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
