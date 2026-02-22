@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -19,22 +19,6 @@ interface Props {
   user: SupabaseUser | null;
 }
 
-type ConversationState =
-  | 'idle'
-  | 'awaiting_deliverables'
-  | 'awaiting_timeline'
-  | 'awaiting_payment_terms'
-  | 'generating';
-
-interface PendingProposal {
-  clientName: string;
-  projectType: string;
-  deliverables?: string;
-  timeline?: string;
-  pricing?: string;
-  paymentTerms?: string;
-}
-
 function renderMarkdown(text: string) {
   return text
     .replace(/^### (.*$)/gm, '<h3 class="text-sm font-semibold mt-2 mb-1">$1</h3>')
@@ -49,8 +33,6 @@ export default function ChatPanel({
 }: Props) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [convState, setConvState] = useState<ConversationState>('idle');
-  const [pendingProposal, setPendingProposal] = useState<PendingProposal | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -66,44 +48,34 @@ export default function ChatPanel({
     }]);
   };
 
-  const parseDetailsFromMessage = (msg: string) => {
-    // Extract timeline and pricing from a combined message
-    // Try currency symbol first
-    const currencyMatch = msg.match(/[\$€£₹]\s?[\d,]+(?:\.\d+)?/);
-    if (currencyMatch) {
-      const pricing = currencyMatch[0];
-      const timeline = msg.replace(pricing, '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
-      return { timeline, pricing };
-    }
-    // Try bare number (last number in the message, likely the price)
-    const numbers = [...msg.matchAll(/\b[\d,]+(?:\.\d+)?\b/g)];
-    if (numbers.length > 0) {
-      const lastNumber = numbers[numbers.length - 1][0];
-      const pricing = `$${lastNumber}`;
-      const timeline = msg.replace(lastNumber, '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
-      return { timeline, pricing };
-    }
-    return { timeline: msg, pricing: '$0' };
-  };
-
-  const generateProposal = async (info: PendingProposal) => {
+  const generateProposal = async (proposalInfo: {
+    client_name: string;
+    project_type: string;
+    deliverables: string;
+    timeline?: string;
+    pricing: string;
+    payment_terms?: string;
+    special_requirements?: string;
+    response: string;
+  }) => {
     if (!user) return;
-    setConvState('generating');
+
     addMessage('assistant', '✨ Generating your proposal now... This will take a moment!');
 
-    const pricing = info.pricing || '$0';
+    const pricing = proposalInfo.pricing || '$0';
 
     try {
       const { data } = await supabase.functions.invoke('generate-proposal-content', {
         body: {
           section: 'full_proposal',
-          clientName: info.clientName,
-          projectName: info.projectType,
-          proposalTitle: `${info.projectType} Proposal for ${info.clientName}`,
+          clientName: proposalInfo.client_name,
+          projectName: proposalInfo.project_type,
+          proposalTitle: `${proposalInfo.project_type} Proposal for ${proposalInfo.client_name}`,
           projectWorth: pricing.replace(/[^0-9.]/g, ''),
-          timeline: info.timeline || 'To be discussed',
-          deliverables: info.deliverables || '',
-          paymentTerms: info.paymentTerms || '',
+          timeline: proposalInfo.timeline || 'To be discussed',
+          deliverables: proposalInfo.deliverables,
+          paymentTerms: proposalInfo.payment_terms || '',
+          specialRequirements: proposalInfo.special_requirements || '',
           companyName: profile.company_name,
           companyBio: profile.bio,
           services: profile.services,
@@ -115,29 +87,30 @@ export default function ChatPanel({
 
       const proposalPayload = {
         user_id: user.id,
-        title: `${info.projectType} Proposal for ${info.clientName}`,
-        client_name: info.clientName,
+        title: `${proposalInfo.project_type} Proposal for ${proposalInfo.client_name}`,
+        client_name: proposalInfo.client_name,
         status: 'draft',
         worth: parseFloat(pricing.replace(/[^0-9.]/g, '')) || 0,
         content: {
           summary: aiContent,
-          timeline: info.timeline || 'To be discussed',
+          timeline: proposalInfo.timeline || 'To be discussed',
           pricing,
-          deliverables: info.deliverables || '',
-          payment_terms: info.paymentTerms || '',
-          project_type: info.projectType,
+          deliverables: proposalInfo.deliverables,
+          payment_terms: proposalInfo.payment_terms || 'To be discussed',
+          special_requirements: proposalInfo.special_requirements || '',
+          project_type: proposalInfo.project_type,
           company_name: profile.company_name,
           company_logo: profile.logo_url,
           company_bio: profile.bio,
           company_services: profile.services,
           next_steps: 'Please sign the proposal and make the initial payment to get started.',
           sections: [
-            { type: 'cover_page', title: `${info.projectType} Proposal`, company_name: profile.company_name, company_logo: profile.logo_url },
+            { type: 'cover_page', title: `${proposalInfo.project_type} Proposal`, company_name: profile.company_name, company_logo: profile.logo_url },
             { type: 'executive_summary', content: aiContent },
-            { type: 'deliverables', content: info.deliverables || 'Deliverables to be discussed.' },
-            { type: 'timeline', content: info.timeline || 'To be discussed' },
+            { type: 'deliverables', content: proposalInfo.deliverables },
+            { type: 'timeline', content: proposalInfo.timeline || 'To be discussed' },
             { type: 'pricing', content: pricing },
-            { type: 'payment_terms', content: info.paymentTerms || 'Payment terms to be discussed.' },
+            { type: 'payment_terms', content: proposalInfo.payment_terms || 'To be discussed' },
             { type: 'about', content: profile.bio || 'About our company...' },
             { type: 'next_steps', content: 'Please sign the proposal and make the initial payment to get started.' },
           ]
@@ -152,78 +125,13 @@ export default function ChatPanel({
 
       if (saveError) throw saveError;
 
-      addMessage('assistant', `🎉 Your proposal is ready! I've created a **${info.projectType}** proposal for **${info.clientName}** worth **${pricing}**. The proposal panel is now open — you can edit any section directly.`);
+      addMessage('assistant', proposalInfo.response || `🎉 Your proposal is ready! I've created a **${proposalInfo.project_type}** proposal for **${proposalInfo.client_name}** worth **${pricing}**. The proposal panel is now open — you can edit any section directly.`);
 
       onProposalCreated(savedProposal);
-      setConvState('idle');
-      setPendingProposal(null);
     } catch (err: any) {
       console.error('Error generating proposal:', err);
       addMessage('assistant', 'Sorry, I had trouble generating the proposal. Please try again!');
-      setConvState('idle');
       toast({ title: 'Error generating proposal', variant: 'destructive' });
-    }
-  };
-
-  const handleAIResponse = async (userMessage: string) => {
-    // Build conversation history for AI (last 10 messages for context)
-    const recentMessages = messages.slice(-10).map(m => ({
-      role: m.role,
-      content: m.content,
-    }));
-    recentMessages.push({ role: 'user', content: userMessage });
-
-    // Exclude logo_url from profile to avoid huge base64 payloads
-    const { logo_url, ...profileForAI } = profile;
-    const { data, error } = await supabase.functions.invoke('chat-assistant', {
-      body: {
-        messages: recentMessages,
-        companyProfile: profileForAI,
-      }
-    });
-
-    if (error) throw error;
-
-    const { intent, client_name, project_type, response, generated_content } = data;
-
-    switch (intent) {
-      case 'create_proposal':
-        setPendingProposal({
-          clientName: client_name || 'Client',
-          projectType: project_type || 'project',
-        });
-        setConvState('awaiting_deliverables');
-        addMessage('assistant', response || `Great! I'll create a proposal for **${client_name}** for **${project_type}**.\n\nWhat are the key **deliverables** for this project? (e.g., "Homepage design, 5 inner pages, mobile responsive, SEO setup")`);
-        break;
-
-      case 'write_about_us':
-        addMessage('assistant', response || 'Here\'s a professional About Us section for your company:');
-        if (generated_content) {
-          await (supabase as any)
-            .from('profiles')
-            .update({ bio: generated_content })
-            .eq('user_id', user?.id);
-          onProfileUpdated({ bio: generated_content });
-          addMessage('assistant', `📝 **Generated About Us:**\n\n${generated_content}\n\nI've saved this to your company profile. You can edit it anytime in Settings.`);
-        }
-        break;
-
-      case 'write_case_study':
-        addMessage('assistant', response || 'Here\'s a case study for your company:');
-        if (generated_content) {
-          await (supabase as any)
-            .from('profiles')
-            .update({ case_studies: generated_content })
-            .eq('user_id', user?.id);
-          onProfileUpdated({ case_studies: generated_content });
-          addMessage('assistant', `📝 **Generated Case Study:**\n\n${generated_content}\n\nI've saved this to your company profile. You can edit it in Settings.`);
-        }
-        break;
-
-      case 'general_chat':
-      default:
-        addMessage('assistant', response || "I'm here to help! You can ask me to create proposals, write your About Us section, or generate case studies.");
-        break;
     }
   };
 
@@ -235,22 +143,73 @@ export default function ChatPanel({
     setLoading(true);
 
     try {
-      if (convState === 'awaiting_deliverables' && pendingProposal) {
-        setPendingProposal(prev => prev ? { ...prev, deliverables: trimmed } : null);
-        setConvState('awaiting_timeline');
-        addMessage('assistant', `Got it! Now, do you have a specific **timeline** for this project? (e.g., "2 weeks", "1 month", or "flexible")`);
-      } else if (convState === 'awaiting_timeline' && pendingProposal) {
-        setPendingProposal(prev => prev ? { ...prev, timeline: trimmed } : null);
-        setConvState('awaiting_payment_terms');
-        addMessage('assistant', `Great! What are the **payment terms** and **total pricing** for this project?\n\n(e.g., "50% upfront, 50% on completion, total $2,500" or "$3,000 - net 30 days")`);
-      } else if (convState === 'awaiting_payment_terms' && pendingProposal) {
-        const { pricing } = parseDetailsFromMessage(trimmed);
-        const updatedProposal = { ...pendingProposal, paymentTerms: trimmed, pricing };
-        setPendingProposal(updatedProposal);
-        await generateProposal(updatedProposal);
-      } else {
-        // Use AI to understand user intent
-        await handleAIResponse(trimmed);
+      // Build conversation history for AI (last 20 messages for better context)
+      const recentMessages = messages.slice(-20).map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+      recentMessages.push({ role: 'user', content: trimmed });
+
+      const { logo_url, ...profileForAI } = profile;
+      const { data, error } = await supabase.functions.invoke('chat-assistant', {
+        body: {
+          messages: recentMessages,
+          companyProfile: profileForAI,
+        }
+      });
+
+      if (error) throw error;
+
+      const { intent, response, generated_content, client_name, project_type,
+              deliverables, timeline, pricing, payment_terms, special_requirements } = data;
+
+      switch (intent) {
+        case 'generate_proposal':
+          await generateProposal({
+            client_name: client_name || 'Client',
+            project_type: project_type || 'Project',
+            deliverables: deliverables || '',
+            timeline,
+            pricing: pricing || '$0',
+            payment_terms,
+            special_requirements,
+            response: response || '',
+          });
+          break;
+
+        case 'create_proposal':
+          // AI acknowledged the intent and is asking follow-up questions
+          addMessage('assistant', response || `I'd love to help create a proposal! Let me ask a few questions to make it great.`);
+          break;
+
+        case 'write_about_us':
+          addMessage('assistant', response || 'Here\'s a professional About Us section for your company:');
+          if (generated_content) {
+            await (supabase as any)
+              .from('profiles')
+              .update({ bio: generated_content })
+              .eq('user_id', user?.id);
+            onProfileUpdated({ bio: generated_content });
+            addMessage('assistant', `📝 **Generated About Us:**\n\n${generated_content}\n\nI've saved this to your company profile.`);
+          }
+          break;
+
+        case 'write_case_study':
+          addMessage('assistant', response || 'Here\'s a case study for your company:');
+          if (generated_content) {
+            await (supabase as any)
+              .from('profiles')
+              .update({ case_studies: generated_content })
+              .eq('user_id', user?.id);
+            onProfileUpdated({ case_studies: generated_content });
+            addMessage('assistant', `📝 **Generated Case Study:**\n\n${generated_content}\n\nI've saved this to your company profile.`);
+          }
+          break;
+
+        case 'general_chat':
+        default:
+          addMessage('assistant', response || "I'm here to help! You can ask me to create proposals, write your About Us section, or generate case studies.");
+          break;
       }
     } catch (err) {
       console.error('Chat error:', err);
@@ -337,15 +296,7 @@ export default function ChatPanel({
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={
-                convState === 'awaiting_deliverables'
-                  ? "List the key deliverables for this project..."
-                  : convState === 'awaiting_timeline'
-                  ? "Enter timeline (e.g. 2 weeks, 1 month)..."
-                  : convState === 'awaiting_payment_terms'
-                  ? "Enter pricing and payment terms (e.g. $2,500, 50% upfront)..."
-                  : "Ask me anything — create proposals, write About Us, generate case studies..."
-              }
+              placeholder="Ask me anything — create proposals, write About Us, generate case studies..."
               className="min-h-[44px] max-h-[120px] resize-none text-sm"
               disabled={loading}
             />

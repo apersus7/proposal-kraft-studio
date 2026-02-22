@@ -7,24 +7,48 @@ const corsHeaders = {
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-const SYSTEM_PROMPT = `You are Craft Proposal's AI assistant. You help freelancers and agencies create professional business proposals and manage their company profile.
+const SYSTEM_PROMPT = `You are Craft Proposal's AI assistant — an expert proposal consultant for freelancers and agencies.
 
-You have these capabilities:
-1. CREATE PROPOSALS - When users want to create a proposal for a client
-2. WRITE ABOUT US - Generate a professional "About Us" section based on the company's website content and profile
-3. WRITE CASE STUDIES - Generate a compelling case study based on the company's website content and achievements
-4. GENERAL CHAT - Answer questions about proposals, business, freelancing
+YOUR CAPABILITIES:
+1. CREATE PROPOSALS — Help users build professional proposals through intelligent conversation
+2. WRITE ABOUT US — Generate professional "About Us" content from company context/website
+3. WRITE CASE STUDIES — Generate compelling case studies
+4. GENERAL CHAT — Answer questions about proposals, business, freelancing
 
-IMPORTANT RULES FOR TOOL CALLING:
-- When the user wants to create a proposal, call the "handle_intent" tool with intent "create_proposal". Extract the client name and project type from their message. In the "response" field, confirm what you understood and ask them to list the key deliverables for the project. Example response: "I'll create a Web Design proposal for John! What are the key **deliverables** for this project? (e.g., Homepage design, 5 inner pages, mobile responsive, SEO setup)"
-- When they want help writing an About Us section, call "handle_intent" with intent "write_about_us". Use the WEBSITE CONTENT and company profile context to generate a concise, professional About Us section in the "generated_content" field. Keep it to 2-3 SHORT paragraphs (max 150 words total). Focus on what makes the company unique — no filler or generic statements. Do NOT use markdown headings or excessive formatting. Just clean, compelling prose.
-- When they want help writing case studies, call "handle_intent" with intent "write_case_study". Use the WEBSITE CONTENT and company profile context to generate ONE focused case study in the "generated_content" field. Keep it under 200 words. Include: challenge, solution, and result. Do NOT use markdown headings. Use simple prose with bold for key metrics only.
-- For general conversation, call "handle_intent" with intent "general_chat" and put your helpful response in the "response" field
-- ALWAYS use the tool call, never respond with plain text
-- If website content is provided, you MUST use it as the primary source of truth for generating About Us and Case Study content.
-- Keep all responses concise. Do NOT use ### headings in any responses.
+PROPOSAL CREATION — CONVERSATIONAL APPROACH:
+When a user wants to create a proposal, DO NOT just accept minimal info. Act like a senior consultant:
 
-Be friendly, professional, and concise. Use emojis sparingly.`;
+1. First acknowledge what you understand (client name, project type)
+2. Then ask smart, relevant follow-up questions ONE OR TWO at a time based on the project type. Examples:
+   - For web design: "What pages do they need? Do they have existing branding/style guidelines?"
+   - For app development: "Is this iOS, Android, or both? Do they need backend/API work?"
+   - For marketing: "What channels are we focusing on? What's their current marketing situation?"
+   - For consulting: "What's the engagement model — hourly, retainer, or project-based?"
+
+3. As the conversation progresses, gather these key details (ask naturally, not as a checklist):
+   - Scope & deliverables
+   - Timeline expectations
+   - Budget/pricing
+   - Payment terms (milestone-based, upfront %, net terms)
+   - Any special requirements or constraints
+
+4. When you feel you have ENOUGH information to create a solid proposal, use the "generate_proposal" tool with ALL gathered details. You should have at minimum: client name, project type, deliverables, and pricing before generating.
+
+5. If the user says something like "that's it" or "go ahead" or "create it" — generate with what you have, filling reasonable defaults.
+
+IMPORTANT RULES:
+- Ask 1-2 questions at a time, not a huge list
+- Be conversational and natural, not robotic
+- Use context from previous messages — don't re-ask things already answered
+- If the user gives lots of detail upfront, skip to confirming and generating
+- Keep responses concise (2-4 sentences max per turn)
+- Do NOT use ### headings. Use **bold** sparingly.
+- ALWAYS use tool calls, never respond with plain text
+
+FOR ABOUT US / CASE STUDIES:
+- About Us: 2-3 SHORT paragraphs (max 150 words). Use WEBSITE CONTENT as primary source. No headings, clean prose.
+- Case Studies: Under 200 words. Challenge, solution, result. No headings. Bold key metrics only.
+- If website content is provided, use it as primary source of truth.`;
 
 async function fetchWebsiteContent(url: string): Promise<string> {
   try {
@@ -39,7 +63,6 @@ async function fetchWebsiteContent(url: string): Promise<string> {
     });
     if (!res.ok) return '';
     const html = await res.text();
-    // Strip HTML tags, scripts, styles to get text content
     const text = html
       .replace(/<script[\s\S]*?<\/script>/gi, '')
       .replace(/<style[\s\S]*?<\/style>/gi, '')
@@ -50,7 +73,6 @@ async function fetchWebsiteContent(url: string): Promise<string> {
       .replace(/&[a-z]+;/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-    // Limit to ~3000 chars to keep token usage reasonable
     return text.slice(0, 3000);
   } catch (err) {
     console.error('Failed to fetch website:', err);
@@ -72,7 +94,6 @@ serve(async (req) => {
       });
     }
 
-    // Check if this is a content generation request - fetch website if so
     const lastMessage = messages?.[messages.length - 1]?.content?.toLowerCase() || '';
     const needsWebsite = lastMessage.includes('about us') || lastMessage.includes('about section') ||
       lastMessage.includes('case study') || lastMessage.includes('case studies') ||
@@ -84,7 +105,6 @@ serve(async (req) => {
       websiteContent = await fetchWebsiteContent(companyProfile.website);
     }
 
-    // Build context about the company
     let companyContext = '';
     if (companyProfile) {
       const p = companyProfile;
@@ -117,41 +137,86 @@ serve(async (req) => {
             type: 'function',
             function: {
               name: 'handle_intent',
-              description: 'Handle the user intent by classifying it and extracting relevant info',
+              description: 'Handle conversational responses — asking questions, providing info, or acknowledging user input. Use this for ALL responses that are NOT generating a final proposal.',
               parameters: {
                 type: 'object',
                 properties: {
                   intent: {
                     type: 'string',
                     enum: ['create_proposal', 'write_about_us', 'write_case_study', 'general_chat'],
-                    description: 'The detected user intent'
+                    description: 'The detected user intent. Use create_proposal when the user first mentions wanting a proposal (to start the conversation). Use general_chat for follow-up questions during proposal gathering.'
                   },
                   client_name: {
                     type: 'string',
-                    description: 'Client name for the proposal (if create_proposal intent)'
+                    description: 'Client name extracted from message (if create_proposal)'
                   },
                   project_type: {
                     type: 'string',
-                    description: 'Type of project/service (if create_proposal intent)'
+                    description: 'Type of project/service (if create_proposal)'
                   },
                   response: {
                     type: 'string',
-                    description: 'The assistant response message to show the user'
+                    description: 'Your conversational response to the user'
                   },
                   generated_content: {
                     type: 'string',
-                    description: 'Generated About Us or Case Study content (if write_about_us or write_case_study intent)'
+                    description: 'Generated About Us or Case Study content'
                   }
                 },
                 required: ['intent', 'response'],
                 additionalProperties: false
               }
             }
+          },
+          {
+            type: 'function',
+            function: {
+              name: 'generate_proposal',
+              description: 'Generate the final proposal when you have gathered enough information through conversation. Call this ONLY when you have sufficient details (at minimum: client name, project type, deliverables, and pricing).',
+              parameters: {
+                type: 'object',
+                properties: {
+                  client_name: {
+                    type: 'string',
+                    description: 'The client name'
+                  },
+                  project_type: {
+                    type: 'string',
+                    description: 'Type of project/service'
+                  },
+                  deliverables: {
+                    type: 'string',
+                    description: 'Detailed list of deliverables gathered from conversation'
+                  },
+                  timeline: {
+                    type: 'string',
+                    description: 'Project timeline'
+                  },
+                  pricing: {
+                    type: 'string',
+                    description: 'Total project price (e.g. "$2,500")'
+                  },
+                  payment_terms: {
+                    type: 'string',
+                    description: 'Payment structure (e.g. "50% upfront, 50% on delivery")'
+                  },
+                  special_requirements: {
+                    type: 'string',
+                    description: 'Any special notes or requirements'
+                  },
+                  response: {
+                    type: 'string',
+                    description: 'Confirmation message to show the user'
+                  }
+                },
+                required: ['client_name', 'project_type', 'deliverables', 'pricing', 'response'],
+                additionalProperties: false
+              }
+            }
           }
         ],
-        tool_choice: { type: 'function', function: { name: 'handle_intent' } },
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 1200,
       }),
     });
 
@@ -175,14 +240,24 @@ serve(async (req) => {
     const data = await response.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     
-    if (toolCall?.function?.arguments) {
+    if (toolCall?.function?.name === 'generate_proposal') {
+      const parsed = JSON.parse(toolCall.function.arguments);
+      return new Response(JSON.stringify({
+        intent: 'generate_proposal',
+        ...parsed,
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (toolCall?.function?.name === 'handle_intent') {
       const parsed = JSON.parse(toolCall.function.arguments);
       return new Response(JSON.stringify(parsed), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    // Fallback if no tool call
+    // Fallback
     const content = data.choices?.[0]?.message?.content || '';
     return new Response(JSON.stringify({
       intent: 'general_chat',
