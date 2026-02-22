@@ -21,6 +21,7 @@ import TermsOfService from "./pages/TermsOfService";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Integrations from "./pages/Integrations";
 import CompanyProfile from "./pages/CompanyProfile";
+import ProposalsDashboard from "./pages/ProposalsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/profile" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/integrations" element={<ProtectedRoute><Integrations /></ProtectedRoute>} />
             <Route path="/company-profile" element={<ProtectedRoute><CompanyProfile /></ProtectedRoute>} />
+            <Route path="/proposals" element={<ProtectedRoute><ProposalsDashboard /></ProtectedRoute>} />
             <Route path="/features" element={<Features />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/shared/:token" element={<SharedProposal />} />
