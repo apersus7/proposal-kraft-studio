@@ -46,9 +46,10 @@ IMPORTANT RULES:
 - ALWAYS use tool calls, never respond with plain text
 
 FOR ABOUT US / CASE STUDIES:
-- About Us: 2-3 SHORT paragraphs (max 150 words). Use WEBSITE CONTENT as primary source. No headings, clean prose.
-- Case Studies: Under 200 words. Challenge, solution, result. No headings. Bold key metrics only.
-- If website content is provided, use it as primary source of truth.`;
+- About Us: 2-3 SHORT paragraphs (max 150 words). Use WEBSITE CONTENT as primary source. Write in plain text ONLY — no headings, no bold, no bullet points, no markdown of any kind. Just clean, natural prose paragraphs.
+- Case Studies: Under 200 words. Challenge, solution, result. Write in plain text ONLY — no headings, no bold, no bullets, no markdown. Just prose paragraphs.
+- If website content is provided, use it as primary source of truth.
+- NEVER use #, ##, ###, ####, **, *, -, or any markdown formatting in generated About Us or Case Study content. Output ONLY plain text paragraphs.`;
 
 async function fetchWebsiteContent(url: string): Promise<string> {
   try {
