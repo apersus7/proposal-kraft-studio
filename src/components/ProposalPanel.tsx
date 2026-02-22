@@ -39,6 +39,7 @@ const SECTIONS: Section[] = [
   { id: 'deliverables', label: 'Deliverables', icon: Check, field: 'deliverables' },
   { id: 'timeline', label: 'Timeline', icon: Clock, field: 'timeline' },
   { id: 'pricing', label: 'Pricing', icon: DollarSign, field: 'pricing' },
+  { id: 'payment_terms', label: 'Payment Terms', icon: CreditCard, field: 'payment_terms' },
   { id: 'about', label: 'About Us', icon: Building2, field: 'about' },
   { id: 'next_steps', label: 'Next Steps', icon: ArrowRight, field: 'next_steps' },
 ];

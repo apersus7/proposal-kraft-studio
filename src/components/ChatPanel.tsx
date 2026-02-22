@@ -21,12 +21,18 @@ interface Props {
 
 type ConversationState =
   | 'idle'
-  | 'awaiting_details'
+  | 'awaiting_deliverables'
+  | 'awaiting_timeline'
+  | 'awaiting_payment_terms'
   | 'generating';
 
 interface PendingProposal {
   clientName: string;
   projectType: string;
+  deliverables?: string;
+  timeline?: string;
+  pricing?: string;
+  paymentTerms?: string;
 }
 
 function renderMarkdown(text: string) {
@@ -80,12 +86,12 @@ export default function ChatPanel({
     return { timeline: msg, pricing: '$0' };
   };
 
-  const generateProposal = async (info: PendingProposal, details: string) => {
+  const generateProposal = async (info: PendingProposal) => {
     if (!user) return;
     setConvState('generating');
     addMessage('assistant', '✨ Generating your proposal now... This will take a moment!');
 
-    const { timeline, pricing } = parseDetailsFromMessage(details);
+    const pricing = info.pricing || '$0';
 
     try {
       const { data } = await supabase.functions.invoke('generate-proposal-content', {
@@ -95,7 +101,9 @@ export default function ChatPanel({
           projectName: info.projectType,
           proposalTitle: `${info.projectType} Proposal for ${info.clientName}`,
           projectWorth: pricing.replace(/[^0-9.]/g, ''),
-          timeline,
+          timeline: info.timeline || 'To be discussed',
+          deliverables: info.deliverables || '',
+          paymentTerms: info.paymentTerms || '',
           companyName: profile.company_name,
           companyBio: profile.bio,
           services: profile.services,
@@ -113,23 +121,24 @@ export default function ChatPanel({
         worth: parseFloat(pricing.replace(/[^0-9.]/g, '')) || 0,
         content: {
           summary: aiContent,
-          timeline,
+          timeline: info.timeline || 'To be discussed',
           pricing,
+          deliverables: info.deliverables || '',
+          payment_terms: info.paymentTerms || '',
           project_type: info.projectType,
           company_name: profile.company_name,
           company_logo: profile.logo_url,
           company_bio: profile.bio,
           company_services: profile.services,
-          case_studies: profile.case_studies,
-          deliverables: '',
           next_steps: 'Please sign the proposal and make the initial payment to get started.',
           sections: [
             { type: 'cover_page', title: `${info.projectType} Proposal`, company_name: profile.company_name, company_logo: profile.logo_url },
             { type: 'executive_summary', content: aiContent },
-            { type: 'timeline', content: timeline },
+            { type: 'deliverables', content: info.deliverables || 'Deliverables to be discussed.' },
+            { type: 'timeline', content: info.timeline || 'To be discussed' },
             { type: 'pricing', content: pricing },
+            { type: 'payment_terms', content: info.paymentTerms || 'Payment terms to be discussed.' },
             { type: 'about', content: profile.bio || 'About our company...' },
-            { type: 'case_studies', content: profile.case_studies || 'Our previous work...' },
             { type: 'next_steps', content: 'Please sign the proposal and make the initial payment to get started.' },
           ]
         }
@@ -183,8 +192,8 @@ export default function ChatPanel({
           clientName: client_name || 'Client',
           projectType: project_type || 'project',
         });
-        setConvState('awaiting_details');
-        addMessage('assistant', response || `Great! I'll create a proposal for **${client_name}** for **${project_type}**.\n\nPlease share the **timeline** and **pricing** for this project (e.g., "2 weeks, $2,500").`);
+        setConvState('awaiting_deliverables');
+        addMessage('assistant', response || `Great! I'll create a proposal for **${client_name}** for **${project_type}**.\n\nWhat are the key **deliverables** for this project? (e.g., "Homepage design, 5 inner pages, mobile responsive, SEO setup")`);
         break;
 
       case 'write_about_us':
@@ -226,10 +235,19 @@ export default function ChatPanel({
     setLoading(true);
 
     try {
-      if (convState === 'awaiting_details') {
-        if (pendingProposal) {
-          await generateProposal(pendingProposal, trimmed);
-        }
+      if (convState === 'awaiting_deliverables' && pendingProposal) {
+        setPendingProposal(prev => prev ? { ...prev, deliverables: trimmed } : null);
+        setConvState('awaiting_timeline');
+        addMessage('assistant', `Got it! Now, do you have a specific **timeline** for this project? (e.g., "2 weeks", "1 month", or "flexible")`);
+      } else if (convState === 'awaiting_timeline' && pendingProposal) {
+        setPendingProposal(prev => prev ? { ...prev, timeline: trimmed } : null);
+        setConvState('awaiting_payment_terms');
+        addMessage('assistant', `Great! What are the **payment terms** and **total pricing** for this project?\n\n(e.g., "50% upfront, 50% on completion, total $2,500" or "$3,000 - net 30 days")`);
+      } else if (convState === 'awaiting_payment_terms' && pendingProposal) {
+        const { pricing } = parseDetailsFromMessage(trimmed);
+        const updatedProposal = { ...pendingProposal, paymentTerms: trimmed, pricing };
+        setPendingProposal(updatedProposal);
+        await generateProposal(updatedProposal);
       } else {
         // Use AI to understand user intent
         await handleAIResponse(trimmed);
@@ -320,8 +338,12 @@ export default function ChatPanel({
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                convState === 'awaiting_details'
-                  ? "Enter timeline and pricing (e.g. 2 weeks, $2,500)..."
+                convState === 'awaiting_deliverables'
+                  ? "List the key deliverables for this project..."
+                  : convState === 'awaiting_timeline'
+                  ? "Enter timeline (e.g. 2 weeks, 1 month)..."
+                  : convState === 'awaiting_payment_terms'
+                  ? "Enter pricing and payment terms (e.g. $2,500, 50% upfront)..."
                   : "Ask me anything — create proposals, write About Us, generate case studies..."
               }
               className="min-h-[44px] max-h-[120px] resize-none text-sm"
