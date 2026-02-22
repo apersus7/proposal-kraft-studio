@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.generate-proposal-content]
 verify_jwt = false
+
+[functions.dodo-checkout]
+verify_jwt = false
+
+[functions.dodo-webhook]
+verify_jwt = false

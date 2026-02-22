@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut, Menu } from 'lucide-react';
+import { Plus, Eye, DollarSign, User, Search, FileText, Zap, Shield, Users, Settings, Crown, LogOut, Menu, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Footer from '@/components/Footer';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -34,6 +34,23 @@ const Index = () => {
   const [filteredProposals, setFilteredProposals] = useState<Proposal[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const handleStartTrial = useCallback(async () => {
+    if (!user) { navigate('/auth'); return; }
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dodo-checkout', {
+        body: { return_url: window.location.origin + '/' },
+      });
+      if (error) throw error;
+      if (data?.checkout_url) window.location.href = data.checkout_url;
+    } catch (err) {
+      console.error('Checkout error:', err);
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }, [user, navigate]);
   
   useEffect(() => {
     if (user) {
@@ -404,8 +421,8 @@ const Index = () => {
                   ))}
                 </ul>
 
-                <Button size="lg" className="w-full text-base" onClick={() => navigate('/auth')}>
-                  Start 7-Day Free Trial
+                <Button size="lg" className="w-full text-base" onClick={handleStartTrial} disabled={checkoutLoading}>
+                  {checkoutLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Processing...</> : 'Start 7-Day Free Trial'}
                 </Button>
                 <p className="text-xs text-muted-foreground">No credit card required · Cancel anytime</p>
               </CardContent>
