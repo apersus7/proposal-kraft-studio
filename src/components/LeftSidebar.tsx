@@ -148,26 +148,36 @@ export default function LeftSidebar({
               ) : proposals.length === 0 ? (
                 <div className="px-2 py-2 text-xs text-sidebar-foreground/50">No proposals yet</div>
               ) : (
-                proposals.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => onOpenProposal(p.id)}
-                    className={cn(
-                      "w-full text-left px-2 py-2 rounded-md text-sm transition-colors",
-                      activeProposalId === p.id
-                        ? "bg-primary/20 text-primary"
-                        : "hover:bg-sidebar-accent text-sidebar-foreground"
-                    )}
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <FileText className="h-3.5 w-3.5 shrink-0 text-sidebar-foreground/40" />
-                      <div className="min-w-0">
-                        <p className="truncate text-xs font-medium">{p.title || 'Untitled'}</p>
-                        <p className="truncate text-xs text-sidebar-foreground/50">{p.client_name}</p>
+                <>
+                  {proposals.slice(0, 5).map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => onOpenProposal(p.id)}
+                      className={cn(
+                        "w-full text-left px-2 py-2 rounded-md text-sm transition-colors",
+                        activeProposalId === p.id
+                          ? "bg-primary/20 text-primary"
+                          : "hover:bg-sidebar-accent text-sidebar-foreground"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="h-3.5 w-3.5 shrink-0 text-sidebar-foreground/40" />
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-medium">{p.title || 'Untitled'}</p>
+                          <p className="truncate text-xs text-sidebar-foreground/50">{p.client_name}</p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                ))
+                    </button>
+                  ))}
+                  {proposals.length > 5 && (
+                    <button
+                      onClick={() => navigate('/proposals')}
+                      className="w-full text-center px-2 py-2 rounded-md text-xs font-medium text-primary hover:bg-sidebar-accent transition-colors"
+                    >
+                      View All ({proposals.length})
+                    </button>
+                  )}
+                </>
               )}
             </div>
           )}
