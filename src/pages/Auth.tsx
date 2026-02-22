@@ -18,10 +18,10 @@ export default function Auth() {
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // After successful authentication, redirect to dashboard
+  // After successful authentication, redirect to pricing (subscription check)
   useEffect(() => {
     if (!loading && user) {
-      navigate('/dashboard');
+      navigate('/pricing');
     }
   }, [user, loading, navigate]);
 

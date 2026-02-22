@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Integrations from "./pages/Integrations";
 import CompanyProfile from "./pages/CompanyProfile";
 import ProposalsDashboard from "./pages/ProposalsDashboard";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
