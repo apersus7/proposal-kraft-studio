@@ -14,6 +14,7 @@ interface Props {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   profile: CompanyProfile;
   onProposalCreated: (proposal: any) => void;
+  onProfileUpdated: (updates: Partial<CompanyProfile>) => void;
   proposalPanelOpen: boolean;
   user: SupabaseUser | null;
 }
@@ -36,7 +37,7 @@ function renderMarkdown(text: string) {
 }
 
 export default function ChatPanel({
-  messages, setMessages, profile, onProposalCreated, proposalPanelOpen, user
+  messages, setMessages, profile, onProposalCreated, onProfileUpdated, proposalPanelOpen, user
 }: Props) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,11 +60,22 @@ export default function ChatPanel({
 
   const parseDetailsFromMessage = (msg: string) => {
     // Extract timeline and pricing from a combined message
-    const priceMatch = msg.match(/[\$€£₹]\s?[\d,]+(?:\.\d+)?/);
-    const pricing = priceMatch ? priceMatch[0] : msg;
-    // Everything else is timeline context
-    const timeline = msg.replace(priceMatch?.[0] || '', '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
-    return { timeline, pricing };
+    // Try currency symbol first
+    const currencyMatch = msg.match(/[\$€£₹]\s?[\d,]+(?:\.\d+)?/);
+    if (currencyMatch) {
+      const pricing = currencyMatch[0];
+      const timeline = msg.replace(pricing, '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
+      return { timeline, pricing };
+    }
+    // Try bare number (last number in the message, likely the price)
+    const numbers = [...msg.matchAll(/\b[\d,]+(?:\.\d+)?\b/g)];
+    if (numbers.length > 0) {
+      const lastNumber = numbers[numbers.length - 1][0];
+      const pricing = `$${lastNumber}`;
+      const timeline = msg.replace(lastNumber, '').replace(/[,.]?\s*$/, '').trim() || 'To be discussed';
+      return { timeline, pricing };
+    }
+    return { timeline: msg, pricing: '$0' };
   };
 
   const generateProposal = async (info: PendingProposal, details: string) => {
@@ -176,12 +188,11 @@ export default function ChatPanel({
       case 'write_about_us':
         addMessage('assistant', response || 'Here\'s a professional About Us section for your company:');
         if (generated_content) {
-          // Save to profile
-          const updatedProfile = { ...profile, bio: generated_content };
           await (supabase as any)
             .from('profiles')
             .update({ bio: generated_content })
             .eq('user_id', user?.id);
+          onProfileUpdated({ bio: generated_content });
           addMessage('assistant', `📝 **Generated About Us:**\n\n${generated_content}\n\nI've saved this to your company profile. You can edit it anytime in Settings.`);
         }
         break;
@@ -189,11 +200,11 @@ export default function ChatPanel({
       case 'write_case_study':
         addMessage('assistant', response || 'Here\'s a case study for your company:');
         if (generated_content) {
-          const updatedProfile = { ...profile, case_studies: generated_content };
           await (supabase as any)
             .from('profiles')
             .update({ case_studies: generated_content })
             .eq('user_id', user?.id);
+          onProfileUpdated({ case_studies: generated_content });
           addMessage('assistant', `📝 **Generated Case Study:**\n\n${generated_content}\n\nI've saved this to your company profile. You can edit it in Settings.`);
         }
         break;
