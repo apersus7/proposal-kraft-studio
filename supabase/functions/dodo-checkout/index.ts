@@ -45,26 +45,22 @@ Deno.serve(async (req) => {
       throw new Error("DODO_PAYMENTS_API_KEY not configured");
     }
 
-    const response = await fetch("https://api.dodopayments.com/subscriptions", {
+    // Use the Checkout Sessions API (recommended by Dodo)
+    const response = await fetch("https://live.dodopayments.com/checkouts", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${DODO_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        billing: {
-          city: "",
-          country: "US",
-          state: "",
-          street: "",
-          zipcode: "",
-        },
+        product_cart: [
+          { product_id: "pdt_0NZ4ezgNPcPQywH4e9p8W", quantity: 1 },
+        ],
         customer: {
           email: userEmail,
           name: userEmail,
         },
-        product_id: "pdt_0NZ4ezgNPcPQywH4e9p8W",
-        quantity: 1,
+        payment_link: true,
         return_url: return_url || "https://proposal-kraft-studio.lovable.app/",
         metadata: {
           user_id: userId,
@@ -73,14 +69,17 @@ Deno.serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log("Dodo Checkout response:", JSON.stringify(data));
 
     if (!response.ok) {
       console.error("Dodo API error:", data);
-      throw new Error(data.message || "Failed to create subscription checkout");
+      throw new Error(data.message || "Failed to create checkout session");
     }
 
+    const checkoutUrl = data.checkout_url || data.payment_link || data.url;
+
     return new Response(
-      JSON.stringify({ checkout_url: data.payment_link }),
+      JSON.stringify({ checkout_url: checkoutUrl }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
