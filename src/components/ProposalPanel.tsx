@@ -151,51 +151,84 @@ export default function ProposalPanel({ open, onClose, proposalData, profile, on
   };
 
   const handleExportPDF = async () => {
-    if (!user || !proposalData?.id) return;
+    if (!proposalData) return;
     try {
-      // Check for existing share token or create one
-      const { data: existing } = await (supabase as any)
-        .from('secure_proposal_shares')
-        .select('share_token')
-        .eq('proposal_id', proposalData.id)
-        .order('created_at', { ascending: false })
-        .limit(1);
+      toast({ title: 'Generating PDF...', description: 'Please wait a moment.' });
+      
+      // Dynamically import html2canvas and jspdf
+      const html2canvas = (await import('html2canvas')).default;
+      const jsPDF = (await import('jspdf')).default;
 
-      let token = existing?.[0]?.share_token;
+      // Create a temporary off-screen container with the proposal content
+      const container = document.createElement('div');
+      container.style.cssText = 'position:absolute;left:-9999px;top:0;width:800px;background:#fff;color:#000;padding:48px;font-family:Inter,sans-serif;';
 
-      if (!token) {
-        const { data: pData } = await (supabase as any)
-          .from('proposals')
-          .select('title, client_name, client_email, content, worth, created_at, status')
-          .eq('id', proposalData.id)
-          .single();
+      const content = proposalData.content || {};
+      const title = proposalData.title || 'Untitled Proposal';
+      const clientName = proposalData.client_name || '';
+      const worth = Number(proposalData.worth || 0);
 
-        const snapshot: any = {
-          ...(typeof pData.content === 'object' && pData.content !== null ? pData.content : {}),
-          title: pData.title, client_name: pData.client_name, client_email: pData.client_email,
-          worth: pData.worth, created_at: pData.created_at, status: pData.status,
-        };
+      let html = `
+        <div style="margin-bottom:32px;padding:24px;background:linear-gradient(135deg,#00bf63,#009e52);border-radius:12px;color:#fff;">
+          ${profile.logo_url ? `<img src="${profile.logo_url}" style="height:40px;margin-bottom:12px;border-radius:4px;" />` : ''}
+          <h1 style="font-size:24px;font-weight:700;margin:0 0 4px 0;">${title}</h1>
+          <p style="font-size:14px;opacity:0.85;margin:0;">Prepared for ${clientName}</p>
+          <p style="font-size:20px;font-weight:700;margin:12px 0 0 0;">$${worth.toLocaleString()}</p>
+          <p style="font-size:12px;opacity:0.7;margin:2px 0 0 0;">${profile.company_name || ''}</p>
+        </div>
+      `;
 
-        const { data } = await (supabase as any)
-          .from('secure_proposal_shares')
-          .insert({
-            proposal_id: proposalData.id,
-            share_token: generateShortToken(),
-            created_by: user.id,
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            content_snapshot: snapshot,
-            permissions: JSON.stringify({ allowComments: true, trackViews: true }),
-          })
-          .select()
-          .single();
-        token = data?.share_token;
+      const sections = [
+        { label: 'Executive Summary', value: content.summary },
+        { label: 'Deliverables', value: content.deliverables },
+        { label: 'Timeline', value: content.timeline },
+        { label: 'Pricing', value: content.pricing },
+        { label: 'Payment Terms', value: content.payment_terms },
+        { label: 'About Us', value: content.company_bio || profile.bio },
+        { label: 'Next Steps', value: content.next_steps },
+      ];
+
+      for (const sec of sections) {
+        if (sec.value) {
+          html += `
+            <div style="margin-bottom:24px;">
+              <h2 style="font-size:16px;font-weight:600;margin:0 0 8px 0;color:#222;">${sec.label}</h2>
+              <p style="font-size:13px;line-height:1.6;color:#444;white-space:pre-wrap;margin:0;">${sec.value}</p>
+            </div>
+          `;
+        }
       }
 
-      if (token) {
-        window.open(`/p/${token}`, '_blank');
+      container.innerHTML = html;
+      document.body.appendChild(container);
+
+      const canvas = await html2canvas(container, { scale: 2, useCORS: true, logging: false });
+      document.body.removeChild(container);
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      let heightLeft = pdfHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = -(pdfHeight - heightLeft);
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
       }
-    } catch {
-      toast({ title: 'Error opening PDF view', variant: 'destructive' });
+
+      pdf.save(`${title}.pdf`);
+      toast({ title: 'PDF downloaded!' });
+    } catch (err) {
+      console.error('PDF generation error:', err);
+      toast({ title: 'Error generating PDF', variant: 'destructive' });
     }
   };
 
