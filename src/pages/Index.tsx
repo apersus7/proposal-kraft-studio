@@ -359,6 +359,61 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Pricing */}
+      <section className="py-12 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-lg sm:text-xl text-muted-foreground">
+              Start with a free trial. No credit card required.
+            </p>
+          </div>
+
+          <div className="max-w-md mx-auto">
+            <Card className="relative overflow-hidden border-primary/50">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
+              <CardHeader className="text-center pb-2 pt-8">
+                <Badge className="mx-auto mb-4 bg-primary/10 text-primary hover:bg-primary/10 border-primary/20">
+                  Most Popular
+                </Badge>
+                <CardTitle className="text-2xl sm:text-3xl">Pro Plan</CardTitle>
+                <CardDescription className="text-base mt-2">Everything you need to win more clients</CardDescription>
+              </CardHeader>
+              <CardContent className="text-center space-y-6 pb-8">
+                <div>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-4xl sm:text-5xl font-bold text-primary">$19</span>
+                    <span className="text-muted-foreground text-lg">/month</span>
+                  </div>
+                  <p className="text-primary font-medium mt-2">7-day free trial included</p>
+                </div>
+
+                <ul className="text-left space-y-3 mx-auto max-w-xs">
+                  {[
+                    'Unlimited AI-generated proposals',
+                    'Custom branding & templates',
+                    'E-signatures & payments',
+                    'Client analytics & tracking',
+                    'PDF & link sharing',
+                    'Priority support',
+                  ].map((feature) => (
+                    <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Shield className="h-4 w-4 text-primary flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button size="lg" className="w-full text-base" onClick={() => navigate('/auth')}>
+                  Start 7-Day Free Trial
+                </Button>
+                <p className="text-xs text-muted-foreground">No credit card required · Cancel anytime</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-12 sm:py-20">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
