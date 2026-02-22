@@ -126,19 +126,13 @@ export default function LeftSidebar({
       <ScrollArea className="flex-1 px-3 scrollbar-thin">
         {/* Proposals */}
         <div className="mb-2">
-          <div className="flex items-center justify-between w-full px-2 py-1.5">
+          <div className="flex items-center w-full px-2 py-1.5">
             <button
               onClick={() => setProposalsOpen(p => !p)}
               className="flex items-center gap-1 text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider hover:text-sidebar-foreground transition-colors"
             >
               <span>Proposals</span>
               {proposalsOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-            </button>
-            <button
-              onClick={() => navigate('/proposals')}
-              className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
-            >
-              View All
             </button>
           </div>
           {proposalsOpen && (
