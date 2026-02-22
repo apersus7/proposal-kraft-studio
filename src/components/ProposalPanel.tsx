@@ -91,14 +91,112 @@ export default function ProposalPanel({ open, onClose, proposalData, profile, on
     }
   };
 
-  const handleExportLink = () => {
-    const url = `${window.location.origin}/shared/${proposalData.id}`;
-    navigator.clipboard.writeText(url);
-    toast({ title: 'Link copied!', description: url });
+  const getPublicBaseUrl = () => {
+    const host = window.location.hostname;
+    if (host === 'www.craftproposal.com' || host === 'craftproposal.com') {
+      return window.location.origin;
+    }
+    return 'https://www.craftproposal.com';
   };
 
-  const handleExportPDF = () => {
-    window.open(`/proposal/${proposalData.id}`, '_blank');
+  const generateShortToken = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const arr = new Uint8Array(8);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, b => chars[b % chars.length]).join('');
+  };
+
+  const handleExportLink = async () => {
+    if (!user || !proposalData?.id) return;
+    try {
+      // Fetch proposal content for snapshot
+      const { data: pData, error: pErr } = await (supabase as any)
+        .from('proposals')
+        .select('title, client_name, client_email, content, worth, created_at, status')
+        .eq('id', proposalData.id)
+        .single();
+      if (pErr) throw pErr;
+
+      const snapshot: any = {
+        ...(typeof pData.content === 'object' && pData.content !== null ? pData.content : {}),
+        title: pData.title,
+        client_name: pData.client_name,
+        client_email: pData.client_email,
+        worth: pData.worth,
+        created_at: pData.created_at,
+        status: pData.status,
+      };
+
+      const { data, error } = await (supabase as any)
+        .from('secure_proposal_shares')
+        .insert({
+          proposal_id: proposalData.id,
+          share_token: generateShortToken(),
+          created_by: user.id,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          content_snapshot: snapshot,
+          permissions: JSON.stringify({ allowComments: true, trackViews: true }),
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const shareUrl = `${getPublicBaseUrl()}/p/${data.share_token}`;
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: 'Share link copied!', description: shareUrl });
+    } catch {
+      toast({ title: 'Error generating link', variant: 'destructive' });
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!user || !proposalData?.id) return;
+    try {
+      // Check for existing share token or create one
+      const { data: existing } = await (supabase as any)
+        .from('secure_proposal_shares')
+        .select('share_token')
+        .eq('proposal_id', proposalData.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      let token = existing?.[0]?.share_token;
+
+      if (!token) {
+        const { data: pData } = await (supabase as any)
+          .from('proposals')
+          .select('title, client_name, client_email, content, worth, created_at, status')
+          .eq('id', proposalData.id)
+          .single();
+
+        const snapshot: any = {
+          ...(typeof pData.content === 'object' && pData.content !== null ? pData.content : {}),
+          title: pData.title, client_name: pData.client_name, client_email: pData.client_email,
+          worth: pData.worth, created_at: pData.created_at, status: pData.status,
+        };
+
+        const { data } = await (supabase as any)
+          .from('secure_proposal_shares')
+          .insert({
+            proposal_id: proposalData.id,
+            share_token: generateShortToken(),
+            created_by: user.id,
+            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            content_snapshot: snapshot,
+            permissions: JSON.stringify({ allowComments: true, trackViews: true }),
+          })
+          .select()
+          .single();
+        token = data?.share_token;
+      }
+
+      if (token) {
+        window.open(`/p/${token}`, '_blank');
+      }
+    } catch {
+      toast({ title: 'Error opening PDF view', variant: 'destructive' });
+    }
   };
 
   return (
