@@ -249,6 +249,7 @@ export default function AppLayout() {
               setProposalPanelOpen(true);
               fetchProposals();
             }}
+            onProfileUpdated={(updates) => setProfile(prev => ({ ...prev, ...updates }))}
             proposalPanelOpen={proposalPanelOpen}
             user={user}
           />
