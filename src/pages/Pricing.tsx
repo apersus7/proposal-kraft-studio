@@ -40,7 +40,7 @@ export default function Pricing() {
               <img src={logo} alt="Craft Proposal" className="h-8" />
               <h1 className="text-xl font-bold text-primary">Craft Proposal</h1>
             </div>
-            <Button variant="ghost" size="sm" onClick={signOut}>
+            <Button variant="ghost" size="sm" onClick={async () => { await signOut(); navigate('/auth'); }}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
             </Button>
