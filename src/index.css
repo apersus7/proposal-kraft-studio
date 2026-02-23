@@ -120,4 +120,41 @@
     background: hsl(var(--border));
     border-radius: 3px;
   }
+
+  .gradient-hero {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, hsl(151 100% 37% / 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 50%, hsl(151 80% 30% / 0.08), transparent),
+                radial-gradient(ellipse 50% 50% at 20% 80%, hsl(151 100% 37% / 0.05), transparent);
+  }
+
+  .gradient-section {
+    background: linear-gradient(180deg, transparent 0%, hsl(151 100% 37% / 0.03) 50%, transparent 100%);
+  }
+
+  .gradient-cta {
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, hsl(151 100% 37% / 0.1), transparent);
+  }
+
+  .gradient-card {
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(151 80% 8% / 0.3) 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(151 100% 45%), hsl(151 100% 37%), hsl(151 80% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-glow {
+    border: 1px solid hsl(151 100% 37% / 0.2);
+    box-shadow: 0 0 15px hsl(151 100% 37% / 0.05), inset 0 0 15px hsl(151 100% 37% / 0.02);
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
 }
