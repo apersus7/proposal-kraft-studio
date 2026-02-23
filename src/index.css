@@ -28,8 +28,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
+    --border: 0 0% 10%;
+    --input: 0 0% 12%;
     --ring: 151 100% 37%;
 
     --radius: 0.625rem;
@@ -45,7 +45,7 @@
 
     --chat-bg: 0 0% 0%;
     --panel-bg: 0 0% 6%;
-    --panel-border: 0 0% 14%;
+    --panel-border: 0 0% 10%;
     --user-bubble: 151 100% 37%;
     --bot-bubble: 0 0% 8%;
   }
@@ -75,8 +75,8 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 14%;
-    --input: 0 0% 14%;
+    --border: 0 0% 10%;
+    --input: 0 0% 12%;
     --ring: 151 100% 37%;
 
     --sidebar-background: 0 0% 5%;
@@ -90,7 +90,7 @@
 
     --chat-bg: 0 0% 0%;
     --panel-bg: 0 0% 6%;
-    --panel-border: 0 0% 14%;
+    --panel-border: 0 0% 10%;
     --user-bubble: 151 100% 37%;
     --bot-bubble: 0 0% 8%;
   }
