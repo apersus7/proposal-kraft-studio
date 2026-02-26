@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,54 +9,50 @@ export interface SubscriptionStatus {
   currentPeriodEnd: string | null;
 }
 
+const defaultStatus: SubscriptionStatus = {
+  hasActiveSubscription: false,
+  planType: null,
+  status: 'none',
+  currentPeriodEnd: null,
+};
+
+// Simple in-memory cache to avoid re-fetching on every route change
+let cachedStatus: SubscriptionStatus | null = null;
+let cacheUserId: string | null = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 60_000; // 1 minute
+
 export const useSubscription = () => {
   const { user } = useAuth();
-  const [subscription, setSubscription] = useState<SubscriptionStatus>({
-    hasActiveSubscription: false,
-    planType: null,
-    status: 'none',
-    currentPeriodEnd: null,
-  });
-  const [loading, setLoading] = useState(true);
+  const [subscription, setSubscription] = useState<SubscriptionStatus>(
+    // Use cache immediately if available for this user
+    (cachedStatus && cacheUserId === user?.id && Date.now() - cacheTimestamp < CACHE_TTL)
+      ? cachedStatus
+      : defaultStatus
+  );
+  const [loading, setLoading] = useState(
+    !(cachedStatus && cacheUserId === user?.id && Date.now() - cacheTimestamp < CACHE_TTL)
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSubscriptionStatus = async () => {
+  const fetchSubscriptionStatus = useCallback(async () => {
     if (!user) {
+      setSubscription(defaultStatus);
       setLoading(false);
       return;
     }
 
     try {
-      setLoading(true);
       setError(null);
 
-      const { data: whopData, error: whopError } = await supabase.functions.invoke('verify-whop-access', {
-        body: { email: user.email, strict: true }
-      });
-
-      if (whopError) {
-        console.warn('[useSubscription] verify-whop-access error:', whopError);
-      }
-
-      const now = Date.now();
-      const endMsWhop = typeof whopData?.currentPeriodEnd === 'string' ? Date.parse(whopData.currentPeriodEnd) : null;
-      const statusWhop = typeof whopData?.status === 'string' ? whopData.status : 'none';
-      const activeFlagWhop = whopData?.hasActiveSubscription === true;
-      const isWhopActive = statusWhop === 'active' && !!endMsWhop && endMsWhop > now && activeFlagWhop;
-
-      console.log('[useSubscription] Whop normalized:', {
-        source: whopData?.source,
-        version: whopData?.version,
-        incoming: whopData,
-        normalized: { isWhopActive, statusWhop, endMsWhop }
-      });
-
-      // Always use DB as final gate (synced by the edge function/webhooks)
-      const sb = supabase as any;
-      const { data: subRows, error: dbError } = await sb
+      // Query DB directly — no slow edge function call
+      const now = new Date().toISOString();
+      const { data: subRows, error: dbError } = await (supabase as any)
         .from('subscriptions')
         .select('status, plan_type, current_period_end')
         .eq('user_id', user.id)
+        .eq('status', 'active')
+        .gt('current_period_end', now)
         .order('created_at', { ascending: false })
         .limit(1);
 
@@ -65,32 +61,39 @@ export const useSubscription = () => {
       }
 
       const dbSub = subRows?.[0] as any;
-      const endMsDb = dbSub?.current_period_end ? Date.parse(dbSub.current_period_end) : null;
-      const isDbActive = dbSub?.status === 'active' && !!endMsDb && endMsDb > now;
+      const isActive = !!dbSub;
 
-      setSubscription({
-        hasActiveSubscription: isDbActive, // DB is the source of truth for gating
-        planType: isDbActive ? (typeof dbSub?.plan_type === 'string' ? dbSub.plan_type : (typeof whopData?.planType === 'string' ? whopData.planType : null)) : null,
-        status: isDbActive ? 'active' : 'none',
-        currentPeriodEnd: isDbActive ? (typeof dbSub?.current_period_end === 'string' ? dbSub.current_period_end : null) : null,
-      });
+      const result: SubscriptionStatus = {
+        hasActiveSubscription: isActive,
+        planType: isActive ? (dbSub?.plan_type || null) : null,
+        status: isActive ? 'active' : 'none',
+        currentPeriodEnd: isActive ? (dbSub?.current_period_end || null) : null,
+      };
+
+      // Update cache
+      cachedStatus = result;
+      cacheUserId = user.id;
+      cacheTimestamp = Date.now();
+
+      setSubscription(result);
     } catch (err) {
       console.error('Subscription hook error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
-      setSubscription({
-        hasActiveSubscription: false,
-        planType: null,
-        status: 'none',
-        currentPeriodEnd: null,
-      });
+      setSubscription(defaultStatus);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
+    // If we have a valid cache hit, skip the fetch
+    if (cachedStatus && cacheUserId === user?.id && Date.now() - cacheTimestamp < CACHE_TTL) {
+      setSubscription(cachedStatus);
+      setLoading(false);
+      return;
+    }
     fetchSubscriptionStatus();
-  }, [user]);
+  }, [user, fetchSubscriptionStatus]);
 
   return {
     subscription,
