@@ -21,7 +21,7 @@ export default function Auth() {
   // After successful authentication, redirect to pricing (subscription check)
   useEffect(() => {
     if (!loading && user) {
-      navigate('/pricing');
+      navigate('/dashboard');
     }
   }, [user, loading, navigate]);
 

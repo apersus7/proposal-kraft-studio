@@ -79,8 +79,15 @@ export default function AppLayout() {
     if (user) {
       checkOnboarding();
       fetchProposals();
+    } else {
+      // Reset state when user changes to prevent stale data
+      setProfile(defaultProfile);
+      setProposals([]);
+      setActiveProposalId(null);
+      setActiveProposalData(null);
+      setProposalPanelOpen(false);
     }
-  }, [user]);
+  }, [user?.id]);
 
   const checkOnboarding = async () => {
     try {
