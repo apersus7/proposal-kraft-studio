@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
           name: userEmail,
         },
         payment_link: true,
-        return_url: return_url || "https://proposal-kraft-studio.lovable.app/dashboard",
+        return_url: return_url || "https://proposal-kraft-studio.lovable.app/pricing?checkout=success",
         metadata: {
           user_id: userId,
         },
