@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Download, FileText, Image, Share } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { Download, FileText, Image } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface ExportDialogProps {
@@ -32,14 +30,15 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
   const exportToPDF = async () => {
     setIsExporting(true);
     try {
-      // Find the actual rendered proposal content
       const proposalContent = document.getElementById('proposal-preview-content');
-      
-      if (!proposalContent) {
-        throw new Error('Proposal content not found');
-      }
+      if (!proposalContent) throw new Error('Proposal content not found');
 
-      // Generate PDF from the actual rendered content
+      // Dynamic imports - only load when actually exporting
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
+
       const canvas = await html2canvas(proposalContent, {
         scale: 2,
         useCORS: true,
@@ -48,11 +47,7 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
       });
 
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       
       const imgWidth = 210;
       const pageHeight = 295;
@@ -70,20 +65,11 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
         heightLeft -= pageHeight;
       }
 
-      // Download the PDF
       pdf.save(`${proposal.title.replace(/[^a-zA-Z0-9]/g, '_')}_proposal.pdf`);
-
-      toast({
-        title: "Export Successful",
-        description: "Your proposal has been exported as a PDF with exact styling"
-      });
+      toast({ title: "Export Successful", description: "Your proposal has been exported as a PDF" });
     } catch (error) {
       console.error('Export error:', error);
-      toast({
-        title: "Export Failed",
-        description: "There was an error exporting your proposal",
-        variant: "destructive"
-      });
+      toast({ title: "Export Failed", description: "There was an error exporting your proposal", variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
@@ -92,14 +78,11 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
   const exportAsImage = async () => {
     setIsExporting(true);
     try {
-      // Find the actual rendered proposal content
       const proposalContent = document.getElementById('proposal-preview-content');
-      
-      if (!proposalContent) {
-        throw new Error('Proposal content not found');
-      }
+      if (!proposalContent) throw new Error('Proposal content not found');
 
-      // Generate image from the actual rendered content
+      const { default: html2canvas } = await import('html2canvas');
+
       const canvas = await html2canvas(proposalContent, {
         scale: 2,
         useCORS: true,
@@ -107,34 +90,23 @@ export default function ExportDialog({ proposal, trigger, defaultOpen = false }:
         logging: false
       });
 
-      // Download as image
       const link = document.createElement('a');
       link.download = `${proposal.title.replace(/[^a-zA-Z0-9]/g, '_')}_proposal.png`;
       link.href = canvas.toDataURL();
       link.click();
 
-      toast({
-        title: "Export Successful",
-        description: "Your proposal has been exported as an image with exact styling"
-      });
+      toast({ title: "Export Successful", description: "Your proposal has been exported as an image" });
     } catch (error) {
       console.error('Export error:', error);
-      toast({
-        title: "Export Failed",
-        description: "There was an error exporting your proposal",
-        variant: "destructive"
-      });
+      toast({ title: "Export Failed", description: "There was an error exporting your proposal", variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
   };
 
   const handleExport = () => {
-    if (exportFormat === 'pdf') {
-      exportToPDF();
-    } else {
-      exportAsImage();
-    }
+    if (exportFormat === 'pdf') exportToPDF();
+    else exportAsImage();
   };
 
   return (
