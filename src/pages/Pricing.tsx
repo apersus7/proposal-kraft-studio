@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 export default function Pricing() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const handleStartTrial = useCallback(async () => {
@@ -19,7 +20,7 @@ export default function Pricing() {
     setCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('dodo-checkout', {
-        body: { return_url: window.location.origin + '/dashboard' },
+        body: { return_url: window.location.origin + '/pricing?checkout=success' },
       });
       if (error) throw error;
       if (data?.checkout_url) window.location.href = data.checkout_url;
@@ -29,6 +30,54 @@ export default function Pricing() {
       setCheckoutLoading(false);
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const params = new URLSearchParams(location.search);
+    const subscriptionId = params.get('subscription_id') || params.get('session_id');
+    const returnedFromCheckout = params.get('checkout') === 'success' || !!subscriptionId;
+
+    if (!returnedFromCheckout) return;
+
+    let cancelled = false;
+
+    const verifyAndRedirect = async () => {
+      try {
+        if (subscriptionId) {
+          await supabase.functions.invoke('verify-dodo-payment', {
+            body: { subscription_id: subscriptionId },
+          });
+        }
+
+        for (let attempt = 0; attempt < 12 && !cancelled; attempt++) {
+          const now = new Date().toISOString();
+          const { data: subRows } = await (supabase as any)
+            .from('subscriptions')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .gt('current_period_end', now)
+            .limit(1);
+
+          if (subRows?.length) {
+            navigate('/dashboard', { replace: true });
+            return;
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
+      } catch (error) {
+        console.error('Post-checkout verification error:', error);
+      }
+    };
+
+    verifyAndRedirect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, location.search, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex flex-col">
