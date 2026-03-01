@@ -6,31 +6,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   ArrowLeft, 
   User, 
-  Mail,
-  Phone,
-  MapPin,
   Building, 
   CreditCard, 
   Zap, 
   Upload,
   Settings as SettingsIcon,
-  Globe,
   Shield,
-  Bell,
-  Palette,
-  FileText
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import BrandKitManager from '@/components/BrandKitManager';
-import CRMIntegration from '@/components/CRMIntegration';
 import WebhookIntegration from '@/components/WebhookIntegration';
 import PaymentIntegration from '@/components/PaymentIntegration';
 
@@ -153,14 +143,6 @@ export default function Settings() {
     }
   };
 
-
-  if (!user) return null;
-
-  const handleSubscribe = async (planId: string) => {
-    // Redirect to payment page
-    navigate('/payment');
-  };
-
   // Check for PayPal return parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -169,9 +151,8 @@ export default function Settings() {
     if (paypalStatus === 'success') {
       toast({
         title: "Subscription Successful!",
-        description: "Your PayPal subscription has been activated. It may take a few moments to update.",
+        description: "Your PayPal subscription has been activated.",
       });
-      // Clean up URL
       window.history.replaceState({}, document.title, '/settings');
     } else if (paypalStatus === 'cancelled') {
       toast({
@@ -179,33 +160,11 @@ export default function Settings() {
         description: "Your subscription was cancelled. You can try again anytime.",
         variant: "destructive"
       });
-      // Clean up URL
       window.history.replaceState({}, document.title, '/settings');
     }
   }, []);
 
-  // Check for PayPal return parameters
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paypalStatus = urlParams.get('paypal');
-    
-    if (paypalStatus === 'success') {
-      toast({
-        title: "Subscription Successful!",
-        description: "Your PayPal subscription has been activated. Welcome aboard!",
-      });
-      // Clean up URL
-      window.history.replaceState({}, document.title, '/settings');
-    } else if (paypalStatus === 'cancelled') {
-      toast({
-        title: "Subscription Cancelled",
-        description: "Your PayPal subscription was cancelled. You can try again anytime.",
-        variant: "destructive"
-      });
-      // Clean up URL
-      window.history.replaceState({}, document.title, '/settings');
-    }
-  }, []);
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
@@ -362,21 +321,6 @@ export default function Settings() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="payments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Configuration</CardTitle>
-                <CardDescription>
-                  Payment is managed through Whop subscriptions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  All payments are processed securely through Whop. Visit the pricing page to manage your subscription.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="billing" className="space-y-6">
             <Card>
