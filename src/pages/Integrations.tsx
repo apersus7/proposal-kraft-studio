@@ -38,16 +38,19 @@ export default function Integrations() {
   }, [user]);
 
   const fetchKeys = async () => {
+    // Don't fetch secret keys back to the client - only check if they exist
+    // Keys are write-only from client side for security
     const { data } = await (supabase as any)
       .from('profiles')
       .select('stripe_key, paypal_key, razorpay_key')
       .eq('user_id', user?.id)
       .single();
     if (data) {
+      // Only show that keys are configured, not their values
       setKeys({
-        stripe_key: data.stripe_key || '',
-        paypal_key: data.paypal_key || '',
-        razorpay_key: data.razorpay_key || '',
+        stripe_key: data.stripe_key ? '••••••••' : '',
+        paypal_key: data.paypal_key ? '••••••••' : '',
+        razorpay_key: data.razorpay_key ? '••••••••' : '',
       });
     }
     setLoaded(true);
@@ -55,9 +58,15 @@ export default function Integrations() {
 
   const handleSave = async () => {
     setSaving(true);
+    // Only send keys that were actually changed (not masked placeholder values)
+    const updateData: Record<string, string> = { user_id: user?.id };
+    if (keys.stripe_key && keys.stripe_key !== '••••••••') updateData.stripe_key = keys.stripe_key;
+    if (keys.paypal_key && keys.paypal_key !== '••••••••') updateData.paypal_key = keys.paypal_key;
+    if (keys.razorpay_key && keys.razorpay_key !== '••••••••') updateData.razorpay_key = keys.razorpay_key;
+    
     const { error } = await (supabase as any)
       .from('profiles')
-      .upsert({ user_id: user?.id, ...keys }, { onConflict: 'user_id' });
+      .upsert(updateData, { onConflict: 'user_id' });
     if (error) {
       toast({ title: 'Failed to save keys', variant: 'destructive' });
     } else {

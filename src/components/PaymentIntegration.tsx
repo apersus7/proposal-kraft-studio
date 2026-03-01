@@ -36,22 +36,25 @@ export default function PaymentIntegration() {
 
   const fetchPaymentSettings = async () => {
     try {
+      // Only fetch non-secret fields to check configuration status
       const { data, error } = await sb
         .from('user_payment_settings')
-        .select('stripe_publishable_key, stripe_secret_key, paypal_client_id_custom, paypal_merchant_id')
+        .select('stripe_publishable_key, paypal_merchant_id')
         .maybeSingle();
 
       if (error) throw error;
 
       if (data) {
-        setSettings({
+        // We only use publishable/non-secret fields for display
+        // Secret keys are write-only from the client
+        setSettings(prev => ({
+          ...prev,
           stripe_publishable_key: data.stripe_publishable_key,
-          stripe_secret_key: data.stripe_secret_key,
-          paypal_client_id_custom: data.paypal_client_id_custom,
           paypal_merchant_id: data.paypal_merchant_id,
-        });
-        setIsStripeConfigured(!!(data.stripe_publishable_key && data.stripe_secret_key));
-        setIsPayPalConfigured(!!(data.paypal_client_id_custom && data.paypal_merchant_id));
+        }));
+        // Check configured status based on non-secret fields we can safely read
+        setIsStripeConfigured(!!data.stripe_publishable_key);
+        setIsPayPalConfigured(!!data.paypal_merchant_id);
       }
     } catch (error) {
       console.error('Error fetching payment settings:', error);
@@ -60,7 +63,7 @@ export default function PaymentIntegration() {
 
   const handleSaveSettings = async () => {
     if (activeProvider === 'stripe') {
-      if (!settings.stripe_publishable_key || !settings.stripe_secret_key) {
+      if (!settings.stripe_publishable_key || (!settings.stripe_secret_key && !isStripeConfigured)) {
         toast({
           title: 'Validation Error',
           description: 'Please provide both publishable and secret keys',
@@ -195,12 +198,12 @@ export default function PaymentIntegration() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="secret-key">Secret Key</Label>
+                <Label htmlFor="secret-key">Secret Key {isStripeConfigured && <span className="text-xs text-muted-foreground">(already configured)</span>}</Label>
                 <div className="relative">
                   <Input
                     id="secret-key"
                     type={showSecretKey ? 'text' : 'password'}
-                    placeholder="sk_test_..."
+                    placeholder={isStripeConfigured ? '••••••••••••••••' : 'sk_test_...'}
                     value={settings.stripe_secret_key || ''}
                     onChange={(e) => setSettings(prev => ({ ...prev, stripe_secret_key: e.target.value }))}
                     className="pr-10"
