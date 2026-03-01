@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     // Check if returning from Dodo checkout with subscription_id in URL
     const params = new URLSearchParams(location.search);
-    const subscriptionId = params.get('subscription_id');
+    const subscriptionId = params.get('subscription_id') || params.get('session_id');
 
     if (subscriptionId && user && !subscription.hasActiveSubscription && !verifying && !verified) {
       setVerifying(true);
