@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { lovable } from '@/integrations/lovable/index';
 const logo = '/lovable-uploads/22b8b905-b997-42da-85df-b966b4616f6e.png';
 
 export default function Auth() {
@@ -73,18 +74,15 @@ export default function Auth() {
     setIsLoading(false);
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'github' | 'linkedin_oidc') => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
     
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth`
-      }
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
     
     if (error) {
-      console.error('Social login error:', error);
+      console.error('Google login error:', error);
     }
     
     setIsLoading(false);
@@ -117,7 +115,7 @@ export default function Auth() {
                   {/* Google Sign In Button */}
                   <Button 
                     variant="outline" 
-                    onClick={() => handleSocialLogin('google')}
+                    onClick={handleGoogleLogin}
                     disabled={isLoading}
                     className="w-full h-10 flex items-center justify-center gap-2"
                   >
