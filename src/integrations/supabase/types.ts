@@ -304,6 +304,8 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           id: string
+          is_paid: boolean
+          is_trial: boolean
           plan_type: string | null
           status: string
           updated_at: string
@@ -314,6 +316,8 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          is_paid?: boolean
+          is_trial?: boolean
           plan_type?: string | null
           status?: string
           updated_at?: string
@@ -324,6 +328,8 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           id?: string
+          is_paid?: boolean
+          is_trial?: boolean
           plan_type?: string | null
           status?: string
           updated_at?: string

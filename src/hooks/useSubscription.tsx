@@ -7,6 +7,8 @@ export interface SubscriptionStatus {
   planType: string | null;
   status: string;
   currentPeriodEnd: string | null;
+  isTrial: boolean;
+  isPaid: boolean;
 }
 
 const defaultStatus: SubscriptionStatus = {
@@ -14,6 +16,8 @@ const defaultStatus: SubscriptionStatus = {
   planType: null,
   status: 'none',
   currentPeriodEnd: null,
+  isTrial: false,
+  isPaid: false,
 };
 
 // Simple in-memory cache to avoid re-fetching on every route change
@@ -49,7 +53,7 @@ export const useSubscription = () => {
       const now = new Date().toISOString();
       const { data: subRows, error: dbError } = await (supabase as any)
         .from('subscriptions')
-        .select('status, plan_type, current_period_end')
+        .select('status, plan_type, current_period_end, is_trial, is_paid')
         .eq('user_id', user.id)
         .eq('status', 'active')
         .gt('current_period_end', now)
@@ -68,6 +72,8 @@ export const useSubscription = () => {
         planType: isActive ? (dbSub?.plan_type || null) : null,
         status: isActive ? 'active' : 'none',
         currentPeriodEnd: isActive ? (dbSub?.current_period_end || null) : null,
+        isTrial: isActive ? (dbSub?.is_trial || false) : false,
+        isPaid: isActive ? (dbSub?.is_paid || false) : false,
       };
 
       // Update cache

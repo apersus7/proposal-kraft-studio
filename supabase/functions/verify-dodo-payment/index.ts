@@ -36,7 +36,6 @@ Deno.serve(async (req) => {
 
     const { subscription_id } = await req.json();
 
-    // Verify payment with Dodo API
     const DODO_API_KEY = Deno.env.get("DODO_PAYMENTS_API_KEY");
     if (!DODO_API_KEY) {
       throw new Error("DODO_PAYMENTS_API_KEY not configured");
@@ -62,9 +61,11 @@ Deno.serve(async (req) => {
     console.log("Dodo subscription data:", JSON.stringify(subData));
 
     const status = subData.status === "active" || subData.status === "trialing" ? "active" : subData.status;
-    const currentPeriodEnd = subData.current_period_end || subData.next_billing_date || null;
+    const currentPeriodEnd = subData.expires_at || subData.current_period_end || subData.next_billing_date || null;
+    const trialDays = subData.trial_period_days || 0;
+    const isTrial = trialDays > 0 && (subData.recurring_pre_tax_amount === 0 || subData.status === "trialing");
+    const isPaid = status === "active" && !isTrial;
 
-    // Use service role to upsert subscription
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -79,6 +80,8 @@ Deno.serve(async (req) => {
           plan_type: "pro",
           whop_membership_id: subscription_id,
           current_period_end: currentPeriodEnd,
+          is_trial: isTrial,
+          is_paid: isPaid,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "user_id" }
@@ -89,7 +92,7 @@ Deno.serve(async (req) => {
       throw upsertError;
     }
 
-    console.log(`Subscription verified and activated for user ${user.id}`);
+    console.log(`Subscription verified and activated for user ${user.id}, is_trial=${isTrial}, is_paid=${isPaid}`);
 
     return new Response(
       JSON.stringify({ success: true, status }),

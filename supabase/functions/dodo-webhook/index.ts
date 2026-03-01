@@ -37,7 +37,6 @@ Deno.serve(async (req) => {
     if (signature) {
       if (!verifyWebhookSignature(body, signature, webhookSecret)) {
         console.error("Invalid webhook signature, header value:", signature.substring(0, 20));
-        // Log but don't reject - Dodo may use different signing methods
         console.warn("Proceeding despite signature mismatch");
       }
     } else {
@@ -64,14 +63,31 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Determine status from BOTH event type AND actual subscription status field
+    const actualStatus = subData.status; // e.g. "active", "cancelled", etc.
     let status = "none";
-    if (eventType?.includes("active")) status = "active";
-    else if (eventType?.includes("cancelled") || eventType?.includes("canceled")) status = "cancelled";
-    else if (eventType?.includes("expired")) status = "expired";
-    else if (eventType?.includes("failed")) status = "failed";
-    else if (eventType?.includes("created")) status = "pending";
 
-    const currentPeriodEnd = subData.current_period_end || subData.next_billing_date || null;
+    if (actualStatus === "active" || actualStatus === "trialing") {
+      status = "active";
+    } else if (eventType?.includes("active")) {
+      status = "active";
+    } else if (eventType?.includes("cancelled") || eventType?.includes("canceled")) {
+      status = "cancelled";
+    } else if (eventType?.includes("expired")) {
+      status = "expired";
+    } else if (eventType?.includes("failed")) {
+      status = "failed";
+    } else if (eventType?.includes("created") || eventType?.includes("updated")) {
+      // For created/updated events, trust the actual status field
+      if (actualStatus === "active") status = "active";
+      else if (actualStatus === "pending") status = "pending";
+      else status = actualStatus || "pending";
+    }
+
+    const currentPeriodEnd = subData.expires_at || subData.current_period_end || subData.next_billing_date || null;
+    const trialDays = subData.trial_period_days || 0;
+    const isTrial = trialDays > 0 && (subData.recurring_pre_tax_amount === 0 || actualStatus === "trialing");
+    const isPaid = status === "active" && !isTrial;
 
     // Upsert subscription
     const { error: upsertError } = await supabase
@@ -83,6 +99,8 @@ Deno.serve(async (req) => {
           plan_type: "pro",
           whop_membership_id: subscriptionId,
           current_period_end: currentPeriodEnd,
+          is_trial: isTrial,
+          is_paid: isPaid,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "user_id" }
@@ -93,7 +111,7 @@ Deno.serve(async (req) => {
       throw upsertError;
     }
 
-    console.log(`Subscription updated: user=${userId}, status=${status}`);
+    console.log(`Subscription updated: user=${userId}, status=${status}, is_trial=${isTrial}, is_paid=${isPaid}`);
 
     return new Response(JSON.stringify({ received: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
