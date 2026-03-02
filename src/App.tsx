@@ -25,7 +25,6 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const Integrations = lazy(() => import("./pages/Integrations"));
 const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
 const ProposalsDashboard = lazy(() => import("./pages/ProposalsDashboard"));
-const Pricing = lazy(() => import("./pages/Pricing"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const queryClient = new QueryClient();
@@ -39,7 +38,6 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-pulse text-muted-foreground">Loading...</div></div>}>
             <Routes>
-              <Route path="/pricing" element={<Pricing />} />
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
