@@ -9,7 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Lazy-loaded routes for code splitting
 const Index = lazy(() => import("./pages/Index"));
-const Auth = lazy(() => import("./pages/Auth"));
+
 const AppLayout = lazy(() => import("./components/AppLayout"));
 const CreateProposal = lazy(() => import("./pages/CreateProposal"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -39,7 +39,7 @@ const App = () => (
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-pulse text-muted-foreground">Loading...</div></div>}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
+              
               <Route path="/dashboard" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
               <Route path="/create-proposal" element={<ProtectedRoute><CreateProposal /></ProtectedRoute>} />
               <Route path="/proposal/:id" element={<ProtectedRoute><ProposalPreview /></ProtectedRoute>} />
