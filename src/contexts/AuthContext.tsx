@@ -93,35 +93,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const isNetworkError = (err: any) => {
-      const message = String(err?.message || '').toLowerCase();
-      return (
-        err?.name === 'AuthRetryableFetchError' ||
-        err?.status === 0 ||
-        message.includes('failed to fetch') ||
-        message.includes('network')
-      );
-    };
-
     try {
-      let { error } = await supabase.auth.signInWithPassword({
+      // Clear any stale session first to stop background refresh loops
+      // that can interfere with new sign-in attempts
+      try {
+        await supabase.auth.signOut({ scope: 'local' });
+      } catch {
+        // Ignore sign-out errors – we just want to clear local tokens
+      }
+
+      // Small delay to let the auth client settle after clearing
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      // One quick retry for transient preview-network hiccups
-      if (error && isNetworkError(error)) {
-        await new Promise((resolve) => setTimeout(resolve, 400));
-        const retry = await supabase.auth.signInWithPassword({ email, password });
-        error = retry.error;
-      }
-
       if (error) {
         toast({
           title: "Sign in failed",
-          description: isNetworkError(error)
-            ? "Network issue detected. Please retry in a few seconds or use the published app URL."
-            : error.message,
+          description: error.message,
           variant: "destructive"
         });
         return { error };
@@ -136,9 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       toast({
         title: "Sign in failed",
-        description: isNetworkError(error)
-          ? "Network issue detected. Please retry in a few seconds or use the published app URL."
-          : error.message,
+        description: error.message,
         variant: "destructive"
       });
       return { error };
