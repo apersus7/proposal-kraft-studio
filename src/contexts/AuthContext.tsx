@@ -29,14 +29,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
+    // Timeout: stop blocking the UI after 3 seconds even if auth is stuck
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      clearTimeout(timeout);
+    }).catch(() => {
+      // If getSession fails (e.g. stale refresh token, network down), stop loading
+      setLoading(false);
+      clearTimeout(timeout);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   const signUp = async (email: string, password: string, name?: string) => {
