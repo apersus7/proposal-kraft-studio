@@ -93,21 +93,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    try {
-      // Clear stale tokens from localStorage instantly (no network calls)
-      // to stop background refresh loops interfering with sign-in
-      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
-      localStorage.removeItem(storageKey);
+    const isFetchFailure = (err: any) => {
+      const msg = String(err?.message || '').toLowerCase();
+      return msg.includes('failed to fetch') || msg.includes('load failed') || err?.status === 0;
+    };
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+    const clearLocalAuthArtifacts = () => {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      if (!projectId) return;
+      const prefix = `sb-${projectId}-`;
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(prefix)) localStorage.removeItem(key);
       });
+    };
+
+    try {
+      // Clear stale in-memory session quickly (without blocking on network)
+      await Promise.race([
+        supabase.auth.signOut({ scope: 'local' }),
+        new Promise((resolve) => setTimeout(resolve, 300)),
+      ]);
+
+      clearLocalAuthArtifacts();
+
+      let { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      // One retry after cleanup for transient auth-client race conditions
+      if (error && isFetchFailure(error)) {
+        await Promise.race([
+          supabase.auth.signOut({ scope: 'local' }),
+          new Promise((resolve) => setTimeout(resolve, 300)),
+        ]);
+        clearLocalAuthArtifacts();
+        const retry = await supabase.auth.signInWithPassword({ email, password });
+        error = retry.error;
+      }
 
       if (error) {
         toast({
           title: "Sign in failed",
-          description: error.message,
+          description: isFetchFailure(error)
+            ? "Could not reach authentication service. Please refresh and try again."
+            : error.message,
           variant: "destructive"
         });
         return { error };
@@ -122,7 +149,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       toast({
         title: "Sign in failed",
-        description: error.message,
+        description: isFetchFailure(error)
+          ? "Could not reach authentication service. Please refresh and try again."
+          : error.message,
         variant: "destructive"
       });
       return { error };
