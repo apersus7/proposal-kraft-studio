@@ -57,9 +57,13 @@ const Index = () => {
     }
   }, [user, navigate]);
 
-  // Don't render landing page while loading or if user is logged in
-  if (loading || user) {
-    return null;
+  // Show a brief spinner only if authenticated user detected (redirect pending)
+  if (user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Redirecting...</div>
+      </div>
+    );
   }
 
   // Landing page for unauthenticated users
