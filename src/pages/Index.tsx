@@ -1,11 +1,10 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Zap, Shield, Users, Menu, Loader2, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { FileText, Zap, Shield, Users, Menu, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
@@ -27,11 +26,9 @@ function useInView(threshold = 0.15) {
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const heroSection = useInView();
   const featuresSection = useInView();
-  const pricingSection = useInView();
   const ctaSection = useInView();
 
   // Redirect authenticated users to dashboard immediately
@@ -40,22 +37,6 @@ const Index = () => {
       navigate('/dashboard', { replace: true });
     }
   }, [user, loading, navigate]);
-
-  const handleStartTrial = useCallback(async () => {
-    if (!user) { navigate('/auth'); return; }
-    setCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('dodo-checkout', {
-        body: { return_url: window.location.origin + '/' },
-      });
-      if (error) throw error;
-      if (data?.checkout_url) window.location.href = data.checkout_url;
-    } catch (err) {
-      console.error('Checkout error:', err);
-    } finally {
-      setCheckoutLoading(false);
-    }
-  }, [user, navigate]);
 
   // Show a brief spinner only if authenticated user detected (redirect pending)
   if (user) {
@@ -192,64 +173,6 @@ const Index = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section ref={pricingSection.ref} className="py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`text-center mb-14 transition-all duration-700 ${pricingSection.inView ? 'animate-fade-in' : 'opacity-0'}`}>
-            <Badge variant="outline" className="mb-4 border-primary/20 bg-primary/5 text-primary">
-              Pricing
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-lg sm:text-xl text-muted-foreground">
-              Start with a free trial. No credit card required.
-            </p>
-          </div>
-
-          <div className={`max-w-md mx-auto transition-all duration-700 ${pricingSection.inView ? 'animate-scale-in delay-200' : 'opacity-0'}`}>
-            <Card className="relative overflow-hidden border-glow animate-glow-pulse">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
-              <CardHeader className="text-center pb-2 pt-8">
-                <Badge className="mx-auto mb-4 bg-primary/10 text-primary hover:bg-primary/10 border-primary/20">
-                  Most Popular
-                </Badge>
-                <CardTitle className="text-2xl sm:text-3xl">Pro Plan</CardTitle>
-                <CardDescription className="text-base mt-2">Everything you need to win more clients</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center space-y-6 pb-8">
-                <div>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl sm:text-6xl font-bold text-gradient">$19</span>
-                    <span className="text-muted-foreground text-lg">/month</span>
-                  </div>
-                  <p className="text-primary font-medium mt-2">7-day free trial included</p>
-                </div>
-
-                <ul className="text-left space-y-3 mx-auto max-w-xs">
-                  {[
-                    'Unlimited AI-generated proposals',
-                    'Custom branding & templates',
-                    'E-signatures & payments',
-                    'Client analytics & tracking',
-                    'PDF & link sharing',
-                    'Priority support',
-                  ].map((feature) => (
-                    <li key={feature} className="flex items-center gap-2.5 text-sm text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <Button size="lg" className="w-full text-base py-6 group" onClick={handleStartTrial} disabled={checkoutLoading}>
-                  {checkoutLoading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Processing...</> : <>Start 7-Day Free Trial <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" /></>}
-                </Button>
-                <p className="text-xs text-muted-foreground">No credit card required · Cancel anytime</p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
