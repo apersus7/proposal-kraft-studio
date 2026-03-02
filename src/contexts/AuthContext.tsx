@@ -93,16 +93,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
+    const isNetworkError = (err: any) => {
+      const message = String(err?.message || '').toLowerCase();
+      return (
+        err?.name === 'AuthRetryableFetchError' ||
+        err?.status === 0 ||
+        message.includes('failed to fetch') ||
+        message.includes('network')
+      );
+    };
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      let { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      // One quick retry for transient preview-network hiccups
+      if (error && isNetworkError(error)) {
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        const retry = await supabase.auth.signInWithPassword({ email, password });
+        error = retry.error;
+      }
+
       if (error) {
         toast({
           title: "Sign in failed",
-          description: error.message,
+          description: isNetworkError(error)
+            ? "Network issue detected. Please retry in a few seconds or use the published app URL."
+            : error.message,
           variant: "destructive"
         });
         return { error };
@@ -117,7 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       toast({
         title: "Sign in failed",
-        description: error.message,
+        description: isNetworkError(error)
+          ? "Network issue detected. Please retry in a few seconds or use the published app URL."
+          : error.message,
         variant: "destructive"
       });
       return { error };
