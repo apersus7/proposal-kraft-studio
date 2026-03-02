@@ -94,16 +94,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Clear any stale session first to stop background refresh loops
-      // that can interfere with new sign-in attempts
-      try {
-        await supabase.auth.signOut({ scope: 'local' });
-      } catch {
-        // Ignore sign-out errors – we just want to clear local tokens
-      }
-
-      // Small delay to let the auth client settle after clearing
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      // Clear stale tokens from localStorage instantly (no network calls)
+      // to stop background refresh loops interfering with sign-in
+      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
+      localStorage.removeItem(storageKey);
 
       const { error } = await supabase.auth.signInWithPassword({
         email,
